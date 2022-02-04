@@ -10,3 +10,13 @@ A module for single cell sequencing read simulator.
 **Feb. 2nd**
 - Upload scATAC-seq module.
 
+## Quick Install
+Currently, scReadSim doesn't support installation from PyPI.
+
+Install scReadSim from Github
+```
+pip install git+https://github.com/Dominic7227/scReadSim.git
+```
+
+## Tutorial
+To be done.
