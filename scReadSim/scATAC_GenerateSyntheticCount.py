@@ -10,7 +10,7 @@ import os
 
 def GenerateSyntheticCount(samplename, sample_format, directory, outdirectory, cluster_prestep=True):
 	r = robjects.r
-	rscript_dir = os.path.join(os.path.dirname(os.path.abspath(__name__)), 'scReadSim/Rscript/scATAC_SyntheticCountFunctions.R')
+	rscript_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Rscript/scATAC_SyntheticCountFunctions.R')
 	print(rscript_dir)
 	# rscript_dir = pkg_resources.resource_stream(__name__, 'Rscript/scATAC_SyntheticCountFunctions.R').read().decode()
 	r['source'](rscript_dir)
