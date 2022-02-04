@@ -1,0 +1,26 @@
+Metadata-Version: 2.1
+Name: scReadSim
+Version: 0.1.0
+Summary: A single cell sequencing reads simulator.
+Home-page: https://github.com/Dominic7227/scReadSim
+Author: Guanao Yan
+Author-email: gayan@g.ucla.com
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# scReadSim
+
+A module for single cell sequencing read simulator.
+
+## Update Log
+**Feb. 2nd**
+
+- Upload scATAC-seq module.
+
+

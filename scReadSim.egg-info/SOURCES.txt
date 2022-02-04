@@ -1,0 +1,8 @@
+LICENSE
+README.md
+pyproject.toml
+setup.py
+scReadSim.egg-info/PKG-INFO
+scReadSim.egg-info/SOURCES.txt
+scReadSim.egg-info/dependency_links.txt
+scReadSim.egg-info/top_level.txt

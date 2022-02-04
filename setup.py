@@ -17,7 +17,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    package_dir={"": "scReadSim"},
-    packages=setuptools.find_packages(where="scReadSim"),
     python_requires=">=3.6",
+    include_package_data=True,
+    package_data={'': ['Rscript/*.R']}
 )
