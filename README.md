@@ -28,4 +28,4 @@ To be done.
 ## License
 
 This pacakge is licensed under the terms
-of the MIT license.
+of the **MIT License**.
