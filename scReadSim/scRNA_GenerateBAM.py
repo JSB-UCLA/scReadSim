@@ -101,7 +101,7 @@ def scRNA_BED2FASTQ(bedtools_directory, seqtk_directory, referenceGenome_file, o
 	output, error = subprocess.Popen(fasta_read2_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
 	     print('[ERROR] Fail to create synthetic read2 fasta file:', error.decode())
-	fasta_read1_cmd = "awk 'NR%2==0 {print substr(p,2,26);} NR%2 {p=$0;print p;}' %s/%s.read2.bed2fa.fa > %s/%s.read1.bed2fa.fa" % (outdirectory, BED_filename_combined_pre, outdirectory, BED_filename_combined_pre)
+	fasta_read1_cmd = "awk 'NR%%2==0 {print substr(p,2,26);} NR%%2 {p=$0;print p;}' %s/%s.read2.bed2fa.fa > %s/%s.read1.bed2fa.fa" % (outdirectory, BED_filename_combined_pre, outdirectory, BED_filename_combined_pre)
 	output, error = subprocess.Popen(fasta_read1_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
 	     print('[ERROR] Fail to create synthetic read1 fasta file:', error.decode())
