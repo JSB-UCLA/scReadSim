@@ -18,9 +18,14 @@ A module for single cell sequencing read simulator.
 Currently, scReadSim doesn't support installation from PyPI.
 
 Install scReadSim from Github
-```
+```bash
 pip install git+https://github.com/Dominic7227/scReadSim.git
 ```
 
 ## Tutorial
 To be done.
+
+## License
+
+This pacakge is licensed under the terms
+of the MIT license.
