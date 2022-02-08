@@ -23,7 +23,7 @@ def cellbarode_generator(length, size=10):
 	cb_list = [''.join(random.choice(chars) for _ in range(size)) for cell in range(length)]
 	return cb_list
 
-def PerTruePeakEdition(peak_record, count_vec, read_lines, read_len, jitter_size, random_cellbarcode_list):
+def scATAC_PerTruePeakEdition(peak_record, count_vec, read_lines, read_len, jitter_size, random_cellbarcode_list):
 	# peak_record = peaks_assignments.loc[1,] # Input
 	true_peak_concat = peak_record[0] + ":" + str(peak_record[1]) + "-" + str(peak_record[2])
 	reads_cur = read_lines[read_lines['peak_name'] == true_peak_concat] # Input
@@ -78,7 +78,7 @@ def GenerateSyntheticReads(samtools_directory, INPUT_bamfile, outdirectory, coor
 	if error:
 	     print('[ERROR] Fail to generate synthetic reads:\n', error.decode())
 	 
-def GenerateBAMCoord(outdirectory, coordinate_file, assignment_file, count_mat_file, BED_filename, OUTPUT_cells_barcode_file):
+def scATAC_GenerateBAMCoord(outdirectory, coordinate_file, assignment_file, count_mat_file, BED_filename, OUTPUT_cells_barcode_file):
 	random.seed(2022)
 	read_lines = pd.read_csv("%s/%s" % (outdirectory, coordinate_file), delimiter="\t",  names=['peak_name', 'chr', 'r1_start', 'r2_start', 'length'])
 	peaks_assignments = pd.read_csv("%s/%s" % (outdirectory, assignment_file), delimiter="\t",  names=['chr', 'start', 'end']).to_numpy()
@@ -102,13 +102,13 @@ def GenerateBAMCoord(outdirectory, coordinate_file, assignment_file, count_mat_f
 		peak_record = peaks_assignments[peak_ind]
 		count_vec = count_mat[peak_ind,:] # Input
 		print(peak_ind)
-		read_1_df, read_2_df = PerTruePeakEdition(peak_record, count_vec, read_lines, read_len, jitter_size, random_cellbarcode_list)
+		read_1_df, read_2_df = scATAC_PerTruePeakEdition(peak_record, count_vec, read_lines, read_len, jitter_size, random_cellbarcode_list)
 		read_1_df.to_csv("%s/%s" % (outdirectory, read1_bedfile), header=None, index=None, sep='\t', mode='a')
 		read_2_df.to_csv("%s/%s" % (outdirectory, read2_bedfile), header=None, index=None, sep='\t', mode='a')
 	end = time.time()
 	print(end - start)
  
-def CombineBED_Pair(outdirectory, BED_filename_pre, BED_COMPLE_filename_pre, BED_filename_combined_pre):
+def scATAC_CombineBED(outdirectory, BED_filename_pre, BED_COMPLE_filename_pre, BED_filename_combined_pre):
  	combine_read1_cmd = "cat %s/%s.read1.bed %s/%s.read1.bed | sort -k1,1 -k2,2n | cut -f1-5 > %s/%s.read1.bed" % (outdirectory, BED_filename_pre, outdirectory, BED_COMPLE_filename_pre, outdirectory, BED_filename_combined_pre)
  	output, error = subprocess.Popen(combine_read1_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
  	if error:
@@ -119,7 +119,7 @@ def CombineBED_Pair(outdirectory, BED_filename_pre, BED_COMPLE_filename_pre, BED
 	     print('[ERROR] Fail to create combine synthetic read2 bed files:\n', error.decode())
 	     # sys.exit('[ERROR] Fail to create combine synthetic read2 bed files:\n', error.decode())
 
-def BED2FASTQ_Pair(bedtools_directory, seqtk_directory, referenceGenome_file, outdirectory, BED_filename_combined_pre, sort_FASTQ = True):
+def scATAC_BED2FASTQ(bedtools_directory, seqtk_directory, referenceGenome_file, outdirectory, BED_filename_combined_pre, sort_FASTQ = True):
 	# Create FASTA
 	print('scReadSim BED2FASTQ_Pair')
 	print('\tCreating FASTA files...')

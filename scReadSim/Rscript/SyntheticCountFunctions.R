@@ -280,7 +280,7 @@ get_cluster_seurat <- function(data_mat, platform = c("full-length", "UMI"),
 # dir.create(out.directory)
 
 ## Read in count matrix
-scReadSim_runSyntheticCount <- function(samplename, sample_format, directory, out_directory, cluster_prestep=TRUE){
+scATAC_runSyntheticCount <- function(samplename, sample_format, directory, out_directory, cluster_prestep=TRUE){
   cat(sprintf("Reading count matrix %s.%s...\n", samplename, sample_format))
   count_matrix <- read.table(sprintf("%s/%s.%s", directory, samplename, sample_format), sep="\t",header = FALSE)
   matrix_num <- data.matrix(count_matrix[,2:ncol(count_matrix)])
@@ -316,6 +316,44 @@ simu_count_pergene_vec <- rowSums(ceiling(simu_matrix/2))
 write.table(simu_count_pergene_vec, sprintf("%s/%s.scDesign2Simulated.nPairsRegionmargional.txt", out_directory, samplename), row.names = FALSE,col.names = FALSE)
 cat("Done.\n")
 }
+
+scRNA_runSyntheticCount <- function(samplename, sample_format, directory, out_directory, cluster_prestep=TRUE){
+  cat(sprintf("Reading count matrix %s.%s...\n", samplename, sample_format))
+  count_matrix <- read.table(sprintf("%s/%s.%s", directory, samplename, sample_format), sep="\t",header = FALSE)
+  matrix_num <- data.matrix(count_matrix[,2:ncol(count_matrix)])
+count_pergene_vec <- rowSums(matrix_num)
+  write.table(count_pergene_vec, sprintf("%s/%s.real.nReadRegionmargional.txt",out_directory, samplename), row.names = FALSE,col.names = FALSE)
+  ## Clustering
+  if (cluster_prestep == TRUE){
+    cat("Louvain Clustering Before Simulation...\n")
+    set.seed(2022)
+    clustering_result <- get_cluster_seurat(matrix_num, 'UMI')
+    print(clustering_result$rogue_scores)
+    print(mean(clustering_result$rogue_scores))
+    colnames(matrix_num) <- clustering_result$clustering_result
+    write.table(clustering_result$clustering_result, sprintf("%s/%s.LouvainClusterResults.%s", out_directory, samplename, sample_format), sep="\n", row.names = FALSE,col.names = FALSE)
+  } else {
+    colnames(matrix_num) <- rep("Cluster1", ncol(matrix_num))
+  }
+
+## Use scDesign2 for training countmatrix
+cat("Model fitting...\n")
+n_cell_new <- ncol(matrix_num)
+cell_type_sel <- unique(colnames(matrix_num))
+cell_type_prop <- table(colnames(matrix_num))[cell_type_sel]
+copula_result <- fit_model_scDesign2(matrix_num, cell_type_sel, 
+                                         ncores = length(cell_type_sel))
+cat("Generating synthetic count matrix...\n")
+simu_matrix <- simulate_count_scDesign2(copula_result, n_cell_new, cell_type_prop = cell_type_prop)
+rownames(simu_matrix) <- count_matrix[,1]
+colnames(simu_matrix) <- NULL 
+cat(sprintf("Writing out synthetic count matrix %s to %s...\n", out_directory, out_directory))
+write.table(simu_matrix, sprintf("%s/%s.scDesign2Simulated.%s", out_directory, samplename, sample_format), sep="\t", row.names = FALSE,col.names = FALSE)
+simu_count_pergene_vec <- rowSums(simu_matrix)
+write.table(simu_count_pergene_vec, sprintf("%s/%s.scDesign2Simulated.nReadRegionmargional.txt", out_directory, samplename), row.names = FALSE,col.names = FALSE)
+cat("Done.\n")
+}
+
 
 
 
