@@ -82,7 +82,7 @@ def scATAC_GenerateBAMCoord(outdirectory, coordinate_file, assignment_file, coun
 	random.seed(2022)
 	read_lines = pd.read_csv("%s/%s" % (outdirectory, coordinate_file), delimiter="\t",  names=['peak_name', 'chr', 'r1_start', 'r2_start', 'length'])
 	peaks_assignments = pd.read_csv("%s/%s" % (outdirectory, assignment_file), delimiter="\t",  names=['chr', 'start', 'end']).to_numpy()
-	count_mat = pd.read_csv("%s/%s" % (outdirectory, count_mat_file), header=None, delimiter="\t").to_numpy()
+	count_mat = pd.read_csv("%s/%s" % (outdirectory, count_mat_file), header=0, delimiter="\t").to_numpy()
 	n_cell = np.shape(count_mat)[1]
 	random_cellbarcode_list = cellbarode_generator(n_cell, size=16)
 	read_len = 40
