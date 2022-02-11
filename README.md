@@ -3,6 +3,9 @@
 A module for single cell sequencing read simulator.
 
 ## Update Log
+**Feb. 10th**
+- Update synthetic count matrix generation functions. 
+
 **Feb. 7th**
 - Update scRNA-seq module
 - Local installation tested.
