@@ -3,6 +3,10 @@
 A module for single cell sequencing read simulator.
 
 ## Update Log
+**March. 10th**
+- Update BAM generation and synthetic count matrix traning.
+- Test scRNA-seq module and scATAC-seq module use demo data.
+
 **Feb. 10th**
 - Update synthetic count matrix generation functions. 
 

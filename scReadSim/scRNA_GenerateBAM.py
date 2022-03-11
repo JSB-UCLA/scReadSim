@@ -10,6 +10,7 @@ pd.options.mode.chained_assignment = None  # default='warn'
 import string
 import random
 import subprocess
+from tqdm import tqdm
 
 def flatten(x):
     if isinstance(x, collections.Iterable):
@@ -22,12 +23,12 @@ def cellbarcode_generator(length, size=10):
 	cb_list = [''.join(random.choice(chars) for _ in range(size)) for cell in range(length)]
 	return cb_list
 
-def GenerateSyntheticReads(samtools_directory, INPUT_bamfile, outdirectory, coordinate_file, ref_peakfile, cellnumberfile):
+def scRNA_GenerateSyntheticReads(samtools_directory, INPUT_bamfile, outdirectory, coordinate_file, ref_peakfile, cellnumberfile):
 	rm_coor_command = "rm %s/%s" % (outdirectory, coordinate_file)
 	os.system(rm_coor_command)
 	create_coor_command = "touch %s/%s" % (outdirectory, coordinate_file)
 	os.system(create_coor_command)
-	cmd = "while true; do read -r region <&3 || break;  read -r ncell <&4 || break; region=$(echo ${region} | cut -f 1,2,3 | perl -lane 'print \"$F[0]:$F[1]-$F[2]\"');  paste -d\"\t\" <(awk -v nsample=${ncell} -v region=${region} 'BEGIN{for(c=0;c<nsample;c++) print region}') <(%s/samtools view %s ${region} | shuf -r -n ${ncell} | cut -f3,4,8,9) >> %s/%s;  done 3<%s/%s 4<%s" % (samtools_directory, INPUT_bamfile, outdirectory, coordinate_file, outdirectory, ref_peakfile, cellnumberfile)
+	cmd = "while true; do read -r region <&3 || break;  read -r ncell <&4 || break; region=$(echo ${region} | cut -f 1,2,3 | perl -lane 'print \"$F[0]:$F[1]-$F[2]\"');  paste -d\"\t\" <(awk -v nsample=${ncell} -v region=${region} 'BEGIN{for(c=0;c<nsample;c++) print region}') <(%s/samtools view %s ${region} | shuf -r -n ${ncell} | cut -f3,4) >> %s/%s;  done 3<%s/%s 4<%s" % (samtools_directory, INPUT_bamfile, outdirectory, coordinate_file, outdirectory, ref_peakfile, cellnumberfile)
 	# Testing using copied directory
 	output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
@@ -54,18 +55,25 @@ def scRNA_PerTruePeakEdition(peak_record, count_vec, read_lines, read_len, jitte
 	read_1_df['strand'] = '+'
 	return read_1_df
 
-outdirectory = '/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220116_e18_mouse_brain_fresh_5k_gex_possorted_bam_chr1_NONINPUT_withCluster'
-coordinate_file = "BAMfile_coordinates.txt"
-assignment_file = "e18_mouse_brain_fresh_5k_gex_possorted_bam_chr1_peaks.bed"
-count_mat_file = "e18_mouse_brain_fresh_5k_gex_possorted_bam_chr1.countmatrix.scDesign2Simulated.txt"
-BED_filename = "e18_mouse_brain_fresh_5k_gex_possorted_bam_chr1.syntheticBAM"
+# outdirectory = '/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220116_e18_mouse_brain_fresh_5k_gex_possorted_bam_chr1_NONINPUT_withCluster'
+# coordinate_file = "BAMfile_coordinates.txt"
+# coordinate_file = "BAMfile_COMPLE_coordinates.txt"
+# assignment_file = ref_comple_peakfile
+# count_mat_file = synthetic_countmat_file_comple
+# BED_filename = BED_COMPLE_filename_pre
+# cellnumberfile=cellnumberfile_comple
 
-
-def scRNA_GenerateBAMCoord(outdirectory, coordinate_file, assignment_file, count_mat_file, BED_filename, OUTPUT_cells_barcode_file):
+def scRNA_GenerateBAMCoord(outdirectory, coordinate_file, assignment_file, count_mat_file, cellnumberfile, BED_filename, OUTPUT_cells_barcode_file):
+	"""
+	New version (20220310) Update:
+	- Add marginal count of synthetic count matrix
+	- Only loop nonzero peaks to speed up
+	"""
 	random.seed(2022)
 	read_lines = pd.read_csv("%s/%s" % (outdirectory, coordinate_file), delimiter="\t",  names=['peak_name', 'chr', 'r1_start'])
-	peaks_assignments = pd.read_csv("%s/%s" % (outdirectory, assignment_file), delimiter="\t",  names=['chr', 'start', 'end']).to_numpy()
+	peaks = pd.read_csv("%s/%s" % (outdirectory, assignment_file), delimiter="\t",  names=['chr', 'start', 'end']).to_numpy()
 	count_mat = pd.read_csv("%s/%s" % (outdirectory, count_mat_file), header=0, delimiter="\t").to_numpy()
+	marginal_cell_number = pd.read_csv("%s" %  cellnumberfile, header=None, delimiter="\t").to_numpy()
 	n_cell = np.shape(count_mat)[1]
 	random_cellbarcode_list = cellbarcode_generator(n_cell, size=16)
 	read_len = 80
@@ -77,21 +85,30 @@ def scRNA_GenerateBAMCoord(outdirectory, coordinate_file, assignment_file, count
 		    f.write("%s\n" % item)
 	with open("%s/%s" % (outdirectory, read1_bedfile), 'w') as fp:
 		pass
-	for peak_ind in range(len(peaks_assignments)):
+	peak_nonzero_id = np.nonzero(marginal_cell_number)[0]
+	for relative_peak_ind in tqdm(range(len(peak_nonzero_id))):
+		peak_ind = peak_nonzero_id[relative_peak_ind]
 		# peak_ind = 192
-		peak_record = peaks_assignments[peak_ind]
+		peak_record = peaks[peak_ind]
 		count_vec = count_mat[peak_ind,:] # Input
 		print(peak_ind)
 		read_1_df = scRNA_PerTruePeakEdition(peak_record, count_vec, read_lines, read_len, jitter_size, random_cellbarcode_list)
 		read_1_df.to_csv("%s/%s" % (outdirectory, read1_bedfile), header=None, index=None, sep='\t', mode='a')
+	# for peak_ind in tqdm(range(len(peaks))):
+	# 	# peak_ind = 192
+	# 	peak_record = peaks[peak_ind]
+	# 	count_vec = count_mat[peak_ind,:] # Input
+	# 	print(peak_ind)
+	# 	read_1_df = scRNA_PerTruePeakEdition(peak_record, count_vec, read_lines, read_len, jitter_size, random_cellbarcode_list)
+	# 	read_1_df.to_csv("%s/%s" % (outdirectory, read1_bedfile), header=None, index=None, sep='\t', mode='a')
 	end = time.time()
 	print(end - start)
 
 def scRNA_CombineBED(outdirectory, BED_filename_pre, BED_COMPLE_filename_pre, BED_filename_combined_pre):
 	combine_read_cmd = "cat %s/%s.read.bed %s/%s.read.bed | sort -k1,1 -k2,2n | cut -f1-5 > %s/%s.read.bed" % (outdirectory, BED_filename_pre, outdirectory, BED_COMPLE_filename_pre, outdirectory, BED_filename_combined_pre)
 	output, error = subprocess.Popen(combine_read_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-	 	if error:
-	     print('[ERROR] Fail to create combine synthetic read bed files:\n', error.decode())
+	if error:
+ 		print('[ERROR] Fail to create combine synthetic read bed files:\n', error.decode())
 
 def scRNA_BED2FASTQ(bedtools_directory, seqtk_directory, referenceGenome_file, outdirectory, BED_filename_combined_pre, sort_FASTQ = True):
 	# Create FASTA
@@ -107,11 +124,11 @@ def scRNA_BED2FASTQ(bedtools_directory, seqtk_directory, referenceGenome_file, o
 	     print('[ERROR] Fail to create synthetic read1 fasta file:', error.decode())
 	print('\tConverting FASTA files to FASTQ files...')
 	# FASTA to FASTQ
-	fastq_read1_cmd = "%s/seqtk seq -F '#' %s/%s.read1.bed2fa.fa > %s/%s.read1.bed2fa.fq" % (seqtk_directory, outdirectory, BED_filename_combined_pre, outdirectory, BED_filename_combined_pre)
+	fastq_read1_cmd = "%s/seqtk seq -F 'F' %s/%s.read1.bed2fa.fa > %s/%s.read1.bed2fa.fq" % (seqtk_directory, outdirectory, BED_filename_combined_pre, outdirectory, BED_filename_combined_pre)
 	output, error = subprocess.Popen(fastq_read1_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
 	     print('[ERROR] Fail to convert read1 synthetic fasta file to fastq file:', error.decode())
-	fastq_read2_cmd = "%s/seqtk seq -F '#' %s/%s.read2.bed2fa.fa > %s/%s.read2.bed2fa.fq" % (seqtk_directory, outdirectory, BED_filename_combined_pre, outdirectory, BED_filename_combined_pre)
+	fastq_read2_cmd = "%s/seqtk seq -F 'F' %s/%s.read2.bed2fa.fa > %s/%s.read2.bed2fa.fq" % (seqtk_directory, outdirectory, BED_filename_combined_pre, outdirectory, BED_filename_combined_pre)
 	output, error = subprocess.Popen(fastq_read2_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
 	     print('[ERROR] Fail to convert read2 synthetic fasta file to fastq file:', error.decode())
@@ -127,8 +144,43 @@ def scRNA_BED2FASTQ(bedtools_directory, seqtk_directory, referenceGenome_file, o
 		if error:
 		     print('[ERROR] Fail to sort read2 synthetic fastq file:', error.decode())
 		print('\tSorted FASTQ files %s.read1.bed2fa.sorted.fq, %s.read2.bed2fa.sorted.fq stored in %s.' % (BED_filename_combined_pre, BED_filename_combined_pre, outdirectory))
-	print('Done!\n')
+	print('Done!')
 
+
+def AlignSyntheticBam_Pair(bowtie2_directory, samtools_directory, outdirectory, referenceGenome_name, referenceGenome_dir, BED_filename_combined_pre, output_BAM_pre, doIndex = True):
+	print('scReadSim AlignSyntheticBam_Pair')
+	if doIndex == True:
+		print('\tIndexing reference genome file...')
+		index_ref_cmd = "%s/bowtie2-build %s/%s.fa %s" % (bowtie2_directory, referenceGenome_dir, referenceGenome_name, referenceGenome_name)
+		output, error = subprocess.Popen(index_ref_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+		if error:
+		     print('[ERROR] Fail to index the reference genome:\nPlease index the reference genome by setting \'doIndex=True\'\n', error.decode())
+	# Align using bwa
+	print('\tAligning FASTQ files onto reference genome files...')
+	alignment_cmd = "%s/bowtie2 -x %s/%s -1 %s/%s.read1.bed2fa.sorted.fq -2 %s/%s.read2.bed2fa.sorted.fq | %s/samtools view -bS - > %s/%s.synthetic.noCB.bam" % (bowtie2_directory, referenceGenome_dir, referenceGenome_name,  outdirectory, BED_filename_combined_pre, outdirectory, BED_filename_combined_pre, samtools_directory, outdirectory, output_BAM_pre)
+	output, error = subprocess.Popen(alignment_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+	if error:
+	     print('[ERROR] Fail to align the reference genome:', error.decode())
+	print('\tAlignment Done.')
+	print('\tGenerating cell barcode tag...')
+	addBC2BAM_header_cmd = "%s/samtools view %s/%s.synthetic.noCB.bam -H > %s/%s.synthetic.noCB.header.sam" % (samtools_directory, outdirectory, output_BAM_pre, outdirectory, output_BAM_pre)
+	output, error = subprocess.Popen(addBC2BAM_header_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+	addBC2BAM_cmd = "cat <( cat %s/%s.synthetic.noCB.header.sam ) <( paste <(%s/samtools view %s/%s.synthetic.noCB.bam ) <(%s/samtools view %s/%s.synthetic.noCB.bam | cut -f1 | cut -d':' -f1 | sed -e 's/^/CB:Z:/')) | %s/samtools view -bS - > %s/%s.synthetic.bam" % (outdirectory, output_BAM_pre, samtools_directory, outdirectory, output_BAM_pre, samtools_directory, outdirectory, output_BAM_pre, samtools_directory, outdirectory, output_BAM_pre)
+	output, error = subprocess.Popen(addBC2BAM_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+	if error:
+		print('[ERROR] Fail to add BC tag to synthetic BAM file:', error.decode())
+	print('\tGenerating cell barcode tag done.')
+	print('\tSorting synthetic BAM file...')
+	sortBAMcmd = "%s/samtools sort %s/%s.synthetic.bam > %s/%s.synthetic.sorted.bam" % (samtools_directory, outdirectory, output_BAM_pre, outdirectory, output_BAM_pre)
+	output, error = subprocess.Popen(sortBAMcmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+	if error:
+		print('[ERROR] Fail to sort synthetic BAM file:', error.decode())
+	print('\tIndexing synthetic BAM file...')
+	indexBAMcmd = "%s/samtools index %s/%s.synthetic.sorted.bam" % (samtools_directory, outdirectory, output_BAM_pre)
+	output, error = subprocess.Popen(indexBAMcmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+	if error:
+		print('[ERROR] Fail to index synthetic BAM file:', error.decode())
+	print('Done!\n')
 
 
 

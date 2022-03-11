@@ -7,6 +7,7 @@ from time import process_time
 import sys
 import subprocess
 from tqdm import tqdm
+import os
 
 def CallPeak(macs3_directory, INPUT_bamfile, outdirectory, MACS3_peakname_pre):
     macs_cmd = "%s/macs3 callpeak -f BAMPE -t %s -g mm -n %s/%s -B -q 0.01 --outdir %s" % (macs3_directory, INPUT_bamfile, outdirectory, MACS3_peakname_pre, outdirectory)
@@ -15,31 +16,68 @@ def CallPeak(macs3_directory, INPUT_bamfile, outdirectory, MACS3_peakname_pre):
          print('[ERROR] Fail to call peaks:\n', error.decode())
 
 
-def scATAC_CreateFeatureSets(bedtools_directory, outdirectory, genome_file, ref_peakfile, ref_comple_peakfile, MACS3_peakname_pre):
+
+# samtools index /home/gayan/Projects/scATAC_Simulator/package_development/package_data/10X_RNA_chr1_3073253_4526737.bam
+# samtools index /home/gayan/Projects/scATAC_Simulator/package_development/package_data/10X_ATAC_chr1_4194444_4399104.bam
+# samtools idxstats /home/gayan/Projects/scATAC_Simulator/package_development/package_data/10X_RNA_chr1_3073253_4526737.bam > bam.stats.txt
+# sort /home/gayan/Projects/scATAC_Simulator/data/mm10_ref_genome_GECODE/mm10.chrom.sizes > /home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220310_10X_scRNAseq_NONINPUT/chrom.size.sorted
+# bedtools complement -i 10X_RNA_chr1_3073253_4526737_peaks.1.bed -g /home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220310_10X_scRNAseq_NONINPUT/chrom.size.sorted
+
+## Python
+def ExtractBAMCoverage(INPUT_bamfile, samtools_directory, outdirectory):
+    """
+    This function returns the coverd chromsome name for the input bam file.
+    """
+    cmd = "%s/samtools idxstats %s > %s/bam.stats.txt" % (samtools_directory, INPUT_bamfile, outdirectory)
+    output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    if error:
+         print('[ERROR] Fail to rerturn the index BAM information:\n', error.decode())    
+    bamstats = pd.read_csv("%s/bam.stats.txt" % outdirectory, header=None, delimiter="\t").to_numpy()
+    chromosomes_coverd = bamstats[np.nonzero(bamstats[:,2])[0],0].tolist()
+    return chromosomes_coverd
+
+
+def scATAC_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directory, outdirectory, genome_size_file, ref_peakfile, ref_comple_peakfile, MACS3_peakname_pre):
     cmd = "%s/bedtools sort -i %s/%s_peaks.narrowPeak | %s/bedtools merge  > %s/%s" % (bedtools_directory, outdirectory, MACS3_peakname_pre, bedtools_directory, outdirectory, ref_peakfile)
     output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     if error:
          print('[ERROR] Fail to create feature set:\n', error.decode())
-    complement_cmd = "%s/bedtools complement -i %s/%s -g %s > %s/%s" % (bedtools_directory, outdirectory, ref_peakfile, genome_file, outdirectory, ref_comple_peakfile)
+    chromosomes_coverd = ExtractBAMCoverage(INPUT_bamfile, samtools_directory, outdirectory)
+    search_string_chr = '|'.join(chromosomes_coverd)
+    cmd = "cat %s | grep -Ew '%s' > %s/genome_size_selected.txt" % (genome_size_file, search_string_chr, outdirectory)
+    output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    if error:
+        print('[ERROR] Fail to extract gene regions from genome annotation file:\n', error.decode())
+    complement_cmd = "%s/bedtools complement -i %s/%s -g %s/genome_size_selected.txt > %s/%s" % (bedtools_directory, outdirectory, ref_peakfile, outdirectory, outdirectory, ref_comple_peakfile)
     output, error = subprocess.Popen(complement_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     if error:
          print('[ERROR] Fail to create complementary feature set:\n', error.decode())
     print('Done!\n')   
 
-def scRNA_CreateFeatureSets(bedtools_directory, outdirectory, genome_annotation, genome_size, ref_peakfile, ref_comple_peakfile):
-    cmd = "awk -F\"\t\" '$3==\"gene\"' %s | cut -f1,4,5 > %s/gene_region.bed" % (genome_annotation, outdirectory)
+def scRNA_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directory, outdirectory, genome_annotation, genome_size_file, ref_peakfile, ref_comple_peakfile):
+    """
+    This function extracts gene regions from the annotation gtf for only the covered chromosome of the input bam.
+    """
+    genome_size_df = pd.read_csv(genome_size_file, header=None, delimiter="\t")
+    chromosomes_coverd = ExtractBAMCoverage(INPUT_bamfile, samtools_directory, outdirectory)
+    search_string_chr = '|'.join(chromosomes_coverd)
+    cmd = "cat %s | grep -Ew '%s' > %s/genome_size_selected.txt" % (genome_size_file, search_string_chr, outdirectory)
     output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     if error:
-         print('[ERROR] Fail to extract gene regions from genome annotation file:\n', error.decode())
-    cmd = "%s/bedtools sort -i %s/gene_region.bed | %s/bedtools merge  > %s/%s" % (bedtools_directory, outdirectory, bedtools_directory, outdirectory, ref_peakfile)
+        print('[ERROR] Fail to extract corresponding chromosomes from genome size file:\n', error.decode())
+    cmd = """awk -F"\t" '$3=="gene"' %s | cut -f1,4,5 > %s/gene_region.bed""" % (genome_annotation, outdirectory)
     output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     if error:
-         print('[ERROR] Fail to create feature set:\n', error.decode())
-    os.system("rm %s/gene_region.bed", outdirectory)
-    complement_cmd = "%s/bedtools complement -i %s/%s -g %s > %s/%s" % (bedtools_directory, outdirectory, ref_peakfile, genome_size, outdirectory, ref_comple_peakfile)
+        print('[ERROR] Fail to extract gene regions from genome annotation file:\n', error.decode())
+    cmd = "%s/bedtools sort -i %s/gene_region.bed | %s/bedtools merge | grep -Ew '%s' > %s/%s" % (bedtools_directory, outdirectory, bedtools_directory, search_string_chr, outdirectory, ref_peakfile)
+    output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    if error:
+        print('[ERROR] Fail to create feature set:\n', error.decode())
+    os.system("rm %s/gene_region.bed" % outdirectory)
+    complement_cmd = "%s/bedtools complement -i %s/%s -g %s/genome_size_selected.txt > %s/%s" % (bedtools_directory, outdirectory, ref_peakfile, outdirectory, outdirectory, ref_comple_peakfile)
     output, error = subprocess.Popen(complement_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     if error:
-         print('[ERROR] Fail to create complementary feature set:\n', error.decode())
+        print('[ERROR] Fail to create complementary feature set:\n', error.decode())
     print('Done!\n')   
 
 # ## Construct expression matrix for single paired read
@@ -143,7 +181,11 @@ def scRNA_CreateFeatureSets(bedtools_directory, outdirectory, genome_annotation,
 #             # if sum(currcounts) > 0:
 #             print(rec_name + "\t" + "\t".join([str(x) for x in currcounts]),file = outsfile)
 
-
+# cells_barcode_file = INPUT_cells_barcode_file
+# bed_directory = outdirectory 
+# bed_file = ref_peakfile
+# sam_filename = INPUT_bamfile
+# count_mat_filename = "%s.%s" % (count_mat_filename, count_mat_format)
 def bam2countmat(cells_barcode_file, bed_directory, bed_file, sam_filename, outdirectory, count_mat_filename):
     cells = pd.read_csv(cells_barcode_file, sep="\t")
     cells = cells.values.tolist()
@@ -166,6 +208,7 @@ def bam2countmat(cells_barcode_file, bed_directory, bed_file, sam_filename, outd
             k += 1
         cells_n = len(cells_barcode)
         peaks_n = len(open_peak)
+        # marginal_count_vec = [0] * len(open_peak)
         print("Converting count matrix...\n")
         # for rec in open_peak:
         for rec_id in tqdm(range(len(open_peak))):
@@ -180,8 +223,61 @@ def bam2countmat(cells_barcode_file, bed_directory, bed_file, sam_filename, outd
                         currcounts[cellsdic[cell]] += 1
                     except KeyError:
                         pass
+            # marginal_count_vec[rec_id] = sum(currcounts)
             # if sum(currcounts) > 0:
             print(rec_name + "\t" + "\t".join([str(x) for x in currcounts]),file = outsfile)
+
+
+
+# def bam2countmat(cells_barcode_file, bed_directory, bed_file, sam_filename, outdirectory, count_mat_filename):
+    """
+    This version select non-zero features for informative feature set and generate corresponding background feature set
+    """
+#     cells = pd.read_csv(cells_barcode_file, sep="\t")
+#     cells = cells.values.tolist()
+#     cells_barcode = [item[0] for item in cells]
+#     with open("%s/%s" % (outdirectory, count_mat_filename), 'w') as outsfile:
+#         samfile = pysam.AlignmentFile(sam_filename, "rb")
+#         with open("%s/%s" % (bed_directory, bed_file)) as open_peak:
+#             reader = csv.reader(open_peak, delimiter="\t")
+#             open_peak = np.asarray(list(reader))
+#         k = 0
+#         cellsdic = defaultdict(lambda: [None])
+#         for cell in cells_barcode:
+#             cellsdic[cell] = k
+#             k += 1
+#         k = 0
+#         peaksdic = defaultdict(lambda: [None])
+#         for rec in open_peak:
+#             rec_name = '_'.join(rec)
+#             peaksdic[rec_name] = k
+#             k += 1
+#         cells_n = len(cells_barcode)
+#         peaks_n = len(open_peak)
+#         marginal_count_vec = [0] * len(open_peak)
+#         print("Converting count matrix...\n")
+#         # for rec in open_peak:
+#         for rec_id in tqdm(range(len(open_peak))):
+#             rec = open_peak[rec_id]
+#             rec_name = '_'.join(rec)
+#             currcounts = [0]*cells_n
+#             reads = samfile.fetch(rec[0], int(rec[1]), int(rec[2]))
+#             for read in reads:
+#                 cell = read.qname.split(":")[0].upper()
+#                 if cell in cells_barcode:
+#                     try:
+#                         currcounts[cellsdic[cell]] += 1
+#                     except KeyError:
+#                         pass
+#             marginal_count_vec[rec_id] = sum(currcounts)
+#             if sum(currcounts) > 0:
+#                 print(rec_name + "\t" + "\t".join([str(x) for x in currcounts]),file = outsfile)
+#     open_peak_selected = open_peak[np.array(marginal_count_vec) > 0]
+#     np.savetxt("%s/%s.selected" % (outdirectory, bed_file), open_peak_selected, delimiter="\t", fmt='%s')
+#     complement_cmd = "%s/bedtools complement -i %s/%s.selected -g %s/genome_size_selected.txt > %s/%s.selected" % (bedtools_directory, outdirectory, bed_file, outdirectory, outdirectory, ref_comple_peakfile)
+#     output, error = subprocess.Popen(complement_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+#     if error:
+#         print('[ERROR] Fail to create complementary feature set:\n', error.decode())
 
 # # Test
 # cells_barcode_file = INPUT_cells_barcode_file

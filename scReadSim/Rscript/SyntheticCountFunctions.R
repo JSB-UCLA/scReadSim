@@ -456,7 +456,7 @@ check_cluster_quality <- function(data_mat, cell_type_sel,
 }
 # function of using Seurat to cluster -----------------------------------------------------
 get_cluster_seurat <- function(data_mat, platform = c("full-length", "UMI"),
-                               dims = 1:10, res = 0.5){
+                               res = 0.5){
   platform <- match.arg(platform)
   submat <- data_mat
   
@@ -474,14 +474,15 @@ get_cluster_seurat <- function(data_mat, platform = c("full-length", "UMI"),
                          features = VariableFeatures(object = count_seurat),
                          verbose = F)
   ### clustering
+  dims = 1:min(10, min(ncol(data_mat), nrow(data_mat))-1)
   count_seurat <- FindNeighbors(count_seurat, dims = dims)
   count_seurat <- FindClusters(count_seurat, resolution = res)
   ### results
   cluster_predicted <- as.integer(Idents(count_seurat))
   
   colnames(submat) <- as.character(cluster_predicted)
-  rogue_scores <- check_cluster_quality(submat, unique(cluster_predicted), platform)
-  list(clustering_result = cluster_predicted, rogue_scores = rogue_scores)
+  # rogue_scores <- check_cluster_quality(submat, unique(cluster_predicted), platform)
+  return(list(clustering_result = cluster_predicted))
 }
 
 # Calculate marginal count for each region
@@ -499,6 +500,12 @@ get_cluster_seurat <- function(data_mat, platform = c("full-length", "UMI"),
 # out.directory <- "/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220116_e18_mouse_brain_fresh_5k_atac_possorted_bam_chr1_NONINPUT_withCluster"
 # dir.create(out.directory)
 
+samplename <- '10X_ATAC_chr1_4194444_4399104.countmatrix' 
+sample_format<-'txt'
+directory <- '/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220310_10X_scATACseq_NONINPUT'
+out_directory <- '/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220310_10X_scATACseq_NONINPUT'
+
+
 ## Read in count matrix
 scATAC_runSyntheticCount <- function(samplename, sample_format, directory, out_directory, cluster_prestep=TRUE){
   cat(sprintf("Reading count matrix %s.%s...\n", samplename, sample_format))
@@ -506,13 +513,14 @@ scATAC_runSyntheticCount <- function(samplename, sample_format, directory, out_d
   matrix_num <- data.matrix(count_matrix[,2:ncol(count_matrix)])
   count_pergene_vec <- rowSums(ceiling(matrix_num/2))
   write.table(count_pergene_vec, sprintf("%s/%s.real.nPairsRegionmargional.txt",out_directory, samplename), row.names = FALSE,col.names = FALSE)
+    matrix_num_nonzero <- matrix_num[count_pergene_vec>0,]
   ## Clustering
   if (cluster_prestep == TRUE){
     cat("Louvain Clustering Before Simulation...\n")
     set.seed(2022)
-    clustering_result <- get_cluster_seurat(matrix_num, 'UMI')
-    print(clustering_result$rogue_scores)
-    print(mean(clustering_result$rogue_scores))
+    clustering_result <- get_cluster_seurat(matrix_num_nonzero, 'UMI')
+    # print(clustering_result$rogue_scores)
+    # print(mean(clustering_result$rogue_scores))
     colnames(matrix_num) <- clustering_result$clustering_result
     write.table(clustering_result$clustering_result, sprintf("%s/%s.LouvainClusterResults.%s", out_directory, samplename, sample_format), sep="\n", row.names = FALSE,col.names = FALSE)
   } else {
@@ -524,7 +532,7 @@ cat("Model fitting...\n")
 n_cell_new <- ncol(matrix_num)
 cell_type_sel <- unique(colnames(matrix_num))
 cell_type_prop <- table(colnames(matrix_num))[cell_type_sel]
-copula_result <- fit_model_scDesign2_new(count_mat, cell_type_sel, sim_method = 'copula',
+copula_result <- fit_model_scDesign2_new(matrix_num, cell_type_sel, sim_method = 'copula',
                                        ncores = length(cell_type_sel))
 cat("Generating synthetic count matrix...\n")
 simu_matrix <- scDesign2::simulate_count_scDesign2(copula_result, n_cell_new, sim_method = 'copula',
@@ -537,19 +545,24 @@ write.table(simu_count_pergene_vec, sprintf("%s/%s.scDesign2Simulated.nPairsRegi
 cat("Done.\n")
 }
 
+
+# samplename <- '10X_RNA_chr1_3073253_4526737.countmatrix' 
+# sample_format<-'txt'
+# directory <- '/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220310_10X_scRNAseq_NONINPUT'
+# out_directory <- '/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220310_10X_scRNAseq_NONINPUT'
+
 scRNA_runSyntheticCount <- function(samplename, sample_format, directory, out_directory, cluster_prestep=TRUE){
   cat(sprintf("Reading count matrix %s.%s...\n", samplename, sample_format))
   count_matrix <- read.table(sprintf("%s/%s.%s", directory, samplename, sample_format), sep="\t",header = FALSE)
   matrix_num <- data.matrix(count_matrix[,2:ncol(count_matrix)])
 count_pergene_vec <- rowSums(matrix_num)
   write.table(count_pergene_vec, sprintf("%s/%s.real.nReadRegionmargional.txt",out_directory, samplename), row.names = FALSE,col.names = FALSE)
+  matrix_num_nonzero <- matrix_num[count_pergene_vec>0,]
   ## Clustering
   if (cluster_prestep == TRUE){
     cat("Louvain Clustering Before Simulation...\n")
     set.seed(2022)
-    clustering_result <- get_cluster_seurat(matrix_num, 'UMI')
-    print(clustering_result$rogue_scores)
-    print(mean(clustering_result$rogue_scores))
+    clustering_result <- get_cluster_seurat(matrix_num_nonzero, 'UMI')
     colnames(matrix_num) <- clustering_result$clustering_result
     write.table(clustering_result$clustering_result, sprintf("%s/%s.LouvainClusterResults.%s", out_directory, samplename, sample_format), sep="\n", row.names = FALSE,col.names = FALSE)
   } else {
@@ -561,7 +574,7 @@ cat("Model fitting...\n")
 n_cell_new <- ncol(matrix_num)
 cell_type_sel <- unique(colnames(matrix_num))
 cell_type_prop <- table(colnames(matrix_num))[cell_type_sel]
-copula_result <- fit_model_scDesign2_new(count_mat, cell_type_sel, sim_method = 'copula',
+copula_result <- fit_model_scDesign2_new(matrix_num, cell_type_sel, sim_method = 'copula',
                                        ncores = length(cell_type_sel))
 cat("Generating synthetic count matrix...\n")
 simu_matrix <- scDesign2::simulate_count_scDesign2(copula_result, n_cell_new, sim_method = 'copula',
