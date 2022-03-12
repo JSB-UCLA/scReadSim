@@ -129,7 +129,7 @@ output_BAM_pre = "%s.syntheticBAM.CBincluded" % filename
 scATAC_GenerateBAM.scATAC_BED2FASTQ(bedtools_directory, seqtk_directory, referenceGenome_file, outdirectory, BED_filename_combined_pre, sort_FASTQ = True)
 
 ######################## Generate BAM file ######################## 
-scATAC_GenerateBAM.AlignSyntheticBam(bwa_directory, outdirectory, referenceGenome_name, referenceGenome_file, BED_filename_combined_pre, output_BAM_pre, doIndex = True)
+scATAC_GenerateBAM.AlignSyntheticBam(bowtie2_directory, samtools_directory, outdirectory, referenceGenome_name, referenceGenome_file, BED_filename_combined_pre, output_BAM_pre, doIndex = True)
 
 
 
