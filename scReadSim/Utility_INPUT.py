@@ -41,22 +41,20 @@ def fragment_length(open_peak):
     output = np.asarray([int(x[2]) - int(x[1]) for x in open_peak])
     return output
 
-
 def match_peak(true_peakfile, ref_peakfile, outdirectory, assignment_file):
-	with open(true_peakfile) as true_peak_file:
-	    reader = csv.reader(true_peak_file, delimiter="\t")
-	    true_peak_set = np.asarray(list(reader))
-	with open(ref_peakfile) as ref_peak_file:
-	    reader = csv.reader(ref_peak_file, delimiter="\t")
-	    ref_peak_set = np.asarray(list(reader))
-	ref_peak_fraglen = fragment_length(ref_peak_set)
-    # ref_peak_fraglen.view('i8,i8,i8').sort(order=['f0'], axis=0)
+    with open(true_peakfile) as true_peak_file:
+        reader = csv.reader(true_peak_file, delimiter="\t")
+        true_peak_set = np.asarray(list(reader))
+    with open(ref_peakfile) as ref_peak_file:
+        reader = csv.reader(ref_peak_file, delimiter="\t")
+        ref_peak_set = np.asarray(list(reader))
+    ref_peak_fraglen = fragment_length(ref_peak_set)
     with open("%s/%s" % (outdirectory, assignment_file), 'w') as outsfile:
-		for true_peak in true_peak_set:
-		    true_length = int(true_peak[2]) - int(true_peak[1])
-		    idx = find_nearest(ref_peak_fraglen, true_length)
+        for true_peak in true_peak_set:
+            true_length = int(true_peak[2]) - int(true_peak[1])
+            idx = find_nearest(ref_peak_fraglen, true_length)
             print("\t".join(true_peak[0:3]) + '\t' + "\t".join(ref_peak_set[idx][0:3]), file=outsfile)
-	print('Done!')   
+    print('Done!')   
 
 def bam2countmat(cells_barcode_file, bed_directory, bed_file, sam_filename, outdirectory, count_mat_filename):
     cells = pd.read_csv(cells_barcode_file, sep="\t")

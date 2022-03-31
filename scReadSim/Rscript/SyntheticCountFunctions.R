@@ -500,10 +500,10 @@ get_cluster_seurat <- function(data_mat, platform = c("full-length", "UMI"),
 # out.directory <- "/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220116_e18_mouse_brain_fresh_5k_atac_possorted_bam_chr1_NONINPUT_withCluster"
 # dir.create(out.directory)
 
-samplename <- '10X_ATAC_chr1_4194444_4399104.countmatrix' 
-sample_format<-'txt'
-directory <- '/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220310_10X_scATACseq_NONINPUT'
-out_directory <- '/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220310_10X_scATACseq_NONINPUT'
+# samplename <- '10X_ATAC_chr1_4194444_4399104.countmatrix' 
+# sample_format<-'txt'
+# directory <- '/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220310_10X_scATACseq_NONINPUT'
+# out_directory <- '/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220310_10X_scATACseq_NONINPUT'
 
 
 ## Read in count matrix

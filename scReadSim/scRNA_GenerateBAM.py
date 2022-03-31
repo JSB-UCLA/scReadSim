@@ -112,17 +112,17 @@ def scRNA_CombineBED(outdirectory, BED_filename_pre, BED_COMPLE_filename_pre, BE
 
 def scRNA_BED2FASTQ(bedtools_directory, seqtk_directory, referenceGenome_file, outdirectory, BED_filename_combined_pre, sort_FASTQ = True):
 	# Create FASTA
-	print('scReadSim BED2FASTQ_Pair')
-	print('\tCreating FASTA files...')
+	print('scReadSim BED2FASTQ_Pair Running...')
+	print('\t- Creating FASTA files...')
 	fasta_read2_cmd = "%s/bedtools getfasta -fi %s -bed %s/%s.read.bed -fo %s/%s.read2.bed2fa.fa -nameOnly" % (bedtools_directory, referenceGenome_file, outdirectory, BED_filename_combined_pre, outdirectory, BED_filename_combined_pre)
 	output, error = subprocess.Popen(fasta_read2_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
-	     print('[ERROR] Fail to create synthetic read2 fasta file:', error.decode())
+	     print(error.decode())
 	fasta_read1_cmd = "awk 'NR%%2==0 {print substr(p,2,26);} NR%%2 {p=$0;print p;}' %s/%s.read2.bed2fa.fa > %s/%s.read1.bed2fa.fa" % (outdirectory, BED_filename_combined_pre, outdirectory, BED_filename_combined_pre)
 	output, error = subprocess.Popen(fasta_read1_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
-	     print('[ERROR] Fail to create synthetic read1 fasta file:', error.decode())
-	print('\tConverting FASTA files to FASTQ files...')
+	     print(error.decode())
+	print('\t- Converting FASTA files to FASTQ files...')
 	# FASTA to FASTQ
 	fastq_read1_cmd = "%s/seqtk seq -F 'F' %s/%s.read1.bed2fa.fa > %s/%s.read1.bed2fa.fq" % (seqtk_directory, outdirectory, BED_filename_combined_pre, outdirectory, BED_filename_combined_pre)
 	output, error = subprocess.Popen(fastq_read1_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
@@ -132,9 +132,9 @@ def scRNA_BED2FASTQ(bedtools_directory, seqtk_directory, referenceGenome_file, o
 	output, error = subprocess.Popen(fastq_read2_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
 	     print('[ERROR] Fail to convert read2 synthetic fasta file to fastq file:', error.decode())
-	print('\tFASTQ files %s.read1.bed2fa.fq, %s.read2.bed2fa.fq stored in %s.' % (BED_filename_combined_pre, BED_filename_combined_pre, outdirectory))
+	print('\t- FASTQ files %s.read1.bed2fa.fq, %s.read2.bed2fa.fq stored in %s.' % (BED_filename_combined_pre, BED_filename_combined_pre, outdirectory))
 	if sort_FASTQ == True:
-		print('\tSorting FASTQ files...')
+		print('\t- Sorting FASTQ files...')
 		sort_fastq_read1_cmd = "cat %s/%s.read1.bed2fa.fq | paste - - - - | sort -k1,1 -S 3G | tr '\t' '\n' > %s/%s.read1.bed2fa.sorted.fq" % (outdirectory, BED_filename_combined_pre, outdirectory, BED_filename_combined_pre)
 		output, error = subprocess.Popen(sort_fastq_read1_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 		if error:
@@ -143,39 +143,40 @@ def scRNA_BED2FASTQ(bedtools_directory, seqtk_directory, referenceGenome_file, o
 		output, error = subprocess.Popen(sort_fastq_read2_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 		if error:
 		     print('[ERROR] Fail to sort read2 synthetic fastq file:', error.decode())
-		print('\tSorted FASTQ files %s.read1.bed2fa.sorted.fq, %s.read2.bed2fa.sorted.fq stored in %s.' % (BED_filename_combined_pre, BED_filename_combined_pre, outdirectory))
+		print('\t- Sorted FASTQ files %s.read1.bed2fa.sorted.fq, %s.read2.bed2fa.sorted.fq stored in %s.' % (BED_filename_combined_pre, BED_filename_combined_pre, outdirectory))
 	print('Done!')
 
 
-def AlignSyntheticBam_Pair(bowtie2_directory, samtools_directory, outdirectory, referenceGenome_name, referenceGenome_dir, BED_filename_combined_pre, output_BAM_pre, doIndex = True):
-	print('scReadSim AlignSyntheticBam_Pair')
+def AlignSyntheticBam_Pair(bowtie2_directory, samtools_directory, outdirectory, referenceGenome_name, referenceGenome_dir, BED_filename_combined_pre, output_BAM_pre, doIndex = False):
+	print('scReadSim AlignSyntheticBam_Pair Running...')
 	if doIndex == True:
-		print('\tIndexing reference genome file...')
+		print('\t- Indexing reference genome file...')
 		index_ref_cmd = "%s/bowtie2-build %s/%s.fa %s" % (bowtie2_directory, referenceGenome_dir, referenceGenome_name, referenceGenome_name)
 		output, error = subprocess.Popen(index_ref_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 		if error:
-		     print('[ERROR] Fail to index the reference genome:\nPlease index the reference genome by setting \'doIndex=True\'\n', error.decode())
+			print(error.decode())
+			# print('[ERROR] Fail to index the reference genome:\nPlease index the reference genome by setting \'doIndex=True\'\n', error.decode())
 	# Align using bwa
-	print('\tAligning FASTQ files onto reference genome files...')
+	print('\t- Aligning FASTQ files onto reference genome files...')
 	alignment_cmd = "%s/bowtie2 -x %s/%s -1 %s/%s.read1.bed2fa.sorted.fq -2 %s/%s.read2.bed2fa.sorted.fq | %s/samtools view -bS - > %s/%s.synthetic.noCB.bam" % (bowtie2_directory, referenceGenome_dir, referenceGenome_name,  outdirectory, BED_filename_combined_pre, outdirectory, BED_filename_combined_pre, samtools_directory, outdirectory, output_BAM_pre)
 	output, error = subprocess.Popen(alignment_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
 	     print('[ERROR] Fail to align the reference genome:', error.decode())
-	print('\tAlignment Done.')
-	print('\tGenerating cell barcode tag...')
+	print('\t- Alignment Done.')
+	print('\t- Generating cell barcode tag...')
 	addBC2BAM_header_cmd = "%s/samtools view %s/%s.synthetic.noCB.bam -H > %s/%s.synthetic.noCB.header.sam" % (samtools_directory, outdirectory, output_BAM_pre, outdirectory, output_BAM_pre)
 	output, error = subprocess.Popen(addBC2BAM_header_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	addBC2BAM_cmd = "cat <( cat %s/%s.synthetic.noCB.header.sam ) <( paste <(%s/samtools view %s/%s.synthetic.noCB.bam ) <(%s/samtools view %s/%s.synthetic.noCB.bam | cut -f1 | cut -d':' -f1 | sed -e 's/^/CB:Z:/')) | %s/samtools view -bS - > %s/%s.synthetic.bam" % (outdirectory, output_BAM_pre, samtools_directory, outdirectory, output_BAM_pre, samtools_directory, outdirectory, output_BAM_pre, samtools_directory, outdirectory, output_BAM_pre)
 	output, error = subprocess.Popen(addBC2BAM_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
 		print('[ERROR] Fail to add BC tag to synthetic BAM file:', error.decode())
-	print('\tGenerating cell barcode tag done.')
-	print('\tSorting synthetic BAM file...')
+	print('\t- Generating cell barcode tag done.')
+	print('\t- Sorting synthetic BAM file...')
 	sortBAMcmd = "%s/samtools sort %s/%s.synthetic.bam > %s/%s.synthetic.sorted.bam" % (samtools_directory, outdirectory, output_BAM_pre, outdirectory, output_BAM_pre)
 	output, error = subprocess.Popen(sortBAMcmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
 		print('[ERROR] Fail to sort synthetic BAM file:', error.decode())
-	print('\tIndexing synthetic BAM file...')
+	print('\t- Indexing synthetic BAM file...')
 	indexBAMcmd = "%s/samtools index %s/%s.synthetic.sorted.bam" % (samtools_directory, outdirectory, output_BAM_pre)
 	output, error = subprocess.Popen(indexBAMcmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:

@@ -3,6 +3,11 @@
 A module for single cell sequencing read simulator.
 
 ## Update Log
+**March. 30th**
+- Set up documentation framework.
+- Update demo data.
+
+
 **March. 11st**
 - Update INPUT moldue.
 - Update test script for scATAC-seq INPUT module using demo data.
