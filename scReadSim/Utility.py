@@ -10,23 +10,42 @@ from tqdm import tqdm
 import os
 
 def CallPeak(macs3_directory, INPUT_bamfile, outdirectory, MACS3_peakname_pre):
+    """Perform peak calling using MACS3 
+
+    Arguments
+    ----------
+    macs3_directory: `str`
+        Directory of software MACS3.
+    INPUT_bamfile: `str`
+        Directory of input BAM file.
+    outdirectory: `str`
+        Output directory of peak calling.
+    MACS3_peakname_pre: `str`
+        Base name of peak calling results for MACS3.
+
+    """
     macs_cmd = "%s/macs3 callpeak -f BAMPE -t %s -g mm -n %s/%s -B -q 0.01 --outdir %s" % (macs3_directory, INPUT_bamfile, outdirectory, MACS3_peakname_pre, outdirectory)
     output, error = subprocess.Popen(macs_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     if error:
          print('[ERROR] Fail to call peaks:\n', error.decode())
 
 
-
-# samtools index /home/gayan/Projects/scATAC_Simulator/package_development/package_data/10X_RNA_chr1_3073253_4526737.bam
-# samtools index /home/gayan/Projects/scATAC_Simulator/package_development/package_data/10X_ATAC_chr1_4194444_4399104.bam
-# samtools idxstats /home/gayan/Projects/scATAC_Simulator/package_development/package_data/10X_RNA_chr1_3073253_4526737.bam > bam.stats.txt
-# sort /home/gayan/Projects/scATAC_Simulator/data/mm10_ref_genome_GECODE/mm10.chrom.sizes > /home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220310_10X_scRNAseq_NONINPUT/chrom.size.sorted
-# bedtools complement -i 10X_RNA_chr1_3073253_4526737_peaks.1.bed -g /home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220310_10X_scRNAseq_NONINPUT/chrom.size.sorted
-
-## Python
 def ExtractBAMCoverage(INPUT_bamfile, samtools_directory, outdirectory):
-    """
-    This function returns the coverd chromsome name for the input bam file.
+    """Examine the covered chromosome names for the input bam file.
+
+    Arguments
+    ----------
+    INPUT_bamfile: `str`
+        Directory of input BAM file.
+    samtools_directory: `str`
+        Directory of software samtools.
+    outdirectory: `str`
+        Output directory.
+    
+    Return
+    ------
+    chromosomes_coverd: `list`
+        List of chromosome names that the input bam files covers.
     """
     cmd = "%s/samtools idxstats %s > %s/bam.stats.txt" % (samtools_directory, INPUT_bamfile, outdirectory)
     output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
@@ -38,6 +57,27 @@ def ExtractBAMCoverage(INPUT_bamfile, samtools_directory, outdirectory):
 
 
 def scATAC_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directory, outdirectory, genome_size_file, ref_peakfile, ref_comple_peakfile, MACS3_peakname_pre):
+    """Create the foreground and background feature set for the input scATAC-seq bam file.
+
+    Arguments
+    ----------
+    INPUT_bamfile: `str`
+        Directory of input BAM file.
+    samtools_directory: `str`
+        Directory of software samtools.
+    bedtools_directory: `str`
+        Directory of software bedtools.
+    outdirectory: `str`
+        Output directory.
+    genome_size_file: `str`
+        Directory of Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicates the size.
+    ref_peakfile: `str`
+        Specify the base name of output foreground feature bed file.
+    ref_comple_peakfile: `str`
+        Specify the base name of output background feature bed file.    
+    MACS3_peakname_pre: `str`
+        Base name of peak calling results for MACS3.
+    """
     cmd = "%s/bedtools sort -i %s/%s_peaks.narrowPeak | %s/bedtools merge  > %s/%s" % (bedtools_directory, outdirectory, MACS3_peakname_pre, bedtools_directory, outdirectory, ref_peakfile)
     output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     if error:
@@ -54,9 +94,28 @@ def scATAC_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directo
          print('[ERROR] Fail to create complementary feature set:\n', error.decode())
     print('Done!\n')   
 
+
 def scRNA_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directory, outdirectory, genome_annotation, genome_size_file, ref_peakfile, ref_comple_peakfile):
-    """
-    This function extracts gene regions from the annotation gtf for only the covered chromosome of the input bam.
+    """Create the foreground and background feature set for the input scRNA-seq bam file.
+
+    Arguments
+    ----------
+    INPUT_bamfile: `str`
+        Directory of input BAM file.
+    samtools_directory: `str`
+        Directory of software samtools.
+    bedtools_directory: `str`
+        Directory of software bedtools.
+    outdirectory: `str`
+        Output directory.
+    genome_annotation: `str`
+        Directory of Genome annotation file for the reference genome that the input bamfile aligned on.
+    genome_size_file: `str`
+        Directory of Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicates the size.
+    ref_peakfile: `str`
+        Specify the base name of output foreground feature bed file.
+    ref_comple_peakfile: `str`
+        Specify the base name of output background feature bed file.    
     """
     genome_size_df = pd.read_csv(genome_size_file, header=None, delimiter="\t")
     chromosomes_coverd = ExtractBAMCoverage(INPUT_bamfile, samtools_directory, outdirectory)
@@ -80,118 +139,28 @@ def scRNA_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_director
         print('[ERROR] Fail to create complementary feature set:\n', error.decode())
     print('Done!\n')   
 
-# ## Construct expression matrix for single paired read
-# def read_pair_generator(bam, contig_str=None,start_int = None,stop_int=None):
-#     """
-#     Generate read pairs in a BAM file or within a region string.
-#     Reads are added to read_dict until a pair is found.
-#     """
-#     read_dict = defaultdict(lambda: [None, None])
-#     for read in bam.fetch(contig=contig_str, start=start_int, stop=stop_int):
-#         if not read.is_proper_pair or read.is_secondary or read.is_supplementary or read.is_duplicate:
-#             continue
-#         qname = read.query_name
-#         if qname not in read_dict:
-#             if read.is_read1:
-#                 read_dict[qname][0] = read
-#             else:
-#                 read_dict[qname][1] = read
-#         else:
-#             if read.is_read1:
-#                 yield read, read_dict[qname][1]
-#             else:
-#                 yield read_dict[qname][0], read
-#             del read_dict[qname]
 
-# def read_pair_generator_supp(bam, contig_str=None,start_int = None,stop_int=None):
-#     """
-#     Generate read pairs in a BAM file or within a region string.
-#     Reads are added to read_dict until a pair is found.
-#     """
-#     read_dict = defaultdict(lambda: [None, None])
-#     for read in bam.fetch(contig=contig_str, start=start_int, stop=stop_int):
-#         if not read.is_proper_pair or read.is_secondary or read.is_supplementary or read.is_duplicate:
-#             continue
-#         qname = read.query_name
-#         if qname not in read_dict:
-#             if read.is_read1:
-#                 read_dict[qname][0] = read
-#             else:
-#                 read_dict[qname][1] = read
-#         else:
-#             del read_dict[qname]
-#     single_reads = []
-#     for qname in read_dict:
-#         if read_dict[qname][0] == None:
-#             single_reads.append(read_dict[qname][1])
-#         else:
-#             single_reads.append(read_dict[qname][0])
-#     return single_reads
+def bam2countmat(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, count_mat_filename):
+    """Construct count matrix.
 
-# def bam2countmat_countPairsandSingle(cells_barcode_file, bed_directory, bed_file, sam_filename, outdirectory, count_mat_filename):
-#     cells = pd.read_csv(cells_barcode_file, sep="\t")
-#     cells = cells.values.tolist()
-#     cells_barcode = [item[0] for item in cells]
-#     with open("%s/%s" % (outdirectory, count_mat_filename), 'w') as outsfile:
-#         samfile = pysam.AlignmentFile(sam_filename, "rb")
-#         with open("%s/%s" % (bed_directory, bed_file)) as open_peak:
-#             reader = csv.reader(open_peak, delimiter="\t")
-#             open_peak = np.asarray(list(reader))
-#         k = 0
-#         cellsdic = defaultdict(lambda: [None])
-#         for cell in cells_barcode:
-#             cellsdic[cell] = k
-#             k += 1
-#         k = 0
-#         peaksdic = defaultdict(lambda: [None])
-#         print("Converting count matrix...\n")
-#         for rec in open_peak:
-#             rec_name = '_'.join(rec)
-#             peaksdic[rec_name] = k
-#             k += 1
-#         cells_n = len(cells_barcode)
-#         peaks_n = len(open_peak)
-#         # for rec in open_peak:
-#         for rec_id in tqdm(range(len(open_peak))):
-#             rec = open_peak[rec_id]
-#             rec_name = '_'.join(rec)
-#             currcounts = [0]*cells_n
-#             for read1, read2 in read_pair_generator(samfile, rec[0], int(rec[1]), int(rec[2])):
-#                 read1_str = str(read1).split("\t")
-#                 read2_str = str(read2).split("\t")
-#                 if read1.has_tag('CB:Z:'):
-#                     cell = read1.get_tag('CB:Z:')
-#                     # cell = read1_str[0].split(':')[0]
-#                     if cell in cells_barcode:
-#                         try:
-#                             currcounts[cellsdic[cell]] += 2
-#                         except KeyError:
-#                             pass
-#             for read in read_pair_generator_supp(samfile, rec[0], int(rec[1]), int(rec[2])):
-#                 read_str = str(read).split("\t")
-#                 if read.has_tag('CB:Z:'):
-#                     cell = read.get_tag('CB:Z:')
-#                     # cell = read_str[0].split(':')[0]
-#                     if cell in cells_barcode:
-#                         try:
-#                             currcounts[cellsdic[cell]] += 1
-#                         except KeyError:
-#                             pass
-#             # print(sum(currcounts))
-#             # if sum(currcounts) > 0:
-#             print(rec_name + "\t" + "\t".join([str(x) for x in currcounts]),file = outsfile)
-
-# cells_barcode_file = INPUT_cells_barcode_file
-# bed_directory = outdirectory 
-# bed_file = ref_peakfile
-# sam_filename = INPUT_bamfile
-# count_mat_filename = "%s.%s" % (count_mat_filename, count_mat_format)
-def bam2countmat(cells_barcode_file, bed_directory, bed_file, sam_filename, outdirectory, count_mat_filename):
+    Arguments
+    ----------
+    cells_barcode_file: `str`
+        Directory of the cell barcode file corresponding to the input BAM file.
+    bed_file: `str`
+        Directory of the features bed file that the count matrix constructs based on.
+    INPUT_bamfile: `str`
+        Directory of input BAM file.
+    outdirectory: `str`
+        Output directory.
+    count_mat_filename: `str`
+        Specify the base name of output count matrix.
+    """
     cells = pd.read_csv(cells_barcode_file, sep="\t")
     cells = cells.values.tolist()
     cells_barcode = [item[0] for item in cells]
     with open("%s/%s" % (outdirectory, count_mat_filename), 'w') as outsfile:
-        samfile = pysam.AlignmentFile(sam_filename, "rb")
+        samfile = pysam.AlignmentFile(INPUT_bamfile, "rb")
         with open("%s/%s" % (bed_directory, bed_file)) as open_peak:
             reader = csv.reader(open_peak, delimiter="\t")
             open_peak = np.asarray(list(reader))
@@ -228,113 +197,142 @@ def bam2countmat(cells_barcode_file, bed_directory, bed_file, sam_filename, outd
             print(rec_name + "\t" + "\t".join([str(x) for x in currcounts]),file = outsfile)
 
 
+def bam2countmat_INPUT(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, count_mat_filename):
+    """Construct count matrix for task with user input features set. 
 
-# def bam2countmat(cells_barcode_file, bed_directory, bed_file, sam_filename, outdirectory, count_mat_filename):
+    Arguments
+    ----------
+    cells_barcode_file: `str`
+        Directory of the cell barcode file corresponding to the input BAM file.
+    bed_file: `str`
+        Directory of the features bed file that the count matrix constructs based on.
+    INPUT_bamfile: `str`
+        Directory of input BAM file.
+    outdirectory: `str`
+        Output directory.
+    count_mat_filename: `str`
+        Specify the base name of output count matrix.
     """
-    This version select non-zero features for informative feature set and generate corresponding background feature set
+    cells = pd.read_csv(cells_barcode_file, sep="\t")
+    cells = cells.values.tolist()
+    cells_barcode = [item[0] for item in cells]
+    with open("%s/%s" % (outdirectory, count_mat_filename), 'w') as outsfile:
+        samfile = pysam.AlignmentFile(INPUT_bamfile, "rb")
+        with open("%s/%s" % (bed_directory, bed_file)) as open_peak:
+            reader = csv.reader(open_peak, delimiter="\t")
+            open_peak = np.asarray(list(reader))
+        k = 0
+        cellsdic = defaultdict(lambda: [None])
+        for cell in cells_barcode:
+            cellsdic[cell] = k
+            k += 1
+        k = 0
+        peaksdic = defaultdict(lambda: [None])
+        for rec in open_peak:
+            rec_name = '_'.join(rec)
+            peaksdic[rec_name] = k
+            k += 1
+        cells_n = len(cells_barcode)
+        peaks_n = len(open_peak)
+        # marginal_count_vec = [0] * len(open_peak)
+        print("Converting count matrix...\n")
+        # for rec in open_peak:
+        for rec_id in tqdm(range(len(open_peak))):
+            rec = open_peak[rec_id]
+            rec_name = '_'.join(rec)
+            currcounts = [0]*cells_n
+            reads = samfile.fetch(rec[3], int(rec[4]), int(rec[5]))
+            for read in reads:
+                cell = read.qname.split(":")[0].upper()
+                if cell in cells_barcode:
+                    try:
+                        currcounts[cellsdic[cell]] += 1
+                    except KeyError:
+                        pass
+            # marginal_count_vec[rec_id] = sum(currcounts)
+            # if sum(currcounts) > 0:
+            print(rec_name + "\t" + "\t".join([str(x) for x in currcounts]),file = outsfile)
+
+
+def find_nearest(array, value):
+    """Find the index of peak from `array` with a length closest to `value`.
+
+    Arguments
+    ----------
+    array: `numpy.array`
+        Two-column array of peaks indicating the starting and ending positions.
+    value: `int`
+        Integer indicating the target peak length.
+
+    Returns
+    -------
+    idx: `int`
+        Index of the peak with a length closest to `value`.
     """
-#     cells = pd.read_csv(cells_barcode_file, sep="\t")
-#     cells = cells.values.tolist()
-#     cells_barcode = [item[0] for item in cells]
-#     with open("%s/%s" % (outdirectory, count_mat_filename), 'w') as outsfile:
-#         samfile = pysam.AlignmentFile(sam_filename, "rb")
-#         with open("%s/%s" % (bed_directory, bed_file)) as open_peak:
-#             reader = csv.reader(open_peak, delimiter="\t")
-#             open_peak = np.asarray(list(reader))
-#         k = 0
-#         cellsdic = defaultdict(lambda: [None])
-#         for cell in cells_barcode:
-#             cellsdic[cell] = k
-#             k += 1
-#         k = 0
-#         peaksdic = defaultdict(lambda: [None])
-#         for rec in open_peak:
-#             rec_name = '_'.join(rec)
-#             peaksdic[rec_name] = k
-#             k += 1
-#         cells_n = len(cells_barcode)
-#         peaks_n = len(open_peak)
-#         marginal_count_vec = [0] * len(open_peak)
-#         print("Converting count matrix...\n")
-#         # for rec in open_peak:
-#         for rec_id in tqdm(range(len(open_peak))):
-#             rec = open_peak[rec_id]
-#             rec_name = '_'.join(rec)
-#             currcounts = [0]*cells_n
-#             reads = samfile.fetch(rec[0], int(rec[1]), int(rec[2]))
-#             for read in reads:
-#                 cell = read.qname.split(":")[0].upper()
-#                 if cell in cells_barcode:
-#                     try:
-#                         currcounts[cellsdic[cell]] += 1
-#                     except KeyError:
-#                         pass
-#             marginal_count_vec[rec_id] = sum(currcounts)
-#             if sum(currcounts) > 0:
-#                 print(rec_name + "\t" + "\t".join([str(x) for x in currcounts]),file = outsfile)
-#     open_peak_selected = open_peak[np.array(marginal_count_vec) > 0]
-#     np.savetxt("%s/%s.selected" % (outdirectory, bed_file), open_peak_selected, delimiter="\t", fmt='%s')
-#     complement_cmd = "%s/bedtools complement -i %s/%s.selected -g %s/genome_size_selected.txt > %s/%s.selected" % (bedtools_directory, outdirectory, bed_file, outdirectory, outdirectory, ref_comple_peakfile)
-#     output, error = subprocess.Popen(complement_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-#     if error:
-#         print('[ERROR] Fail to create complementary feature set:\n', error.decode())
-
-# # Test
-# cells_barcode_file = INPUT_cells_barcode_file
-# bed_directory = outdirectory
-# bed_file = ref_peakfile
-# sam_filename = INPUT_bamfile
-# outdirectory = outdirectory
-# count_mat_filename = "%s.%s" % (count_mat_filename_new, count_mat_format)
-
-# def bam2countmat_new(cells_barcode_file, bed_directory, bed_file, sam_filename, outdirectory, count_mat_filename):
-#     cells = pd.read_csv(cells_barcode_file, sep="\t")
-#     cells = cells.values.tolist()
-#     cells_barcode = [item[0] for item in cells]
-#     nonzero_peak_list = list()
-#     nonzero_bed_file = "nonzero_%s" % bed_file
-#     nonzero_peak_list = list()
-#     with open("%s/%s" % (outdirectory, count_mat_filename), 'w') as outsfile:
-#         samfile = pysam.AlignmentFile(sam_filename, "rb")
-#         with open("%s/%s" % (bed_directory, bed_file)) as open_peak:
-#             reader = csv.reader(open_peak, delimiter="\t")
-#             open_peak = np.asarray(list(reader))
-#         k = 0
-#         cellsdic = defaultdict(lambda: [None])
-#         for cell in cells_barcode:
-#             cellsdic[cell] = k
-#             k += 1
-#         k = 0
-#         peaksdic = defaultdict(lambda: [None])
-#         for rec in open_peak:
-#             rec_name = '_'.join(rec)
-#             peaksdic[rec_name] = k
-#             k += 1
-#         cells_n = len(cells_barcode)
-#         peaks_n = len(open_peak)
-#         print("Converting count matrix...\n")
-#         # for rec in open_peak:
-#         for rec_id in tqdm(range(len(open_peak))):
-#             rec = open_peak[rec_id]
-#             rec_name = '_'.join(rec)
-#             currcounts = [0]*cells_n
-#             reads = samfile.fetch(rec[0], int(rec[1]), int(rec[2]))
-#             for read in reads:
-#                 cell = read.qname.split(":")[0].upper()
-#                 if cell in cells_barcode:
-#                     try:
-#                         currcounts[cellsdic[cell]] += 1
-#                     except KeyError:
-#                         pass
-#             if sum(currcounts) > 0:
-#                 nonzero_peak_list.append(rec)
-#                 print(rec_name + "\t" + "\t".join([str(x) for x in currcounts]),file = outsfile)
-#     with open("%s/%s" % (outdirectory, nonzero_bed_file), 'w') as outsfile2:
-#         for rec in nonzero_peak_list:
-#             print("\t".join(rec),file = outsfile2)
+    array = np.asarray(array)
+    idx = (np.abs(array - value)).argmin()
+    return idx
 
 
+def match_peak(true_peakfile, ref_peakfile, outdirectory, assignment_file):
+    """Find the reference features for the given features `true_peakfile` according to the similarity of peak length. The assignment would be stored as `assignment_file` within `outdirectory`.
 
+    Arguments
+    ----------
+    true_peakfile: `str`
+        Directory of the target features bed file.
+    ref_peakfile: `str`
+        Directory of the reference features bed file.
+    outdirectory: `str`
+        Output directory.
+    assignment_file: `str`
+        Specify the name of peak assignment file.
+    """
+    with open(true_peakfile) as true_peak_file:
+        reader = csv.reader(true_peak_file, delimiter="\t")
+        true_peak_set = np.asarray(list(reader))
+    with open(ref_peakfile) as ref_peak_file:
+        reader = csv.reader(ref_peak_file, delimiter="\t")
+        ref_peak_set = np.asarray(list(reader))
+    ref_peak_fraglen = np.asarray([int(x[2]) - int(x[1]) for x in ref_peak_set])
+    with open("%s/%s" % (outdirectory, assignment_file), 'w') as outsfile:
+        for true_peak in true_peak_set:
+            true_length = int(true_peak[2]) - int(true_peak[1])
+            idx = find_nearest(ref_peak_fraglen, true_length)
+            print("\t".join(true_peak[0:3]) + '\t' + "\t".join(ref_peak_set[idx][0:3]), file=outsfile)
+    print('Done!')
+
+
+def ComplementFeature(feature_file, comple_faeture_peakfile, genome_size_file, outdirectory, bedtools_directory):
+    """Create background feature set given the user input foreground feature set `feature_file`.
+
+    Arguments
+    ----------
+    feature_file: `str`
+        Directory of the input feature set.
+    comple_faeture_peakfile: `str`
+        Specify the base name of output background feature bed file.    
+    genome_size_file: `str`
+        Directory of Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicates the size.
+    outdirectory: `str`
+        Output directory.
+    bedtools_directory: `str`
+        Directory of software bedtools.
+    """
+    genome_size_df = pd.read_csv(genome_size_file, header=None, delimiter="\t")
+    input_peak_df = pd.read_csv(feature_file, header=None, delimiter="\t")
+    chromosomes_coverd = input_peak_df[0].unique()
+    # Select chromosize according to input bed file
+    search_string_chr = '|'.join(chromosomes_coverd)
+    cmd = "cat %s | grep -Ew '%s' > %s/genome_size_selected.txt" % (genome_size_file, search_string_chr, outdirectory)
+    output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    if error:
+        print('[ERROR] Fail to extract corresponding chromosomes from genome size file:\n', error.decode())
+    complement_cmd = "%s/bedtools complement -i %s -g %s/genome_size_selected.txt > %s/%s" % (bedtools_directory, feature_file, outdirectory, outdirectory, comple_faeture_peakfile)
+    output, error = subprocess.Popen(complement_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    if error:
+        print('[ERROR] Fail to create complementary feature set:\n', error.decode())
+    print('Done!')   
 
 
 

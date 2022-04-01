@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scReadSim.scATAC_GenerateBAM.scATAC_SampleSyntheticReads_INPUT &mdash; scReadSim  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> scReadSim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../API.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">scReadSim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>scReadSim.scATAC_GenerateBAM.scATAC_SampleSyntheticReads_INPUT</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/scReadSim.scATAC_GenerateBAM.scATAC_SampleSyntheticReads_INPUT.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="screadsim-scatac-generatebam-scatac-samplesyntheticreads-input">
+<h1>scReadSim.scATAC_GenerateBAM.scATAC_SampleSyntheticReads_INPUT<a class="headerlink" href="#screadsim-scatac-generatebam-scatac-samplesyntheticreads-input" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="scReadSim.scATAC_GenerateBAM.scATAC_SampleSyntheticReads_INPUT">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">scATAC_SampleSyntheticReads_INPUT</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coordinate_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assignment_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellnumberfile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scReadSim/scATAC_GenerateBAM.html#scATAC_SampleSyntheticReads_INPUT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.scATAC_SampleSyntheticReads_INPUT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample Synthetic reads. The sampled reads coordinates are stored as <cite>coordinate_file</cite> in <cite>outdirectory</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coordinate_file</strong> (<cite>str</cite>) – Specify name of the coordinates file storing synthetic reads. This is not a final output of scReadSim.</p></li>
+<li><p><strong>samtools_directory</strong> (<cite>str</cite>) – Directory of software samtools.</p></li>
+<li><p><strong>INPUT_bamfile</strong> (<cite>str</cite>) – Directory of input BAM file.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory of coordinate files.</p></li>
+<li><p><strong>assignment_file</strong> (<cite>str</cite>) – Directory of the peak assignment file generated in match_peak.</p></li>
+<li><p><strong>cellnumberfile</strong> (<cite>str</cite>) – Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Guanao Yan.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

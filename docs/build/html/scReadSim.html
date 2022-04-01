@@ -4,22 +4,19 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>scReadSim package &mdash; scReadSim  documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <title>scReadSim package &mdash; scReadSim  documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="scReadSim.data package" href="scReadSim.data.html" />
-    <link rel="prev" title="scReadSim" href="modules.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -37,25 +34,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">scReadSim</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">scReadSim package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="scReadSim.data.html">scReadSim.data package</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-scReadSim.GenerateSyntheticCount">scReadSim.GenerateSyntheticCount module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-scReadSim.Utility">scReadSim.Utility module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-scReadSim.Utility_INPUT">scReadSim.Utility_INPUT module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-scReadSim.scATAC_GenerateBAM">scReadSim.scATAC_GenerateBAM module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-scReadSim.scRNA_GenerateBAM">scReadSim.scRNA_GenerateBAM module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-scReadSim">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</li>
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="API.html">API</a></li>
 </ul>
 
         </div>
@@ -72,7 +53,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="modules.html">scReadSim</a> &raquo;</li>
       <li>scReadSim package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/scReadSim.rst.txt" rel="nofollow"> View page source</a>
@@ -83,10 +63,34 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="screadsim-package">
-<h1>scReadSim package<a class="headerlink" href="#screadsim-package" title="Permalink to this headline"></a></h1>
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="screadsim-package">
+<h1>scReadSim package<a class="headerlink" href="#screadsim-package" title="Permalink to this headline">¶</a></h1>
 <section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline"></a></h2>
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="scReadSim.data.html">scReadSim.data package</a><ul>
@@ -97,195 +101,563 @@
 </div>
 </section>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-scReadSim.GenerateSyntheticCount">
-<span id="screadsim-generatesyntheticcount-module"></span><h2>scReadSim.GenerateSyntheticCount module<a class="headerlink" href="#module-scReadSim.GenerateSyntheticCount" title="Permalink to this headline"></a></h2>
+<span id="screadsim-generatesyntheticcount-module"></span><h2>scReadSim.GenerateSyntheticCount module<a class="headerlink" href="#module-scReadSim.GenerateSyntheticCount" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.GenerateSyntheticCount.scATAC_GenerateSyntheticCount">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.GenerateSyntheticCount.</span></span><span class="sig-name descname"><span class="pre">scATAC_GenerateSyntheticCount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samplename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_format</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_prestep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.GenerateSyntheticCount.scATAC_GenerateSyntheticCount" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt id="scReadSim.GenerateSyntheticCount.scATAC_GenerateSyntheticCount">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.GenerateSyntheticCount.</span></code><code class="sig-name descname"><span class="pre">scATAC_GenerateSyntheticCount</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samplename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_prestep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/GenerateSyntheticCount.html#scATAC_GenerateSyntheticCount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.GenerateSyntheticCount.scATAC_GenerateSyntheticCount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulate synthetic count matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samplename</strong> (<cite>str</cite>) – Base name of the count matrix output by function bam2countmat().</p></li>
+<li><p><strong>directory</strong> (<cite>str</cite>) – Path of the count matrix.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory of coordinate files.</p></li>
+<li><p><strong>cluster_prestep</strong> (<cite>bool</cite>) – Set <cite>cluster_prestep=True</cite> to do a Louvain clustering before implementing scDesign2.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.GenerateSyntheticCount.scRNA_GenerateSyntheticCount">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.GenerateSyntheticCount.</span></span><span class="sig-name descname"><span class="pre">scRNA_GenerateSyntheticCount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samplename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_format</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_prestep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.GenerateSyntheticCount.scRNA_GenerateSyntheticCount" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt id="scReadSim.GenerateSyntheticCount.scRNA_GenerateSyntheticCount">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.GenerateSyntheticCount.</span></code><code class="sig-name descname"><span class="pre">scRNA_GenerateSyntheticCount</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samplename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_prestep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/GenerateSyntheticCount.html#scRNA_GenerateSyntheticCount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.GenerateSyntheticCount.scRNA_GenerateSyntheticCount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulate synthetic count matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samplename</strong> (<cite>str</cite>) – Base name of the count matrix output by function bam2countmat().</p></li>
+<li><p><strong>directory</strong> (<cite>str</cite>) – Path of the count matrix.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory of coordinate files.</p></li>
+<li><p><strong>cluster_prestep</strong> (<cite>bool</cite>) – Set <cite>cluster_prestep=True</cite> to do a Louvain clustering before implementing scDesign2.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 <section id="module-scReadSim.Utility">
-<span id="screadsim-utility-module"></span><h2>scReadSim.Utility module<a class="headerlink" href="#module-scReadSim.Utility" title="Permalink to this headline"></a></h2>
+<span id="screadsim-utility-module"></span><h2>scReadSim.Utility module<a class="headerlink" href="#module-scReadSim.Utility" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.Utility.CallPeak">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.Utility.</span></span><span class="sig-name descname"><span class="pre">CallPeak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">macs3_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MACS3_peakname_pre</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.Utility.CallPeak" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.Utility.ExtractBAMCoverage">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.Utility.</span></span><span class="sig-name descname"><span class="pre">ExtractBAMCoverage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.Utility.ExtractBAMCoverage" title="Permalink to this definition"></a></dt>
-<dd><p>This function returns the coverd chromsome name for the input bam file.</p>
+<dt id="scReadSim.Utility.CallPeak">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.Utility.</span></code><code class="sig-name descname"><span class="pre">CallPeak</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">macs3_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MACS3_peakname_pre</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/Utility.html#CallPeak"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.Utility.CallPeak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform peak calling using MACS3</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>macs3_directory</strong> (<cite>str</cite>) – Directory of software MACS3.</p></li>
+<li><p><strong>INPUT_bamfile</strong> (<cite>str</cite>) – Directory of input BAM file.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory of peak calling.</p></li>
+<li><p><strong>MACS3_peakname_pre</strong> (<cite>str</cite>) – Base name of peak calling results for MACS3.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.Utility.bam2countmat">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.Utility.</span></span><span class="sig-name descname"><span class="pre">bam2countmat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cells_barcode_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bed_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bed_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sam_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_mat_filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.Utility.bam2countmat" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt id="scReadSim.Utility.ComplementFeature">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.Utility.</span></code><code class="sig-name descname"><span class="pre">ComplementFeature</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comple_faeture_peakfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genome_size_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bedtools_directory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/Utility.html#ComplementFeature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.Utility.ComplementFeature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create background feature set given the user input foreground feature set <cite>feature_file</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_file</strong> (<cite>str</cite>) – Directory of the input feature set.</p></li>
+<li><p><strong>comple_faeture_peakfile</strong> (<cite>str</cite>) – Specify the base name of output background feature bed file.</p></li>
+<li><p><strong>genome_size_file</strong> (<cite>str</cite>) – Directory of Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicates the size.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory.</p></li>
+<li><p><strong>bedtools_directory</strong> (<cite>str</cite>) – Directory of software bedtools.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.Utility.scATAC_CreateFeatureSets">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.Utility.</span></span><span class="sig-name descname"><span class="pre">scATAC_CreateFeatureSets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bedtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genome_size_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_peakfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_comple_peakfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MACS3_peakname_pre</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.Utility.scATAC_CreateFeatureSets" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt id="scReadSim.Utility.ExtractBAMCoverage">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.Utility.</span></code><code class="sig-name descname"><span class="pre">ExtractBAMCoverage</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/Utility.html#ExtractBAMCoverage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.Utility.ExtractBAMCoverage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Examine the covered chromosome names for the input bam file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>INPUT_bamfile</strong> (<cite>str</cite>) – Directory of input BAM file.</p></li>
+<li><p><strong>samtools_directory</strong> (<cite>str</cite>) – Directory of software samtools.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>chromosomes_coverd</strong> – List of chromosome names that the input bam files covers.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><cite>list</cite></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.Utility.scRNA_CreateFeatureSets">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.Utility.</span></span><span class="sig-name descname"><span class="pre">scRNA_CreateFeatureSets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bedtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genome_annotation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genome_size_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_peakfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_comple_peakfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.Utility.scRNA_CreateFeatureSets" title="Permalink to this definition"></a></dt>
-<dd><p>This function extracts gene regions from the annotation gtf for only the covered chromosome of the input bam.</p>
+<dt id="scReadSim.Utility.bam2countmat">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.Utility.</span></code><code class="sig-name descname"><span class="pre">bam2countmat</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cells_barcode_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bed_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_mat_filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/Utility.html#bam2countmat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.Utility.bam2countmat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct count matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cells_barcode_file</strong> (<cite>str</cite>) – Directory of the cell barcode file corresponding to the input BAM file.</p></li>
+<li><p><strong>bed_file</strong> (<cite>str</cite>) – Directory of the features bed file that the count matrix constructs based on.</p></li>
+<li><p><strong>INPUT_bamfile</strong> (<cite>str</cite>) – Directory of input BAM file.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory.</p></li>
+<li><p><strong>count_mat_filename</strong> (<cite>str</cite>) – Specify the base name of output count matrix.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="scReadSim.Utility.bam2countmat_INPUT">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.Utility.</span></code><code class="sig-name descname"><span class="pre">bam2countmat_INPUT</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cells_barcode_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bed_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_mat_filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/Utility.html#bam2countmat_INPUT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.Utility.bam2countmat_INPUT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct count matrix for task with user input features set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cells_barcode_file</strong> (<cite>str</cite>) – Directory of the cell barcode file corresponding to the input BAM file.</p></li>
+<li><p><strong>bed_file</strong> (<cite>str</cite>) – Directory of the features bed file that the count matrix constructs based on.</p></li>
+<li><p><strong>INPUT_bamfile</strong> (<cite>str</cite>) – Directory of input BAM file.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory.</p></li>
+<li><p><strong>count_mat_filename</strong> (<cite>str</cite>) – Specify the base name of output count matrix.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="scReadSim.Utility.find_nearest">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.Utility.</span></code><code class="sig-name descname"><span class="pre">find_nearest</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/Utility.html#find_nearest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.Utility.find_nearest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the index of peak from <cite>array</cite> with a length closest to <cite>value</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>numpy.array</cite>) – Two-column array of peaks indicating the starting and ending positions.</p></li>
+<li><p><strong>value</strong> (<cite>int</cite>) – Integer indicating the target peak length.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>idx</strong> – Index of the peak with a length closest to <cite>value</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><cite>int</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="scReadSim.Utility.match_peak">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.Utility.</span></code><code class="sig-name descname"><span class="pre">match_peak</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">true_peakfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_peakfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assignment_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/Utility.html#match_peak"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.Utility.match_peak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the reference features for the given features <cite>true_peakfile</cite> according to the similarity of peak length. The assignment would be stored as <cite>assignment_file</cite> within <cite>outdirectory</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>true_peakfile</strong> (<cite>str</cite>) – Directory of the target features bed file.</p></li>
+<li><p><strong>ref_peakfile</strong> (<cite>str</cite>) – Directory of the reference features bed file.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory.</p></li>
+<li><p><strong>assignment_file</strong> (<cite>str</cite>) – Specify the name of peak assignment file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="scReadSim.Utility.scATAC_CreateFeatureSets">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.Utility.</span></code><code class="sig-name descname"><span class="pre">scATAC_CreateFeatureSets</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bedtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genome_size_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_peakfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_comple_peakfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MACS3_peakname_pre</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/Utility.html#scATAC_CreateFeatureSets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.Utility.scATAC_CreateFeatureSets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the foreground and background feature set for the input scATAC-seq bam file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>INPUT_bamfile</strong> (<cite>str</cite>) – Directory of input BAM file.</p></li>
+<li><p><strong>samtools_directory</strong> (<cite>str</cite>) – Directory of software samtools.</p></li>
+<li><p><strong>bedtools_directory</strong> (<cite>str</cite>) – Directory of software bedtools.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory.</p></li>
+<li><p><strong>genome_size_file</strong> (<cite>str</cite>) – Directory of Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicates the size.</p></li>
+<li><p><strong>ref_peakfile</strong> (<cite>str</cite>) – Specify the base name of output foreground feature bed file.</p></li>
+<li><p><strong>ref_comple_peakfile</strong> (<cite>str</cite>) – Specify the base name of output background feature bed file.</p></li>
+<li><p><strong>MACS3_peakname_pre</strong> (<cite>str</cite>) – Base name of peak calling results for MACS3.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="scReadSim.Utility.scRNA_CreateFeatureSets">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.Utility.</span></code><code class="sig-name descname"><span class="pre">scRNA_CreateFeatureSets</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bedtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genome_annotation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genome_size_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_peakfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_comple_peakfile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/Utility.html#scRNA_CreateFeatureSets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.Utility.scRNA_CreateFeatureSets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the foreground and background feature set for the input scRNA-seq bam file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>INPUT_bamfile</strong> (<cite>str</cite>) – Directory of input BAM file.</p></li>
+<li><p><strong>samtools_directory</strong> (<cite>str</cite>) – Directory of software samtools.</p></li>
+<li><p><strong>bedtools_directory</strong> (<cite>str</cite>) – Directory of software bedtools.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory.</p></li>
+<li><p><strong>genome_annotation</strong> (<cite>str</cite>) – Directory of Genome annotation file for the reference genome that the input bamfile aligned on.</p></li>
+<li><p><strong>genome_size_file</strong> (<cite>str</cite>) – Directory of Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicates the size.</p></li>
+<li><p><strong>ref_peakfile</strong> (<cite>str</cite>) – Specify the base name of output foreground feature bed file.</p></li>
+<li><p><strong>ref_comple_peakfile</strong> (<cite>str</cite>) – Specify the base name of output background feature bed file.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
-<section id="module-scReadSim.Utility_INPUT">
-<span id="screadsim-utility-input-module"></span><h2>scReadSim.Utility_INPUT module<a class="headerlink" href="#module-scReadSim.Utility_INPUT" title="Permalink to this headline"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.Utility_INPUT.ComplementFeature">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.Utility_INPUT.</span></span><span class="sig-name descname"><span class="pre">ComplementFeature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comple_faeture_peakfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genome_size_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bedtools_directory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.Utility_INPUT.ComplementFeature" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.Utility_INPUT.bam2countmat">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.Utility_INPUT.</span></span><span class="sig-name descname"><span class="pre">bam2countmat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cells_barcode_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bed_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bed_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sam_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_mat_filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.Utility_INPUT.bam2countmat" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.Utility_INPUT.find_nearest">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.Utility_INPUT.</span></span><span class="sig-name descname"><span class="pre">find_nearest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.Utility_INPUT.find_nearest" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.Utility_INPUT.fragment_length">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.Utility_INPUT.</span></span><span class="sig-name descname"><span class="pre">fragment_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">open_peak</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.Utility_INPUT.fragment_length" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.Utility_INPUT.match_peak">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.Utility_INPUT.</span></span><span class="sig-name descname"><span class="pre">match_peak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">true_peakfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_peakfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assignment_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.Utility_INPUT.match_peak" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
+<section id="screadsim-utility-input-module">
+<h2>scReadSim.Utility_INPUT module<a class="headerlink" href="#screadsim-utility-input-module" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-scReadSim.scATAC_GenerateBAM">
-<span id="screadsim-scatac-generatebam-module"></span><h2>scReadSim.scATAC_GenerateBAM module<a class="headerlink" href="#module-scReadSim.scATAC_GenerateBAM" title="Permalink to this headline"></a></h2>
+<span id="screadsim-scatac-generatebam-module"></span><h2>scReadSim.scATAC_GenerateBAM module<a class="headerlink" href="#module-scReadSim.scATAC_GenerateBAM" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.scATAC_GenerateBAM.AlignSyntheticBam_Pair">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></span><span class="sig-name descname"><span class="pre">AlignSyntheticBam_Pair</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bowtie2_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">referenceGenome_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">referenceGenome_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename_combined_pre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_BAM_pre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doIndex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.AlignSyntheticBam_Pair" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt id="scReadSim.scATAC_GenerateBAM.AlignSyntheticBam_Pair">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">AlignSyntheticBam_Pair</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bowtie2_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">referenceGenome_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">referenceGenome_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename_combined_pre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_BAM_pre</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scATAC_GenerateBAM.html#AlignSyntheticBam_Pair"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.AlignSyntheticBam_Pair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert Synthetic reads from FASTQ to BAM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bowtie2_directory</strong> (<cite>str</cite>) – Directory of software bowtie2.</p></li>
+<li><p><strong>samtools_directory</strong> (<cite>str</cite>) – Directory of software samtools.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory of the synthteic bed file and its corresponding cell barcodes file.</p></li>
+<li><p><strong>referenceGenome_name</strong> (<cite>str</cite>) – Base name of the eference genome FASTA file. For example, you should input “chr1” for file “chr1.fa”.</p></li>
+<li><p><strong>referenceGenome_dir</strong> (<cite>str</cite>) – Path to the reference genome FASTA file.</p></li>
+<li><p><strong>BED_filename_combined_pre</strong> (<cite>str</cite>) – Base name of output bed file.</p></li>
+<li><p><strong>output_BAM_pre</strong> (<cite>str</cite>) – Specify the base name of the output BAM file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.scATAC_GenerateBAM.GenerateSyntheticReads">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></span><span class="sig-name descname"><span class="pre">GenerateSyntheticReads</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_peakfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellnumberfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.GenerateSyntheticReads" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt id="scReadSim.scATAC_GenerateBAM.cellbarode_generator">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">cellbarode_generator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scATAC_GenerateBAM.html#cellbarode_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.cellbarode_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate random cellbarcode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>length</strong> (<cite>int</cite>) – Number of cells.</p></li>
+<li><p><strong>size</strong> (<cite>int</cite> (default: ‘10’)) – Size of cell barcode. Default value is 10 bp.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>cb_list</strong> – List of randomly generated cell barcodes.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><cite>list</cite></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.scATAC_GenerateBAM.INPUT_GenerateSyntheticReads">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></span><span class="sig-name descname"><span class="pre">INPUT_GenerateSyntheticReads</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assignment_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellnumberfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.INPUT_GenerateSyntheticReads" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt id="scReadSim.scATAC_GenerateBAM.flatten">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">flatten</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scATAC_GenerateBAM.html#flatten"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.flatten" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flatten a nested list.</p>
+</dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.scATAC_GenerateBAM.cellbarode_generator">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></span><span class="sig-name descname"><span class="pre">cellbarode_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.cellbarode_generator" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt id="scReadSim.scATAC_GenerateBAM.scATAC_BED2FASTQ">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">scATAC_BED2FASTQ</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bedtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seqtk_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">referenceGenome_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename_combined_pre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_FASTQ</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scATAC_GenerateBAM.html#scATAC_BED2FASTQ"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.scATAC_BED2FASTQ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert Synthetic reads from BED to FASTQ.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bedtools_directory</strong> (<cite>str</cite>) – Directory of software bedtools.</p></li>
+<li><p><strong>seqtk_directory</strong> (<cite>str</cite>) – Directory of software seqtk.</p></li>
+<li><p><strong>referenceGenome_file</strong> (<cite>str</cite>) – Directory of the reference genome FASTA file that the synthteic reads should align.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory of the synthteic bed file and its corresponding cell barcodes file.</p></li>
+<li><p><strong>BED_filename_combined_pre</strong> (<cite>str</cite>) – Specify the base name of output bed file.</p></li>
+<li><p><strong>sort_FASTQ</strong> (<cite>bool</cite> (Default: True)) – Set <cite>True</cite> to sort the output FASTQ file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.scATAC_GenerateBAM.flatten">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></span><span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.flatten" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt id="scReadSim.scATAC_GenerateBAM.scATAC_CombineBED">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">scATAC_CombineBED</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename_pre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_COMPLE_filename_pre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename_combined_pre</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scATAC_GenerateBAM.html#scATAC_CombineBED"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.scATAC_CombineBED" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combine the bed files of foreground and background feature sets into one bed file.</p>
+</dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.scATAC_GenerateBAM.scATAC_BED2FASTQ">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></span><span class="sig-name descname"><span class="pre">scATAC_BED2FASTQ</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bedtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seqtk_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">referenceGenome_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename_combined_pre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_FASTQ</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.scATAC_BED2FASTQ" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt id="scReadSim.scATAC_GenerateBAM.scATAC_GenerateBAMCoord">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">scATAC_GenerateBAMCoord</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_peakfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_mat_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellnumberfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">OUTPUT_cells_barcode_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jitter_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scATAC_GenerateBAM.html#scATAC_GenerateBAMCoord"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.scATAC_GenerateBAMCoord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate Synthetic reads in BED format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory of the synthteic bed file and its corresponding cell barcodes file.</p></li>
+<li><p><strong>coordinate_file</strong> (<cite>str</cite>) – Directory of the coordinates file storing synthetic reads output by scATAC_SampleSyntheticReads.</p></li>
+<li><p><strong>ref_peakfile</strong> (<cite>str</cite>) – Directory of the features bed file.</p></li>
+<li><p><strong>count_mat_file</strong> (<cite>str</cite>) – Directory of synthetic count matrix.</p></li>
+<li><p><strong>cellnumberfile</strong> (<cite>str</cite>) – Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.</p></li>
+<li><p><strong>BED_filename</strong> (<cite>str</cite>) – Specify the base name of output bed file.</p></li>
+<li><p><strong>OUTPUT_cells_barcode_file</strong> (<cite>str</cite>) – Specify the file name storing the synthetic cell barcodes.</p></li>
+<li><p><strong>read_len</strong> (<cite>int</cite> (default: ‘50’)) – Specify the length of synthetic reads. Default value is 50 bp.</p></li>
+<li><p><strong>jitter_size</strong> (<cite>int</cite> (default: ‘5’)) – Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.scATAC_GenerateBAM.scATAC_CombineBED">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></span><span class="sig-name descname"><span class="pre">scATAC_CombineBED</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename_pre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_COMPLE_filename_pre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename_combined_pre</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.scATAC_CombineBED" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt id="scReadSim.scATAC_GenerateBAM.scATAC_GenerateBAMCoord_INPUT">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">scATAC_GenerateBAMCoord_INPUT</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assignment_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_mat_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellnumberfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">OUTPUT_cells_barcode_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jitter_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scATAC_GenerateBAM.html#scATAC_GenerateBAMCoord_INPUT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.scATAC_GenerateBAMCoord_INPUT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate Synthetic reads in BED format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory of the synthteic bed file and its corresponding cell barcodes file.</p></li>
+<li><p><strong>coordinate_file</strong> (<cite>str</cite>) – Directory of the coordinates file storing synthetic reads output by scATAC_SampleSyntheticReads.</p></li>
+<li><p><strong>assignment_file</strong> (<cite>str</cite>) – Directory of the peak assignment file generated in match_peak.</p></li>
+<li><p><strong>count_mat_file</strong> (<cite>str</cite>) – Directory of synthetic count matrix.</p></li>
+<li><p><strong>cellnumberfile</strong> (<cite>str</cite>) – Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.</p></li>
+<li><p><strong>BED_filename</strong> (<cite>str</cite>) – Specify the base name of output bed file.</p></li>
+<li><p><strong>OUTPUT_cells_barcode_file</strong> (<cite>str</cite>) – Specify the file name storing the synthetic cell barcodes.</p></li>
+<li><p><strong>read_len</strong> (<cite>int</cite> (default: ‘50’)) – Specify the length of synthetic reads. Default value is 50 bp.</p></li>
+<li><p><strong>jitter_size</strong> (<cite>int</cite> (default: ‘50’)) – Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.scATAC_GenerateBAM.scATAC_GenerateBAMCoord">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></span><span class="sig-name descname"><span class="pre">scATAC_GenerateBAMCoord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assignment_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_mat_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellnumberfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">OUTPUT_cells_barcode_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.scATAC_GenerateBAMCoord" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt id="scReadSim.scATAC_GenerateBAM.scATAC_INPUT_PerTruePeakEdition">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">scATAC_INPUT_PerTruePeakEdition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peak_record</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_cellbarcode_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jitter_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scATAC_GenerateBAM.html#scATAC_INPUT_PerTruePeakEdition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.scATAC_INPUT_PerTruePeakEdition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Formulate Synthetic reads for task with user input features set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>peak_record</strong> (<cite>numpy.array</cite>) – </p></li>
+<li><p><strong>of an input foreground</strong><strong>(</strong><strong>/background</strong><strong>) </strong><strong>peak</strong><strong> (</strong><strong>columns 1</strong> (<em>Coordinates</em>) – </p></li>
+<li><p><strong>count_vec</strong> (<cite>numpy.array</cite>) – Count vector of the input foreground(/background) peak.</p></li>
+<li><p><strong>read_lines</strong> (<cite>pandas.dataframe</cite>) – Coordinates of synthetic reads sampled from the input BAM file.</p></li>
+<li><p><strong>random_cellbarcode_list</strong> (<cite>list</cite>) – List of cell barcodes randomly generated using cellbarode_generator().</p></li>
+<li><p><strong>read_len</strong> (<cite>int</cite> (default: ‘50’)) – Specify the length of synthetic reads. Default value is 50 bp.</p></li>
+<li><p><strong>jitter_size</strong> (<cite>int</cite> (default: ‘50’)) – Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>read_1_df</strong> (<cite>pandas.dataframe</cite>) – Coordinates of synthetic read 1 generated for the input foreground(/background) peak.</p></li>
+<li><p><strong>read_2_df</strong> (<cite>pandas.dataframe</cite>) – Coordinates of synthetic read 2 generated for the input foreground(/background) peak.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.scATAC_GenerateBAM.scATAC_INPUT_GenerateBAMCoord">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></span><span class="sig-name descname"><span class="pre">scATAC_INPUT_GenerateBAMCoord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assignment_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_mat_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellnumberfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">OUTPUT_cells_barcode_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.scATAC_INPUT_GenerateBAMCoord" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt id="scReadSim.scATAC_GenerateBAM.scATAC_PerTruePeakEdition">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">scATAC_PerTruePeakEdition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peak_record</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_cellbarcode_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jitter_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scATAC_GenerateBAM.html#scATAC_PerTruePeakEdition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.scATAC_PerTruePeakEdition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Formulate Synthetic reads.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>peak_record</strong> (<cite>numpy.array</cite>) – Coordinates of a query peak.</p></li>
+<li><p><strong>count_vec</strong> (<cite>numpy.array</cite>) – </p></li>
+<li><p><strong>vector of the query peak.</strong> (<em>Count</em>) – </p></li>
+<li><p><strong>read_lines</strong> (<cite>pandas.dataframe</cite>) – Coordinates of synthetic reads sampled from the input BAM file.</p></li>
+<li><p><strong>random_cellbarcode_list</strong> (<cite>list</cite>) – </p></li>
+<li><p><strong>of cell barcodes randomly generated using cellbarode_generator</strong><strong>(</strong><strong>)</strong><strong></strong> (<em>List</em>) – </p></li>
+<li><p><strong>read_len</strong> (<cite>int</cite> (default: ‘50’)) – Specify the length of synthetic reads. Default value is 50 bp.</p></li>
+<li><p><strong>jitter_size</strong> (<cite>int</cite> (default: ‘5’)) – Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>read_1_df</strong> (<cite>pandas.dataframe</cite>) – Coordinates of synthetic read 1 generated for the query peak.</p></li>
+<li><p><strong>read_2_df</strong> (<cite>pandas.dataframe</cite>) – Coordinates of synthetic read 2 generated for the query peak.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.scATAC_GenerateBAM.scATAC_INPUT_PerTruePeakEdition">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></span><span class="sig-name descname"><span class="pre">scATAC_INPUT_PerTruePeakEdition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peak_record</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_len</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jitter_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_cellbarcode_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.scATAC_INPUT_PerTruePeakEdition" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt id="scReadSim.scATAC_GenerateBAM.scATAC_SampleSyntheticReads">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">scATAC_SampleSyntheticReads</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coordinate_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_peakfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellnumberfile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scATAC_GenerateBAM.html#scATAC_SampleSyntheticReads"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.scATAC_SampleSyntheticReads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample Synthetic reads. The sampled reads coordinates are stored as <cite>coordinate_file</cite> in <cite>outdirectory</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coordinate_file</strong> (<cite>str</cite>) – Specify name of the coordinates file storing synthetic reads. This is not a final output of scReadSim.</p></li>
+<li><p><strong>samtools_directory</strong> (<cite>str</cite>) – Directory of software samtools.</p></li>
+<li><p><strong>INPUT_bamfile</strong> (<cite>str</cite>) – Directory of input BAM file.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory of coordinate files.</p></li>
+<li><p><strong>ref_peakfile</strong> (<cite>str</cite>) – Directory of the features bed file.</p></li>
+<li><p><strong>cellnumberfile</strong> (<cite>str</cite>) – Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.scATAC_GenerateBAM.scATAC_PerTruePeakEdition">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></span><span class="sig-name descname"><span class="pre">scATAC_PerTruePeakEdition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peak_record</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_len</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jitter_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_cellbarcode_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.scATAC_PerTruePeakEdition" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt id="scReadSim.scATAC_GenerateBAM.scATAC_SampleSyntheticReads_INPUT">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">scATAC_SampleSyntheticReads_INPUT</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coordinate_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assignment_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellnumberfile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scATAC_GenerateBAM.html#scATAC_SampleSyntheticReads_INPUT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.scATAC_SampleSyntheticReads_INPUT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample Synthetic reads. The sampled reads coordinates are stored as <cite>coordinate_file</cite> in <cite>outdirectory</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coordinate_file</strong> (<cite>str</cite>) – Specify name of the coordinates file storing synthetic reads. This is not a final output of scReadSim.</p></li>
+<li><p><strong>samtools_directory</strong> (<cite>str</cite>) – Directory of software samtools.</p></li>
+<li><p><strong>INPUT_bamfile</strong> (<cite>str</cite>) – Directory of input BAM file.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory of coordinate files.</p></li>
+<li><p><strong>assignment_file</strong> (<cite>str</cite>) – Directory of the peak assignment file generated in match_peak.</p></li>
+<li><p><strong>cellnumberfile</strong> (<cite>str</cite>) – Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 <section id="module-scReadSim.scRNA_GenerateBAM">
-<span id="screadsim-scrna-generatebam-module"></span><h2>scReadSim.scRNA_GenerateBAM module<a class="headerlink" href="#module-scReadSim.scRNA_GenerateBAM" title="Permalink to this headline"></a></h2>
+<span id="screadsim-scrna-generatebam-module"></span><h2>scReadSim.scRNA_GenerateBAM module<a class="headerlink" href="#module-scReadSim.scRNA_GenerateBAM" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.scRNA_GenerateBAM.AlignSyntheticBam_Pair">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.scRNA_GenerateBAM.</span></span><span class="sig-name descname"><span class="pre">AlignSyntheticBam_Pair</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bowtie2_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">referenceGenome_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">referenceGenome_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename_combined_pre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_BAM_pre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doIndex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.scRNA_GenerateBAM.AlignSyntheticBam_Pair" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.scRNA_GenerateBAM.cellbarcode_generator">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.scRNA_GenerateBAM.</span></span><span class="sig-name descname"><span class="pre">cellbarcode_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.scRNA_GenerateBAM.cellbarcode_generator" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.scRNA_GenerateBAM.flatten">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.scRNA_GenerateBAM.</span></span><span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.scRNA_GenerateBAM.flatten" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.scRNA_GenerateBAM.scRNA_BED2FASTQ">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.scRNA_GenerateBAM.</span></span><span class="sig-name descname"><span class="pre">scRNA_BED2FASTQ</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bedtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seqtk_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">referenceGenome_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename_combined_pre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_FASTQ</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.scRNA_GenerateBAM.scRNA_BED2FASTQ" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.scRNA_GenerateBAM.scRNA_CombineBED">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.scRNA_GenerateBAM.</span></span><span class="sig-name descname"><span class="pre">scRNA_CombineBED</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename_pre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_COMPLE_filename_pre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename_combined_pre</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.scRNA_GenerateBAM.scRNA_CombineBED" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.scRNA_GenerateBAM.scRNA_GenerateBAMCoord">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.scRNA_GenerateBAM.</span></span><span class="sig-name descname"><span class="pre">scRNA_GenerateBAMCoord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assignment_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_mat_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellnumberfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">OUTPUT_cells_barcode_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.scRNA_GenerateBAM.scRNA_GenerateBAMCoord" title="Permalink to this definition"></a></dt>
-<dd><p>New version (20220310) Update:
-- Add marginal count of synthetic count matrix
-- Only loop nonzero peaks to speed up</p>
+<dt id="scReadSim.scRNA_GenerateBAM.AlignSyntheticBam_Pair">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scRNA_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">AlignSyntheticBam_Pair</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bowtie2_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">referenceGenome_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">referenceGenome_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename_combined_pre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_BAM_pre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doIndex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scRNA_GenerateBAM.html#AlignSyntheticBam_Pair"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scRNA_GenerateBAM.AlignSyntheticBam_Pair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert Synthetic reads from FASTQ to BAM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bowtie2_directory</strong> (<cite>str</cite>) – Directory of software bowtie2.</p></li>
+<li><p><strong>samtools_directory</strong> (<cite>str</cite>) – Directory of software samtools.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory of the synthteic bed file and its corresponding cell barcodes file.</p></li>
+<li><p><strong>referenceGenome_name</strong> (<cite>str</cite>) – Base name of the eference genome FASTA file. For example, you should input “chr1” for file “chr1.fa”.</p></li>
+<li><p><strong>referenceGenome_dir</strong> (<cite>str</cite>) – Path to the reference genome FASTA file.</p></li>
+<li><p><strong>BED_filename_combined_pre</strong> (<cite>str</cite>) – Base name of output bed file.</p></li>
+<li><p><strong>output_BAM_pre</strong> (<cite>str</cite>) – Specify the base name of the output BAM file.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.scRNA_GenerateBAM.scRNA_GenerateSyntheticReads">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.scRNA_GenerateBAM.</span></span><span class="sig-name descname"><span class="pre">scRNA_GenerateSyntheticReads</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_peakfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellnumberfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.scRNA_GenerateBAM.scRNA_GenerateSyntheticReads" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt id="scReadSim.scRNA_GenerateBAM.cellbarode_generator">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scRNA_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">cellbarode_generator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scRNA_GenerateBAM.html#cellbarode_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scRNA_GenerateBAM.cellbarode_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate random cellbarcode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>length</strong> (<cite>int</cite>) – Number of cells.</p></li>
+<li><p><strong>size</strong> (<cite>int</cite> (default: ‘10’)) – Size of cell barcode. Default value is 10 bp.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>cb_list</strong> – List of randomly generated cell barcodes.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><cite>list</cite></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="scReadSim.scRNA_GenerateBAM.scRNA_PerTruePeakEdition">
-<span class="sig-prename descclassname"><span class="pre">scReadSim.scRNA_GenerateBAM.</span></span><span class="sig-name descname"><span class="pre">scRNA_PerTruePeakEdition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peak_record</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_len</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jitter_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_cellbarcode_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scReadSim.scRNA_GenerateBAM.scRNA_PerTruePeakEdition" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt id="scReadSim.scRNA_GenerateBAM.flatten">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scRNA_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">flatten</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scRNA_GenerateBAM.html#flatten"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scRNA_GenerateBAM.flatten" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flatten a nested list.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="scReadSim.scRNA_GenerateBAM.scRNA_BED2FASTQ">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scRNA_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">scRNA_BED2FASTQ</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bedtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seqtk_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">referenceGenome_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename_combined_pre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_FASTQ</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scRNA_GenerateBAM.html#scRNA_BED2FASTQ"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scRNA_GenerateBAM.scRNA_BED2FASTQ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert Synthetic reads from BED to FASTQ.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bedtools_directory</strong> (<cite>str</cite>) – Directory of software bedtools.</p></li>
+<li><p><strong>seqtk_directory</strong> (<cite>str</cite>) – Directory of software seqtk.</p></li>
+<li><p><strong>referenceGenome_file</strong> (<cite>str</cite>) – Directory of the reference genome FASTA file that the synthteic reads should align.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory of the synthteic bed file and its corresponding cell barcodes file.</p></li>
+<li><p><strong>BED_filename_combined_pre</strong> (<cite>str</cite>) – Specify the base name of output bed file.</p></li>
+<li><p><strong>sort_FASTQ</strong> (<cite>bool</cite> (Default: True)) – Set <cite>True</cite> to sort the output FASTQ file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="scReadSim.scRNA_GenerateBAM.scRNA_CombineBED">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scRNA_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">scRNA_CombineBED</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename_pre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_COMPLE_filename_pre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename_combined_pre</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scRNA_GenerateBAM.html#scRNA_CombineBED"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scRNA_GenerateBAM.scRNA_CombineBED" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combine the bed files of foreground and background feature sets into one bed file.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="scReadSim.scRNA_GenerateBAM.scRNA_GenerateBAMCoord">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scRNA_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">scRNA_GenerateBAMCoord</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assignment_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_mat_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellnumberfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">OUTPUT_cells_barcode_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scRNA_GenerateBAM.html#scRNA_GenerateBAMCoord"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scRNA_GenerateBAM.scRNA_GenerateBAMCoord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate Synthetic reads in BED format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory of the synthteic bed file and its corresponding cell barcodes file.</p></li>
+<li><p><strong>coordinate_file</strong> (<cite>str</cite>) – Directory of the coordinates file storing synthetic reads output by scATAC_SampleSyntheticReads.</p></li>
+<li><p><strong>ref_peakfile</strong> (<cite>str</cite>) – Directory of the features bed file.</p></li>
+<li><p><strong>count_mat_file</strong> (<cite>str</cite>) – Directory of synthetic count matrix.</p></li>
+<li><p><strong>cellnumberfile</strong> (<cite>str</cite>) – Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.</p></li>
+<li><p><strong>BED_filename</strong> (<cite>str</cite>) – Specify the base name of output bed file.</p></li>
+<li><p><strong>OUTPUT_cells_barcode_file</strong> (<cite>str</cite>) – Specify the file name storing the synthetic cell barcodes.</p></li>
+<li><p><strong>read_len</strong> (<cite>int</cite> (default: ‘50’)) – Specify the length of synthetic reads. Default value is 50 bp.</p></li>
+<li><p><strong>jitter_size</strong> (<cite>int</cite> (default: ‘5’)) – Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="scReadSim.scRNA_GenerateBAM.scRNA_PerTruePeakEdition">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scRNA_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">scRNA_PerTruePeakEdition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peak_record</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_cellbarcode_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jitter_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scRNA_GenerateBAM.html#scRNA_PerTruePeakEdition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scRNA_GenerateBAM.scRNA_PerTruePeakEdition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Formulate Synthetic reads.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>peak_record</strong> (<cite>numpy.array</cite>) – Coordinates of a query peak.</p></li>
+<li><p><strong>count_vec</strong> (<cite>numpy.array</cite>) – </p></li>
+<li><p><strong>vector of the query peak.</strong> (<em>Count</em>) – </p></li>
+<li><p><strong>read_lines</strong> (<cite>pandas.dataframe</cite>) – Coordinates of synthetic reads sampled from the input BAM file.</p></li>
+<li><p><strong>random_cellbarcode_list</strong> (<cite>list</cite>) – </p></li>
+<li><p><strong>of cell barcodes randomly generated using cellbarode_generator</strong><strong>(</strong><strong>)</strong><strong></strong> (<em>List</em>) – </p></li>
+<li><p><strong>read_len</strong> (<cite>int</cite> (default: ‘50’)) – Specify the length of synthetic reads. Default value is 50 bp.</p></li>
+<li><p><strong>jitter_size</strong> (<cite>int</cite> (default: ‘5’)) – Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>read_1_df</strong> (<cite>pandas.dataframe</cite>) – Coordinates of synthetic read 1 generated for the query peak.</p></li>
+<li><p><strong>read_2_df</strong> (<cite>pandas.dataframe</cite>) – Coordinates of synthetic read 2 generated for the query peak.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="scReadSim.scRNA_GenerateBAM.scRNA_SampleSyntheticReads">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scRNA_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">scRNA_SampleSyntheticReads</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coordinate_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_peakfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellnumberfile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scRNA_GenerateBAM.html#scRNA_SampleSyntheticReads"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scRNA_GenerateBAM.scRNA_SampleSyntheticReads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample Synthetic reads. The sampled reads coordinates are stored as <cite>coordinate_file</cite> in <cite>outdirectory</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coordinate_file</strong> (<cite>str</cite>) – Specify name of the coordinates file storing synthetic reads. This is not a final output of scReadSim.</p></li>
+<li><p><strong>samtools_directory</strong> (<cite>str</cite>) – Directory of software samtools.</p></li>
+<li><p><strong>INPUT_bamfile</strong> (<cite>str</cite>) – Directory of input BAM file.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory of coordinate files.</p></li>
+<li><p><strong>ref_peakfile</strong> (<cite>str</cite>) – Directory of the features bed file.</p></li>
+<li><p><strong>cellnumberfile</strong> (<cite>str</cite>) – Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 <section id="module-scReadSim">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-scReadSim" title="Permalink to this headline"></a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-scReadSim" title="Permalink to this headline">¶</a></h2>
 </section>
 </section>
 
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="modules.html" class="btn btn-neutral float-left" title="scReadSim" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="scReadSim.data.html" class="btn btn-neutral float-right" title="scReadSim.data package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

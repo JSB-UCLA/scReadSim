@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scReadSim.scRNA_GenerateBAM &mdash; scReadSim  documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> scReadSim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../API.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">scReadSim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>scReadSim.scRNA_GenerateBAM</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for scReadSim.scRNA_GenerateBAM</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">chained_assignment</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># default=&#39;warn&#39;</span>
+<span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<div class="viewcode-block" id="flatten"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.scRNA_GenerateBAM.flatten">[docs]</a><span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Flatten a nested list.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">flatten</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="cellbarode_generator"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.scRNA_GenerateBAM.cellbarode_generator">[docs]</a><span class="k">def</span> <span class="nf">cellbarode_generator</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;Generate random cellbarcode.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    length: `int`</span>
+<span class="sd">        Number of cells.</span>
+<span class="sd">    size: `int` (default: &#39;10&#39;)</span>
+<span class="sd">        Size of cell barcode. Default value is 10 bp.</span>
+
+<span class="sd">    Return</span>
+<span class="sd">    ------</span>
+<span class="sd">    cb_list: `list`</span>
+<span class="sd">        List of randomly generated cell barcodes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+	<span class="n">chars</span> <span class="o">=</span> <span class="s1">&#39;ACGT&#39;</span>
+	<span class="n">cb_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">chars</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">))</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span><span class="p">)]</span>
+	<span class="k">return</span> <span class="n">cb_list</span></div>
+
+
+<div class="viewcode-block" id="scRNA_SampleSyntheticReads"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.scRNA_GenerateBAM.scRNA_SampleSyntheticReads">[docs]</a><span class="k">def</span> <span class="nf">scRNA_SampleSyntheticReads</span><span class="p">(</span><span class="n">coordinate_file</span><span class="p">,</span> <span class="n">samtools_directory</span><span class="p">,</span> <span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">ref_peakfile</span><span class="p">,</span> <span class="n">cellnumberfile</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;Sample Synthetic reads. The sampled reads coordinates are stored as `coordinate_file` in `outdirectory`.</span>
+
+<span class="sd">	Parameters</span>
+<span class="sd">	----------</span>
+<span class="sd">	coordinate_file: `str`</span>
+<span class="sd">		Specify name of the coordinates file storing synthetic reads. This is not a final output of scReadSim.</span>
+<span class="sd">	samtools_directory: `str`</span>
+<span class="sd">		Directory of software samtools.</span>
+<span class="sd">	INPUT_bamfile: `str`</span>
+<span class="sd">		Directory of input BAM file.</span>
+<span class="sd">	outdirectory: `str`</span>
+<span class="sd">		Output directory of coordinate files.</span>
+<span class="sd">	ref_peakfile: `str`</span>
+<span class="sd">		Directory of the features bed file.</span>
+<span class="sd">	cellnumberfile: `str`</span>
+<span class="sd">		Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">rm_coor_command</span> <span class="o">=</span> <span class="s2">&quot;rm </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">coordinate_file</span><span class="p">)</span>
+	<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">rm_coor_command</span><span class="p">)</span>
+	<span class="n">create_coor_command</span> <span class="o">=</span> <span class="s2">&quot;touch </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">coordinate_file</span><span class="p">)</span>
+	<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">create_coor_command</span><span class="p">)</span>
+	<span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;while true; do read -r region &lt;&amp;3 || break;  read -r ncell &lt;&amp;4 || break; region=$(echo $</span><span class="si">{region}</span><span class="s2"> | cut -f 1,2,3 | perl -lane &#39;print </span><span class="se">\&quot;</span><span class="s2">$F[0]:$F[1]-$F[2]</span><span class="se">\&quot;</span><span class="s2">&#39;);  paste -d</span><span class="se">\&quot;\t\&quot;</span><span class="s2"> &lt;(awk -v nsample=$</span><span class="si">{ncell}</span><span class="s2"> -v region=$</span><span class="si">{region}</span><span class="s2"> &#39;BEGIN{for(c=0;c&lt;nsample;c++) print region}&#39;) &lt;(</span><span class="si">%s</span><span class="s2">/samtools view </span><span class="si">%s</span><span class="s2"> $</span><span class="si">{region}</span><span class="s2"> | shuf -r -n $</span><span class="si">{ncell}</span><span class="s2"> | cut -f3,4) &gt;&gt; </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">;  done 3&lt;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2"> 4&lt;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">samtools_directory</span><span class="p">,</span> <span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">coordinate_file</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">ref_peakfile</span><span class="p">,</span> <span class="n">cellnumberfile</span><span class="p">)</span>
+	<span class="c1"># Testing using copied directory</span>
+	<span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="s2">&quot;/bin/bash&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+	<span class="k">if</span> <span class="n">error</span><span class="p">:</span>
+	     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[ERROR] Fail to generate synthetic reads:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="scRNA_PerTruePeakEdition"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.scRNA_GenerateBAM.scRNA_PerTruePeakEdition">[docs]</a><span class="k">def</span> <span class="nf">scRNA_PerTruePeakEdition</span><span class="p">(</span><span class="n">peak_record</span><span class="p">,</span> <span class="n">count_vec</span><span class="p">,</span> <span class="n">read_lines</span><span class="p">,</span> <span class="n">random_cellbarcode_list</span><span class="p">,</span> <span class="n">read_len</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">jitter_size</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;Formulate Synthetic reads.</span>
+
+<span class="sd">	Parameters</span>
+<span class="sd">	----------</span>
+<span class="sd">	peak_record: `numpy.array`</span>
+<span class="sd">		Coordinates of a query peak.</span>
+<span class="sd">	count_vec: `numpy.array`</span>
+<span class="sd">    	Count vector of the query peak.</span>
+<span class="sd">	read_lines: `pandas.dataframe`</span>
+<span class="sd">		Coordinates of synthetic reads sampled from the input BAM file.</span>
+<span class="sd">	random_cellbarcode_list: `list`</span>
+<span class="sd">    	List of cell barcodes randomly generated using cellbarode_generator().</span>
+<span class="sd">	read_len: `int` (default: &#39;50&#39;)</span>
+<span class="sd">		Specify the length of synthetic reads. Default value is 50 bp.</span>
+<span class="sd">	jitter_size: `int` (default: &#39;5&#39;)</span>
+<span class="sd">		Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.</span>
+
+<span class="sd">	Return</span>
+<span class="sd">	------</span>
+<span class="sd">	read_1_df: `pandas.dataframe`</span>
+<span class="sd">		Coordinates of synthetic read 1 generated for the query peak.</span>
+<span class="sd">	read_2_df: `pandas.dataframe`</span>
+<span class="sd">		Coordinates of synthetic read 2 generated for the query peak.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="c1"># peak_record = peaks_assignments.loc[1,] # Input</span>
+	<span class="n">true_peak_concat</span> <span class="o">=</span> <span class="n">peak_record</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">peak_record</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">peak_record</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+	<span class="n">reads_cur</span> <span class="o">=</span> <span class="n">read_lines</span><span class="p">[</span><span class="n">read_lines</span><span class="p">[</span><span class="s1">&#39;peak_name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">true_peak_concat</span><span class="p">]</span> <span class="c1"># Input</span>
+	<span class="n">nread_cur</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">count_vec</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+	<span class="c1"># Add cell information</span>
+	<span class="n">nonempty_cell_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">count_vec</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+	<span class="n">random_umi_list</span> <span class="o">=</span> <span class="n">cellbarcode_generator</span><span class="p">(</span><span class="n">nread_cur</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+	<span class="n">read_code_simu_cur</span> <span class="o">=</span> <span class="p">[</span><span class="n">random_cellbarcode_list</span><span class="p">[</span><span class="n">nonempty_cell_ind</span><span class="p">[</span><span class="n">ind</span><span class="p">]]</span> <span class="o">+</span> <span class="s2">&quot;:CellType1&quot;</span> <span class="o">+</span> <span class="s2">&quot;CellNo&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nonempty_cell_ind</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">true_peak_concat</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nonempty_cell_ind</span><span class="p">))</span> <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count_vec</span><span class="p">[</span><span class="n">nonempty_cell_ind</span><span class="p">[</span><span class="n">ind</span><span class="p">]])]</span>
+	<span class="n">read_code_simu_cur_withUMI</span> <span class="o">=</span> <span class="p">[</span><span class="n">read_code_simu_cur</span><span class="p">[</span><span class="n">read_id</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">random_umi_list</span><span class="p">[</span><span class="n">read_id</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">read_code_simu_cur</span><span class="p">[</span><span class="n">read_id</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">read_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">read_code_simu_cur</span><span class="p">))]</span>
+	<span class="c1"># read_code_simu_cur = [&quot;CellType1&quot; + &quot;CellNo&quot; + str(nonempty_cell_ind[ind] + 1) + &quot;:&quot; + str(true_peak_concat) + &quot;#&quot; + str(count).zfill(4) for ind in range(len(nonempty_cell_ind)) for count in range(count_vec[nonempty_cell_ind[ind]])]</span>
+	<span class="c1"># start = time.time()</span>
+	<span class="n">jitter_value_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_integers</span><span class="p">(</span><span class="o">-</span><span class="n">jitter_size</span><span class="p">,</span><span class="n">jitter_size</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">reads_cur</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># nrow(reads_cur) should equal to nfrag_cur</span>
+	<span class="n">reads_cur</span><span class="p">[</span><span class="s1">&#39;r1_start_shifted&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reads_cur</span><span class="p">[</span><span class="s1">&#39;r1_start&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">jitter_value_vec</span>
+	<span class="n">reads_cur</span><span class="p">[</span><span class="s1">&#39;r1_end_shifted&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reads_cur</span><span class="p">[</span><span class="s1">&#39;r1_start&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">read_len</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">jitter_value_vec</span>
+	<span class="n">read_1_df</span> <span class="o">=</span> <span class="n">reads_cur</span><span class="p">[[</span><span class="s1">&#39;chr&#39;</span><span class="p">,</span><span class="s1">&#39;r1_start_shifted&#39;</span><span class="p">,</span> <span class="s1">&#39;r1_end_shifted&#39;</span><span class="p">]]</span>
+	<span class="n">read_1_df</span><span class="p">[</span><span class="s1">&#39;read_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_code_simu_cur_withUMI</span>
+	<span class="n">read_1_df</span><span class="p">[</span><span class="s1">&#39;read_length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_len</span>
+	<span class="n">read_1_df</span><span class="p">[</span><span class="s1">&#39;strand&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;+&#39;</span>
+	<span class="k">return</span> <span class="n">read_1_df</span></div>
+
+
+<div class="viewcode-block" id="scRNA_GenerateBAMCoord"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.scRNA_GenerateBAM.scRNA_GenerateBAMCoord">[docs]</a><span class="k">def</span> <span class="nf">scRNA_GenerateBAMCoord</span><span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">coordinate_file</span><span class="p">,</span> <span class="n">assignment_file</span><span class="p">,</span> <span class="n">count_mat_file</span><span class="p">,</span> <span class="n">cellnumberfile</span><span class="p">,</span> <span class="n">BED_filename</span><span class="p">,</span> <span class="n">OUTPUT_cells_barcode_file</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;Generate Synthetic reads in BED format. </span>
+
+<span class="sd">	Parameters</span>
+<span class="sd">	----------</span>
+<span class="sd">	outdirectory: `str`</span>
+<span class="sd">		Output directory of the synthteic bed file and its corresponding cell barcodes file.</span>
+<span class="sd">	coordinate_file: `str`</span>
+<span class="sd">		Directory of the coordinates file storing synthetic reads output by scATAC_SampleSyntheticReads.</span>
+<span class="sd">	ref_peakfile: `str`</span>
+<span class="sd">		Directory of the features bed file.</span>
+<span class="sd">	count_mat_file: `str`</span>
+<span class="sd">		Directory of synthetic count matrix.</span>
+<span class="sd">	cellnumberfile: `str`</span>
+<span class="sd">		Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.</span>
+<span class="sd">	BED_filename: `str`</span>
+<span class="sd">		Specify the base name of output bed file.</span>
+<span class="sd">	OUTPUT_cells_barcode_file: `str`</span>
+<span class="sd">		Specify the file name storing the synthetic cell barcodes.</span>
+<span class="sd">	read_len: `int` (default: &#39;50&#39;)</span>
+<span class="sd">		Specify the length of synthetic reads. Default value is 50 bp.</span>
+<span class="sd">	jitter_size: `int` (default: &#39;5&#39;)</span>
+<span class="sd">		Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">2022</span><span class="p">)</span>
+	<span class="n">read_lines</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">coordinate_file</span><span class="p">),</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;peak_name&#39;</span><span class="p">,</span> <span class="s1">&#39;chr&#39;</span><span class="p">,</span> <span class="s1">&#39;r1_start&#39;</span><span class="p">])</span>
+	<span class="n">peaks</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">assignment_file</span><span class="p">),</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;chr&#39;</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+	<span class="n">count_mat</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">count_mat_file</span><span class="p">),</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+	<span class="n">marginal_cell_number</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>  <span class="n">cellnumberfile</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+	<span class="n">n_cell</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">count_mat</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+	<span class="n">random_cellbarcode_list</span> <span class="o">=</span> <span class="n">cellbarcode_generator</span><span class="p">(</span><span class="n">n_cell</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+	<span class="n">read_len</span> <span class="o">=</span> <span class="mi">80</span>
+	<span class="n">jitter_size</span> <span class="o">=</span> <span class="mi">5</span>
+	<span class="n">read1_bedfile</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.read.bed&quot;</span> <span class="o">%</span> <span class="n">BED_filename</span>
+	<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+	<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">OUTPUT_cells_barcode_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+		<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">random_cellbarcode_list</span><span class="p">:</span>
+		    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">item</span><span class="p">)</span>
+	<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">read1_bedfile</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+		<span class="k">pass</span>
+	<span class="n">peak_nonzero_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">marginal_cell_number</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+	<span class="k">for</span> <span class="n">relative_peak_ind</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">peak_nonzero_id</span><span class="p">))):</span>
+		<span class="n">peak_ind</span> <span class="o">=</span> <span class="n">peak_nonzero_id</span><span class="p">[</span><span class="n">relative_peak_ind</span><span class="p">]</span>
+		<span class="c1"># peak_ind = 192</span>
+		<span class="n">peak_record</span> <span class="o">=</span> <span class="n">peaks</span><span class="p">[</span><span class="n">peak_ind</span><span class="p">]</span>
+		<span class="n">count_vec</span> <span class="o">=</span> <span class="n">count_mat</span><span class="p">[</span><span class="n">peak_ind</span><span class="p">,:]</span> <span class="c1"># Input</span>
+		<span class="nb">print</span><span class="p">(</span><span class="n">peak_ind</span><span class="p">)</span>
+		<span class="n">read_1_df</span> <span class="o">=</span> <span class="n">scRNA_PerTruePeakEdition</span><span class="p">(</span><span class="n">peak_record</span><span class="p">,</span> <span class="n">count_vec</span><span class="p">,</span> <span class="n">read_lines</span><span class="p">,</span> <span class="n">read_len</span><span class="p">,</span> <span class="n">jitter_size</span><span class="p">,</span> <span class="n">random_cellbarcode_list</span><span class="p">)</span>
+		<span class="n">read_1_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">read1_bedfile</span><span class="p">),</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+	<span class="c1"># for peak_ind in tqdm(range(len(peaks))):</span>
+	<span class="c1"># 	# peak_ind = 192</span>
+	<span class="c1"># 	peak_record = peaks[peak_ind]</span>
+	<span class="c1"># 	count_vec = count_mat[peak_ind,:] # Input</span>
+	<span class="c1"># 	print(peak_ind)</span>
+	<span class="c1"># 	read_1_df = scRNA_PerTruePeakEdition(peak_record, count_vec, read_lines, read_len, jitter_size, random_cellbarcode_list)</span>
+	<span class="c1"># 	read_1_df.to_csv(&quot;%s/%s&quot; % (outdirectory, read1_bedfile), header=None, index=None, sep=&#39;\t&#39;, mode=&#39;a&#39;)</span>
+	<span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+	<span class="nb">print</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="scRNA_CombineBED"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.scRNA_GenerateBAM.scRNA_CombineBED">[docs]</a><span class="k">def</span> <span class="nf">scRNA_CombineBED</span><span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_pre</span><span class="p">,</span> <span class="n">BED_COMPLE_filename_pre</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;Combine the bed files of foreground and background feature sets into one bed file.</span>
+
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">combine_read_cmd</span> <span class="o">=</span> <span class="s2">&quot;cat </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.read.bed </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.read.bed | sort -k1,1 -k2,2n | cut -f1-5 &gt; </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.read.bed&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_pre</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_COMPLE_filename_pre</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">)</span>
+	<span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">combine_read_cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="s2">&quot;/bin/bash&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+	<span class="k">if</span> <span class="n">error</span><span class="p">:</span>
+ 		<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[ERROR] Fail to create combine synthetic read bed files:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="scRNA_BED2FASTQ"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.scRNA_GenerateBAM.scRNA_BED2FASTQ">[docs]</a><span class="k">def</span> <span class="nf">scRNA_BED2FASTQ</span><span class="p">(</span><span class="n">bedtools_directory</span><span class="p">,</span> <span class="n">seqtk_directory</span><span class="p">,</span> <span class="n">referenceGenome_file</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">,</span> <span class="n">sort_FASTQ</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;Convert Synthetic reads from BED to FASTQ. </span>
+
+<span class="sd">	Parameters</span>
+<span class="sd">	----------</span>
+<span class="sd">	bedtools_directory: `str`</span>
+<span class="sd">		Directory of software bedtools.</span>
+<span class="sd">	seqtk_directory: `str`</span>
+<span class="sd">		Directory of software seqtk.</span>
+<span class="sd">	referenceGenome_file: `str`</span>
+<span class="sd">		Directory of the reference genome FASTA file that the synthteic reads should align.</span>
+<span class="sd">	outdirectory: `str`</span>
+<span class="sd">		Output directory of the synthteic bed file and its corresponding cell barcodes file.</span>
+<span class="sd">	BED_filename_combined_pre: `str`</span>
+<span class="sd">		Specify the base name of output bed file.</span>
+<span class="sd">	sort_FASTQ: `bool` (Default: True)</span>
+<span class="sd">		Set `True` to sort the output FASTQ file.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="c1"># Create FASTA</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;scReadSim BED2FASTQ_Pair Running...&#39;</span><span class="p">)</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">- Creating FASTA files...&#39;</span><span class="p">)</span>
+	<span class="n">fasta_read2_cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/bedtools getfasta -fi </span><span class="si">%s</span><span class="s2"> -bed </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.read.bed -fo </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.read2.bed2fa.fa -nameOnly&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">bedtools_directory</span><span class="p">,</span> <span class="n">referenceGenome_file</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">)</span>
+	<span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">fasta_read2_cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="s2">&quot;/bin/bash&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+	<span class="k">if</span> <span class="n">error</span><span class="p">:</span>
+	     <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+	<span class="n">fasta_read1_cmd</span> <span class="o">=</span> <span class="s2">&quot;awk &#39;NR</span><span class="si">%%</span><span class="s2">2==0 {print substr(p,2,26);} NR</span><span class="si">%%</span><span class="s2">2 {p=$0;print p;}&#39; </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.read2.bed2fa.fa &gt; </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.read1.bed2fa.fa&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">)</span>
+	<span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">fasta_read1_cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="s2">&quot;/bin/bash&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+	<span class="k">if</span> <span class="n">error</span><span class="p">:</span>
+	     <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">- Converting FASTA files to FASTQ files...&#39;</span><span class="p">)</span>
+	<span class="c1"># FASTA to FASTQ</span>
+	<span class="n">fastq_read1_cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/seqtk seq -F &#39;F&#39; </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.read1.bed2fa.fa &gt; </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.read1.bed2fa.fq&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">seqtk_directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">)</span>
+	<span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">fastq_read1_cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="s2">&quot;/bin/bash&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+	<span class="k">if</span> <span class="n">error</span><span class="p">:</span>
+	     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[ERROR] Fail to convert read1 synthetic fasta file to fastq file:&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+	<span class="n">fastq_read2_cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/seqtk seq -F &#39;F&#39; </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.read2.bed2fa.fa &gt; </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.read2.bed2fa.fq&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">seqtk_directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">)</span>
+	<span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">fastq_read2_cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="s2">&quot;/bin/bash&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+	<span class="k">if</span> <span class="n">error</span><span class="p">:</span>
+	     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[ERROR] Fail to convert read2 synthetic fasta file to fastq file:&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">- FASTQ files </span><span class="si">%s</span><span class="s1">.read1.bed2fa.fq, </span><span class="si">%s</span><span class="s1">.read2.bed2fa.fq stored in </span><span class="si">%s</span><span class="s1">.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">BED_filename_combined_pre</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">))</span>
+	<span class="k">if</span> <span class="n">sort_FASTQ</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">- Sorting FASTQ files...&#39;</span><span class="p">)</span>
+		<span class="n">sort_fastq_read1_cmd</span> <span class="o">=</span> <span class="s2">&quot;cat </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.read1.bed2fa.fq | paste - - - - | sort -k1,1 -S 3G | tr &#39;</span><span class="se">\t</span><span class="s2">&#39; &#39;</span><span class="se">\n</span><span class="s2">&#39; &gt; </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.read1.bed2fa.sorted.fq&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">)</span>
+		<span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">sort_fastq_read1_cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="s2">&quot;/bin/bash&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+		<span class="k">if</span> <span class="n">error</span><span class="p">:</span>
+		     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[ERROR] Fail to sort read1 synthetic fastq file:&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+		<span class="n">sort_fastq_read2_cmd</span> <span class="o">=</span> <span class="s2">&quot;cat </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.read2.bed2fa.fq | paste - - - - | sort -k1,1 -S 3G | tr &#39;</span><span class="se">\t</span><span class="s2">&#39; &#39;</span><span class="se">\n</span><span class="s2">&#39; &gt; </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.read2.bed2fa.sorted.fq&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">)</span>
+		<span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">sort_fastq_read2_cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="s2">&quot;/bin/bash&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+		<span class="k">if</span> <span class="n">error</span><span class="p">:</span>
+		     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[ERROR] Fail to sort read2 synthetic fastq file:&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">- Sorted FASTQ files </span><span class="si">%s</span><span class="s1">.read1.bed2fa.sorted.fq, </span><span class="si">%s</span><span class="s1">.read2.bed2fa.sorted.fq stored in </span><span class="si">%s</span><span class="s1">.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">BED_filename_combined_pre</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">))</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Done!&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AlignSyntheticBam_Pair"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.scRNA_GenerateBAM.AlignSyntheticBam_Pair">[docs]</a><span class="k">def</span> <span class="nf">AlignSyntheticBam_Pair</span><span class="p">(</span><span class="n">bowtie2_directory</span><span class="p">,</span> <span class="n">samtools_directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">referenceGenome_name</span><span class="p">,</span> <span class="n">referenceGenome_dir</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">,</span> <span class="n">output_BAM_pre</span><span class="p">,</span> <span class="n">doIndex</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;Convert Synthetic reads from FASTQ to BAM.</span>
+
+<span class="sd">	Parameters</span>
+<span class="sd">	----------</span>
+<span class="sd">	bowtie2_directory: `str`</span>
+<span class="sd">		Directory of software bowtie2.</span>
+<span class="sd">	samtools_directory: `str`</span>
+<span class="sd">		Directory of software samtools.</span>
+<span class="sd">	outdirectory: `str`</span>
+<span class="sd">		Output directory of the synthteic bed file and its corresponding cell barcodes file.</span>
+<span class="sd">	referenceGenome_name: `str`</span>
+<span class="sd">		Base name of the eference genome FASTA file. For example, you should input &quot;chr1&quot; for file &quot;chr1.fa&quot;.</span>
+<span class="sd">	referenceGenome_dir: `str`</span>
+<span class="sd">		Path to the reference genome FASTA file.</span>
+<span class="sd">	BED_filename_combined_pre: `str`</span>
+<span class="sd">		Base name of output bed file.</span>
+<span class="sd">	output_BAM_pre: `str`</span>
+<span class="sd">		Specify the base name of the output BAM file.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;scReadSim AlignSyntheticBam_Pair Running...&#39;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">doIndex</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">- Indexing reference genome file...&#39;</span><span class="p">)</span>
+		<span class="n">index_ref_cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/bowtie2-build </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.fa </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">bowtie2_directory</span><span class="p">,</span> <span class="n">referenceGenome_dir</span><span class="p">,</span> <span class="n">referenceGenome_name</span><span class="p">,</span> <span class="n">referenceGenome_name</span><span class="p">)</span>
+		<span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">index_ref_cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="s2">&quot;/bin/bash&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+		<span class="k">if</span> <span class="n">error</span><span class="p">:</span>
+			<span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+			<span class="c1"># print(&#39;[ERROR] Fail to index the reference genome:\nPlease index the reference genome by setting \&#39;doIndex=True\&#39;\n&#39;, error.decode())</span>
+	<span class="c1"># Align using bwa</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">- Aligning FASTQ files onto reference genome files...&#39;</span><span class="p">)</span>
+	<span class="n">alignment_cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/bowtie2 -x </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2"> -1 </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.read1.bed2fa.sorted.fq -2 </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.read2.bed2fa.sorted.fq | </span><span class="si">%s</span><span class="s2">/samtools view -bS - &gt; </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.synthetic.noCB.bam&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">bowtie2_directory</span><span class="p">,</span> <span class="n">referenceGenome_dir</span><span class="p">,</span> <span class="n">referenceGenome_name</span><span class="p">,</span>  <span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">,</span> <span class="n">samtools_directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">output_BAM_pre</span><span class="p">)</span>
+	<span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">alignment_cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="s2">&quot;/bin/bash&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+	<span class="k">if</span> <span class="n">error</span><span class="p">:</span>
+	     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[ERROR] Fail to align the reference genome:&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">- Alignment Done.&#39;</span><span class="p">)</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">- Generating cell barcode tag...&#39;</span><span class="p">)</span>
+	<span class="n">addBC2BAM_header_cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/samtools view </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.synthetic.noCB.bam -H &gt; </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.synthetic.noCB.header.sam&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">samtools_directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">output_BAM_pre</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">output_BAM_pre</span><span class="p">)</span>
+	<span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">addBC2BAM_header_cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="s2">&quot;/bin/bash&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+	<span class="n">addBC2BAM_cmd</span> <span class="o">=</span> <span class="s2">&quot;cat &lt;( cat </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.synthetic.noCB.header.sam ) &lt;( paste &lt;(</span><span class="si">%s</span><span class="s2">/samtools view </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.synthetic.noCB.bam ) &lt;(</span><span class="si">%s</span><span class="s2">/samtools view </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.synthetic.noCB.bam | cut -f1 | cut -d&#39;:&#39; -f1 | sed -e &#39;s/^/CB:Z:/&#39;)) | </span><span class="si">%s</span><span class="s2">/samtools view -bS - &gt; </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.synthetic.bam&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">output_BAM_pre</span><span class="p">,</span> <span class="n">samtools_directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">output_BAM_pre</span><span class="p">,</span> <span class="n">samtools_directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">output_BAM_pre</span><span class="p">,</span> <span class="n">samtools_directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">output_BAM_pre</span><span class="p">)</span>
+	<span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">addBC2BAM_cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="s2">&quot;/bin/bash&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+	<span class="k">if</span> <span class="n">error</span><span class="p">:</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[ERROR] Fail to add BC tag to synthetic BAM file:&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">- Generating cell barcode tag done.&#39;</span><span class="p">)</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">- Sorting synthetic BAM file...&#39;</span><span class="p">)</span>
+	<span class="n">sortBAMcmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/samtools sort </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.synthetic.bam &gt; </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.synthetic.sorted.bam&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">samtools_directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">output_BAM_pre</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">output_BAM_pre</span><span class="p">)</span>
+	<span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">sortBAMcmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="s2">&quot;/bin/bash&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+	<span class="k">if</span> <span class="n">error</span><span class="p">:</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[ERROR] Fail to sort synthetic BAM file:&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">- Indexing synthetic BAM file...&#39;</span><span class="p">)</span>
+	<span class="n">indexBAMcmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/samtools index </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.synthetic.sorted.bam&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">samtools_directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">output_BAM_pre</span><span class="p">)</span>
+	<span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">indexBAMcmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="s2">&quot;/bin/bash&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+	<span class="k">if</span> <span class="n">error</span><span class="p">:</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[ERROR] Fail to index synthetic BAM file:&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Done!</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+
+
+
+
+
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Guanao Yan.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

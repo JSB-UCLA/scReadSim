@@ -1,14 +1,23 @@
-## This script takes use of Rscripts to generate synthetic count matrix.
 import numpy as np
 import rpy2.robjects as robjects
-# import rpy2.robjects.numpy2ri as np2r
-# from rpy2.robjects.packages import importr
-# from rpy2.robjects import pandas2ri
 import time
 import pkg_resources
 import os
 
-def scATAC_GenerateSyntheticCount(samplename, sample_format, directory, outdirectory, cluster_prestep=True):
+def scATAC_GenerateSyntheticCount(samplename, directory, outdirectory, cluster_prestep=True):
+	"""Simulate synthetic count matrix.
+
+	Parameters
+	----------
+	samplename: `str`
+		Base name of the count matrix output by function bam2countmat().
+	directory: `str`
+		Path of the count matrix.
+	outdirectory: `str`
+		Output directory of coordinate files.
+	cluster_prestep: `bool`
+		Set `cluster_prestep=True` to do a Louvain clustering before implementing scDesign2.
+	"""
 	r = robjects.r
 	rscript_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Rscript/SyntheticCountFunctions.R')
 	print(rscript_dir)
@@ -16,11 +25,24 @@ def scATAC_GenerateSyntheticCount(samplename, sample_format, directory, outdirec
 	r['source'](rscript_dir)
 	scATAC_runSyntheticCount = robjects.globalenv['scATAC_runSyntheticCount']
 	if cluster_prestep == True:
-		scATAC_runSyntheticCount(samplename, sample_format, directory, outdirectory, cluster_prestep = 1)
+		scATAC_runSyntheticCount(samplename, directory, outdirectory, cluster_prestep = 1)
 	else:
-		scATAC_runSyntheticCount(samplename, sample_format, directory, outdirectory, cluster_prestep = 0)
+		scATAC_runSyntheticCount(samplename, directory, outdirectory, cluster_prestep = 0)
 
-def scRNA_GenerateSyntheticCount(samplename, sample_format, directory, outdirectory, cluster_prestep=True):
+def scRNA_GenerateSyntheticCount(samplename, directory, outdirectory, cluster_prestep=True):
+	"""Simulate synthetic count matrix.
+
+	Parameters
+	----------
+	samplename: `str`
+		Base name of the count matrix output by function bam2countmat().
+	directory: `str`
+		Path of the count matrix.
+	outdirectory: `str`
+		Output directory of coordinate files.
+	cluster_prestep: `bool`
+		Set `cluster_prestep=True` to do a Louvain clustering before implementing scDesign2.
+	"""
 	r = robjects.r
 	rscript_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Rscript/SyntheticCountFunctions.R')
 	print(rscript_dir)
@@ -28,6 +50,6 @@ def scRNA_GenerateSyntheticCount(samplename, sample_format, directory, outdirect
 	r['source'](rscript_dir)
 	scRNA_runSyntheticCount = robjects.globalenv['scRNA_runSyntheticCount']
 	if cluster_prestep == True:
-		scRNA_runSyntheticCount(samplename, sample_format, directory, outdirectory, cluster_prestep = 1)
+		scRNA_runSyntheticCount(samplename, directory, outdirectory, cluster_prestep = 1)
 	else:
-		scRNA_runSyntheticCount(samplename, sample_format, directory, outdirectory, cluster_prestep = 0)
+		scRNA_runSyntheticCount(samplename, directory, outdirectory, cluster_prestep = 0)
