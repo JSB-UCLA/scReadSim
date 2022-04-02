@@ -12,7 +12,7 @@ import os
 def CallPeak(macs3_directory, INPUT_bamfile, outdirectory, MACS3_peakname_pre):
     """Perform peak calling using MACS3 
 
-    Arguments
+    Parameters
     ----------
     macs3_directory: `str`
         Directory of software MACS3.
@@ -33,7 +33,7 @@ def CallPeak(macs3_directory, INPUT_bamfile, outdirectory, MACS3_peakname_pre):
 def ExtractBAMCoverage(INPUT_bamfile, samtools_directory, outdirectory):
     """Examine the covered chromosome names for the input bam file.
 
-    Arguments
+    Parameters
     ----------
     INPUT_bamfile: `str`
         Directory of input BAM file.
@@ -59,7 +59,7 @@ def ExtractBAMCoverage(INPUT_bamfile, samtools_directory, outdirectory):
 def scATAC_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directory, outdirectory, genome_size_file, ref_peakfile, ref_comple_peakfile, MACS3_peakname_pre):
     """Create the foreground and background feature set for the input scATAC-seq bam file.
 
-    Arguments
+    Parameters
     ----------
     INPUT_bamfile: `str`
         Directory of input BAM file.
@@ -98,24 +98,24 @@ def scATAC_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directo
 def scRNA_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directory, outdirectory, genome_annotation, genome_size_file, ref_peakfile, ref_comple_peakfile):
     """Create the foreground and background feature set for the input scRNA-seq bam file.
 
-    Arguments
+    Parameters
     ----------
     INPUT_bamfile: `str`
-        Directory of input BAM file.
+        Input BAM file.
     samtools_directory: `str`
-        Directory of software samtools.
+        Path to software `samtools`.
     bedtools_directory: `str`
-        Directory of software bedtools.
+        Path to software `bedtools`.
     outdirectory: `str`
         Output directory.
     genome_annotation: `str`
-        Directory of Genome annotation file for the reference genome that the input bamfile aligned on.
+        Genome annotation file for the reference genome that the input BAM aligned on or the synthetic BAM should align on.
     genome_size_file: `str`
-        Directory of Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicates the size.
+        Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicates the size.
     ref_peakfile: `str`
-        Specify the base name of output foreground feature bed file.
+        Specify the name of output foreground feature bed file.
     ref_comple_peakfile: `str`
-        Specify the base name of output background feature bed file.    
+        Specify the name of output background feature bed file.    
     """
     genome_size_df = pd.read_csv(genome_size_file, header=None, delimiter="\t")
     chromosomes_coverd = ExtractBAMCoverage(INPUT_bamfile, samtools_directory, outdirectory)
@@ -143,23 +143,23 @@ def scRNA_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_director
 def bam2countmat(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, count_mat_filename):
     """Construct count matrix.
 
-    Arguments
+    Parameters
     ----------
     cells_barcode_file: `str`
-        Directory of the cell barcode file corresponding to the input BAM file.
+        Cell barcode file corresponding to the input BAM file.
     bed_file: `str`
-        Directory of the features bed file that the count matrix constructs based on.
+        Features bed file to generate the count matrix.
     INPUT_bamfile: `str`
-        Directory of input BAM file.
+        Input BAM file for anlaysis.
     outdirectory: `str`
-        Output directory.
+        Specify the output directory of the count matrix file.
     count_mat_filename: `str`
         Specify the base name of output count matrix.
     """
     cells = pd.read_csv(cells_barcode_file, sep="\t")
     cells = cells.values.tolist()
     cells_barcode = [item[0] for item in cells]
-    with open("%s/%s" % (outdirectory, count_mat_filename), 'w') as outsfile:
+    with open("%s/%s.txt" % (outdirectory, count_mat_filename), 'w') as outsfile:
         samfile = pysam.AlignmentFile(INPUT_bamfile, "rb")
         with open("%s/%s" % (bed_directory, bed_file)) as open_peak:
             reader = csv.reader(open_peak, delimiter="\t")
@@ -200,23 +200,23 @@ def bam2countmat(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, coun
 def bam2countmat_INPUT(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, count_mat_filename):
     """Construct count matrix for task with user input features set. 
 
-    Arguments
+    Parameters
     ----------
     cells_barcode_file: `str`
-        Directory of the cell barcode file corresponding to the input BAM file.
+        Cell barcode file corresponding to the input BAM file.
     bed_file: `str`
-        Directory of the features bed file that the count matrix constructs based on.
+        Features bed file to generate the count matrix.
     INPUT_bamfile: `str`
-        Directory of input BAM file.
+        Input BAM file for anlaysis.
     outdirectory: `str`
-        Output directory.
+        Specify the output directory of the count matrix file.
     count_mat_filename: `str`
         Specify the base name of output count matrix.
     """
     cells = pd.read_csv(cells_barcode_file, sep="\t")
     cells = cells.values.tolist()
     cells_barcode = [item[0] for item in cells]
-    with open("%s/%s" % (outdirectory, count_mat_filename), 'w') as outsfile:
+    with open("%s/%s.txt" % (outdirectory, count_mat_filename), 'w') as outsfile:
         samfile = pysam.AlignmentFile(INPUT_bamfile, "rb")
         with open("%s/%s" % (bed_directory, bed_file)) as open_peak:
             reader = csv.reader(open_peak, delimiter="\t")
@@ -257,7 +257,7 @@ def bam2countmat_INPUT(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory
 def find_nearest(array, value):
     """Find the index of peak from `array` with a length closest to `value`.
 
-    Arguments
+    Parameters
     ----------
     array: `numpy.array`
         Two-column array of peaks indicating the starting and ending positions.
@@ -277,7 +277,7 @@ def find_nearest(array, value):
 def match_peak(true_peakfile, ref_peakfile, outdirectory, assignment_file):
     """Find the reference features for the given features `true_peakfile` according to the similarity of peak length. The assignment would be stored as `assignment_file` within `outdirectory`.
 
-    Arguments
+    Parameters
     ----------
     true_peakfile: `str`
         Directory of the target features bed file.
@@ -306,7 +306,7 @@ def match_peak(true_peakfile, ref_peakfile, outdirectory, assignment_file):
 def ComplementFeature(feature_file, comple_faeture_peakfile, genome_size_file, outdirectory, bedtools_directory):
     """Create background feature set given the user input foreground feature set `feature_file`.
 
-    Arguments
+    Parameters
     ----------
     feature_file: `str`
         Directory of the input feature set.

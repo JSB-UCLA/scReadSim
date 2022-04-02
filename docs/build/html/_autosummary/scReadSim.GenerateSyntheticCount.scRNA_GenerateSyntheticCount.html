@@ -17,6 +17,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorials" href="../Tutorials.html" />
     <link rel="prev" title="scReadSim.GenerateSyntheticCount.scATAC_GenerateSyntheticCount" href="scReadSim.GenerateSyntheticCount.scATAC_GenerateSyntheticCount.html" /> 
 </head>
 
@@ -35,7 +36,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Overview:</span></p>
+              <p class="caption"><span class="caption-text">Overview</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../API.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../API.html#utility">Utility</a></li>
@@ -48,6 +49,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../Tutorials.html">Tutorials</a></li>
 </ul>
 
         </div>
@@ -103,15 +105,15 @@
 <h1>scReadSim.GenerateSyntheticCount.scRNA_GenerateSyntheticCount<a class="headerlink" href="#screadsim-generatesyntheticcount-scrna-generatesyntheticcount" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="scReadSim.GenerateSyntheticCount.scRNA_GenerateSyntheticCount">
-<code class="sig-prename descclassname"><span class="pre">scReadSim.GenerateSyntheticCount.</span></code><code class="sig-name descname"><span class="pre">scRNA_GenerateSyntheticCount</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samplename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_prestep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scReadSim/GenerateSyntheticCount.html#scRNA_GenerateSyntheticCount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.GenerateSyntheticCount.scRNA_GenerateSyntheticCount" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">scReadSim.GenerateSyntheticCount.</span></code><code class="sig-name descname"><span class="pre">scRNA_GenerateSyntheticCount</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">count_mat_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_prestep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scReadSim/GenerateSyntheticCount.html#scRNA_GenerateSyntheticCount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.GenerateSyntheticCount.scRNA_GenerateSyntheticCount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simulate synthetic count matrix.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>samplename</strong> (<cite>str</cite>) – Base name of the count matrix output by function bam2countmat().</p></li>
+<li><p><strong>count_mat_filename</strong> (<cite>str</cite>) – Base name of the count matrix output by function bam2countmat().</p></li>
 <li><p><strong>directory</strong> (<cite>str</cite>) – Path of the count matrix.</p></li>
 <li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory of coordinate files.</p></li>
-<li><p><strong>cluster_prestep</strong> (<cite>bool</cite>) – Set <cite>cluster_prestep=True</cite> to do a Louvain clustering before implementing scDesign2.</p></li>
+<li><p><strong>cluster_prestep</strong> (<cite>bool</cite>) – Set <cite>cluster_prestep=True</cite> to perform a Louvain clustering before implementing scDesign2.</p></li>
 </ul>
 </dd>
 </dl>
@@ -124,6 +126,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="scReadSim.GenerateSyntheticCount.scATAC_GenerateSyntheticCount.html" class="btn btn-neutral float-left" title="scReadSim.GenerateSyntheticCount.scATAC_GenerateSyntheticCount" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../Tutorials.html" class="btn btn-neutral float-right" title="Tutorials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

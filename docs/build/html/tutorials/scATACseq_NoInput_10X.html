@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scReadSim on 10X scATAC-seq &mdash; scReadSim  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> scReadSim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../API.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Tutorials.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">scReadSim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>scReadSim on 10X scATAC-seq</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorials/scATACseq_NoInput_10X.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="screadsim-on-10x-scatac-seq">
+<h1>scReadSim on 10X scATAC-seq<a class="headerlink" href="#screadsim-on-10x-scatac-seq" title="Permalink to this headline">¶</a></h1>
+<p>Import modules.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">scReadSim.scATAC_GenerateBAM</span> <span class="k">as</span> <span class="nn">scATAC_GenerateBAM</span>
+<span class="kn">import</span> <span class="nn">scReadSim.Utility</span> <span class="k">as</span> <span class="nn">Utility</span>
+<span class="kn">import</span> <span class="nn">scReadSim.GenerateSyntheticCount</span> <span class="k">as</span> <span class="nn">GenerateSyntheticCount</span>
+<span class="kn">import</span> <span class="nn">pkg_resources</span>
+</pre></div>
+</div>
+<section id="step1-download-test-example">
+<h2>STEP1: Download test example.<a class="headerlink" href="#step1-download-test-example" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wget http://renlab.sdsc.edu/r3fang/share/SnapTools/snaptools_test.tar.gz
+tar -xf snaptools_test.tar.gz
+<span class="nb">cd</span> snaptools_test/
+gunzip mm10.fa.gz
+</pre></div>
+</div>
+</section>
+<section id="step1-feature-space-construction">
+<h2>STEP1: Feature space construction<a class="headerlink" href="#step1-feature-space-construction" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#####################################################################</span>
+<span class="c1">############################## User Input #########################</span>
+<span class="c1">#####################################################################</span>
+<span class="n">samtools_directory</span><span class="o">=</span><span class="s2">&quot;/home/gayan/Tools/samtools/bin&quot;</span>
+<span class="n">macs3_directory</span><span class="o">=</span><span class="s2">&quot;/home/gayan/.local/bin&quot;</span>
+<span class="n">bedtools_directory</span><span class="o">=</span><span class="s2">&quot;/home/gayan/Tools/bedtools/bedtools2/bin&quot;</span>
+<span class="n">seqtk_directory</span> <span class="o">=</span> <span class="s2">&quot;~/Tools/seqtk/seqtk&quot;</span>
+<span class="n">bowtie2_directory</span> <span class="o">=</span> <span class="s2">&quot;/usr/bin&quot;</span>
+
+<span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;10X_ATAC_chr1_4194444_4399104&quot;</span>
+<span class="n">INPUT_cells_barcode_file</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;scReadSim&quot;</span><span class="p">,</span> <span class="s1">&#39;data/barcodes.tsv&#39;</span><span class="p">)</span> 
+<span class="n">INPUT_bamfile</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;scReadSim&quot;</span><span class="p">,</span> <span class="s1">&#39;data/</span><span class="si">%s</span><span class="s1">.bam&#39;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span> <span class="c1"># this one work, still need to test if R script works</span>
+<span class="n">outdirectory</span> <span class="o">=</span> <span class="s2">&quot;/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220330_10X_scATACseq_NONINPUT&quot;</span>
+
+<span class="n">referenceGenome_name</span> <span class="o">=</span> <span class="s2">&quot;chr1&quot;</span>
+<span class="n">referenceGenome_dir</span> <span class="o">=</span> <span class="s2">&quot;~/Projects/scATAC_Simulator/package_development/package_data&quot;</span> <span class="c1"># Put these into server FileGator for tutorial downloading </span>
+<span class="c1"># referenceGenome_name = &quot;GRCm38.primary_assembly.genome&quot;</span>
+<span class="n">referenceGenome_file</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.fa&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">referenceGenome_dir</span><span class="p">,</span> <span class="n">referenceGenome_name</span><span class="p">)</span>
+
+
+<span class="c1">#####################################################################</span>
+<span class="c1">############################ Main function #########################</span>
+<span class="c1">#####################################################################</span>
+<span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">outdirectory</span><span class="p">)</span>
+<span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;cd </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">outdirectory</span>
+<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+<span class="c1"># INPUT_bamfile = &quot;%s/%s.bam&quot; % (directory, filename)</span>
+<span class="n">OUTPUT_cells_barcode_file</span> <span class="o">=</span> <span class="s2">&quot;synthetic_cell_barcode.txt&quot;</span>
+
+<span class="c1">######################## MACS Call Peaks ######################## </span>
+<span class="n">MACS3_peakname_pre</span> <span class="o">=</span> <span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;.MACS3&quot;</span>
+<span class="n">Utility</span><span class="o">.</span><span class="n">CallPeak</span><span class="p">(</span><span class="n">macs3_directory</span><span class="p">,</span> <span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">MACS3_peakname_pre</span><span class="p">)</span>
+
+<span class="c1">######################## Generate Feature Set ######################## </span>
+<span class="n">ref_peakfile</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_peaks.bed&quot;</span> <span class="o">%</span> <span class="n">MACS3_peakname_pre</span>
+<span class="n">ref_comple_peakfile</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_peaks.COMPLE.bed&quot;</span> <span class="o">%</span> <span class="n">MACS3_peakname_pre</span>
+<span class="c1"># genome_size_file = &quot;/home/gayan/Projects/scATAC_Simulator/data/mm10_ref_genome_GECODE/mm10.chrom.sizes.removed&quot;</span>
+<span class="n">genome_size_file</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;scReadSim&quot;</span><span class="p">,</span> <span class="s1">&#39;data/mm10.chrom.sizes&#39;</span><span class="p">)</span>
+<span class="n">Utility</span><span class="o">.</span><span class="n">scATAC_CreateFeatureSets</span><span class="p">(</span><span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">samtools_directory</span><span class="p">,</span> <span class="n">bedtools_directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">genome_size_file</span><span class="p">,</span> <span class="n">ref_peakfile</span><span class="p">,</span> <span class="n">ref_comple_peakfile</span><span class="p">,</span> <span class="n">MACS3_peakname_pre</span><span class="p">)</span>
+ 
+</pre></div>
+</div>
+</section>
+<section id="step2-count-matrix-construction">
+<h2>STEP2: Count matrix construction<a class="headerlink" href="#step2-count-matrix-construction" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="c1">######################## Generate Count matrix ########################</span>
+<span class="n">count_mat_filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.countmatrix&quot;</span> <span class="o">%</span> <span class="n">filename</span>
+<span class="n">count_mat_comple_filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.COMPLE.countmatrix&quot;</span> <span class="o">%</span> <span class="n">filename</span>
+<span class="n">Utility</span><span class="o">.</span><span class="n">bam2countmat</span><span class="p">(</span><span class="n">INPUT_cells_barcode_file</span><span class="p">,</span> <span class="n">outdirectory</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">ref_peakfile</span><span class="p">,</span> <span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">count_mat_filename</span> <span class="o">+</span> <span class="s2">&quot;.txt&quot;</span><span class="p">)</span>
+<span class="n">Utility</span><span class="o">.</span><span class="n">bam2countmat</span><span class="p">(</span><span class="n">INPUT_cells_barcode_file</span><span class="p">,</span> <span class="n">outdirectory</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">ref_comple_peakfile</span><span class="p">,</span> <span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">count_mat_comple_filename</span> <span class="o">+</span> <span class="s2">&quot;.txt&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="step3-synthetic-count-matrix-simulation">
+<h2>STEP3: Synthetic count matrix simulation<a class="headerlink" href="#step3-synthetic-count-matrix-simulation" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="c1">######################## Synthetic Matrix Training ######################## </span>
+<span class="n">GenerateSyntheticCount</span><span class="o">.</span><span class="n">scATAC_GenerateSyntheticCount</span><span class="p">(</span><span class="n">count_mat_filename</span><span class="p">,</span> <span class="n">count_mat_format</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">)</span>
+<span class="n">GenerateSyntheticCount</span><span class="o">.</span><span class="n">scATAC_GenerateSyntheticCount</span><span class="p">(</span><span class="n">count_mat_comple_filename</span><span class="p">,</span> <span class="n">count_mat_format</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">)</span>
+
+<span class="n">cellnumberfile</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.scDesign2Simulated.nPairsRegionmargional.txt&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">count_mat_filename</span><span class="p">)</span>
+<span class="n">cellnumberfile_comple</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.scDesign2Simulated.nPairsRegionmargional.txt&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">count_mat_comple_filename</span><span class="p">)</span>
+<span class="n">synthetic_countmat_file</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.scDesign2Simulated.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">count_mat_filename</span><span class="p">)</span>
+<span class="n">synthetic_countmat_file_comple</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.scDesign2Simulated.txt&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">count_mat_comple_filename</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="step4-synthetic-bam-file-generation">
+<h2>STEP4: Synthetic BAM file generation<a class="headerlink" href="#step4-synthetic-bam-file-generation" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="c1">######################## Generate Synthetic FASTQ file ######################## </span>
+<span class="n">coordinate_file</span> <span class="o">=</span> <span class="s2">&quot;BAMfile_halfsampled_coordinates.txt&quot;</span>
+<span class="n">coordinate_COMPLE_file</span> <span class="o">=</span> <span class="s2">&quot;BAMfile_halfsampled_COMPLE_coordinates.txt&quot;</span>
+<span class="n">BED_filename_pre</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.syntheticBAM.CBincluded&quot;</span> <span class="o">%</span> <span class="n">filename</span>
+<span class="n">BED_COMPLE_filename_pre</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.syntheticBAM.COMPLE.CBincluded&quot;</span> <span class="o">%</span> <span class="n">filename</span>
+<span class="n">BED_filename_combined_pre</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.syntheticBAM.combined.CBincluded&quot;</span> <span class="o">%</span> <span class="n">filename</span>
+<span class="c1">## Parsing bam files according to referenced features, modify the position according to true features</span>
+<span class="n">scATAC_GenerateBAM</span><span class="o">.</span><span class="n">scATAC_SampleSyntheticReads</span><span class="p">(</span><span class="n">coordinate_file</span><span class="p">,</span> <span class="n">samtools_directory</span><span class="p">,</span> <span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">outdirectory</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">ref_peakfile</span><span class="p">,</span> <span class="n">cellnumberfile</span><span class="p">)</span>
+<span class="n">scATAC_GenerateBAM</span><span class="o">.</span><span class="n">scATAC_SampleSyntheticReads</span><span class="p">(</span><span class="n">coordinate_COMPLE_file</span><span class="p">,</span> <span class="n">samtools_directory</span><span class="p">,</span> <span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">outdirectory</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">ref_comple_peakfile</span><span class="p">,</span> <span class="n">cellnumberfile_comple</span><span class="p">)</span>
+<span class="c1">## Create synthetic read coordinates</span>
+<span class="n">scATAC_GenerateBAM</span><span class="o">.</span><span class="n">scATAC_GenerateBAMCoord</span><span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">outdirectory</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">coordinate_file</span><span class="p">,</span> <span class="n">outdirectory</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">ref_peakfile</span><span class="p">,</span> <span class="n">outdirectory</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">synthetic_countmat_file</span><span class="p">,</span> <span class="n">outdirectory</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">cellnumberfile</span><span class="p">,</span> <span class="n">BED_filename_pre</span><span class="p">,</span> <span class="n">OUTPUT_cells_barcode_file</span><span class="p">)</span>
+<span class="n">scATAC_GenerateBAM</span><span class="o">.</span><span class="n">scATAC_GenerateBAMCoord</span><span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">outdirectory</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">coordinate_COMPLE_file</span><span class="p">,</span> <span class="n">outdirectory</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">ref_comple_peakfile</span><span class="p">,</span> <span class="n">outdirectory</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">synthetic_countmat_file_comple</span><span class="p">,</span> <span class="n">outdirectory</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">cellnumberfile_comple</span><span class="p">,</span> <span class="n">BED_COMPLE_filename_pre</span><span class="p">,</span> <span class="n">OUTPUT_cells_barcode_file</span><span class="p">)</span>
+
+<span class="c1">## Combine peak and comple.peak </span>
+<span class="n">scATAC_GenerateBAM</span><span class="o">.</span><span class="n">scATAC_CombineBED</span><span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_pre</span><span class="p">,</span> <span class="n">BED_COMPLE_filename_pre</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">)</span>
+
+<span class="c1">## Convert bed files to FASTQ files</span>
+<span class="n">output_BAM_pre</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.syntheticBAM.CBincluded&quot;</span> <span class="o">%</span> <span class="n">filename</span>
+<span class="n">scATAC_GenerateBAM</span><span class="o">.</span><span class="n">scATAC_BED2FASTQ</span><span class="p">(</span><span class="n">bedtools_directory</span><span class="p">,</span> <span class="n">seqtk_directory</span><span class="p">,</span> <span class="n">referenceGenome_file</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">,</span> <span class="n">sort_FASTQ</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="c1">######################## Generate BAM file ######################## </span>
+<span class="n">scATAC_GenerateBAM</span><span class="o">.</span><span class="n">AlignSyntheticBam_Pair</span><span class="p">(</span><span class="n">bowtie2_directory</span><span class="p">,</span> <span class="n">samtools_directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">referenceGenome_name</span><span class="p">,</span> <span class="n">referenceGenome_dir</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">,</span> <span class="n">output_BAM_pre</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Guanao Yan.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

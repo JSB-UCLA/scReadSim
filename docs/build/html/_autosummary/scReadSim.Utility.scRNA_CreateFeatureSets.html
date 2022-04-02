@@ -36,7 +36,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Overview:</span></p>
+              <p class="caption"><span class="caption-text">Overview</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../API.html">API</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../API.html#utility">Utility</a><ul class="current">
@@ -56,6 +56,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../API.html#generatesyntheticcount">GenerateSyntheticCount</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../Tutorials.html">Tutorials</a></li>
 </ul>
 
         </div>
@@ -116,14 +117,14 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>INPUT_bamfile</strong> (<cite>str</cite>) – Directory of input BAM file.</p></li>
-<li><p><strong>samtools_directory</strong> (<cite>str</cite>) – Directory of software samtools.</p></li>
-<li><p><strong>bedtools_directory</strong> (<cite>str</cite>) – Directory of software bedtools.</p></li>
+<li><p><strong>INPUT_bamfile</strong> (<cite>str</cite>) – Input BAM file.</p></li>
+<li><p><strong>samtools_directory</strong> (<cite>str</cite>) – Path to software <cite>samtools</cite>.</p></li>
+<li><p><strong>bedtools_directory</strong> (<cite>str</cite>) – Path to software <cite>bedtools</cite>.</p></li>
 <li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory.</p></li>
-<li><p><strong>genome_annotation</strong> (<cite>str</cite>) – Directory of Genome annotation file for the reference genome that the input bamfile aligned on.</p></li>
-<li><p><strong>genome_size_file</strong> (<cite>str</cite>) – Directory of Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicates the size.</p></li>
-<li><p><strong>ref_peakfile</strong> (<cite>str</cite>) – Specify the base name of output foreground feature bed file.</p></li>
-<li><p><strong>ref_comple_peakfile</strong> (<cite>str</cite>) – Specify the base name of output background feature bed file.</p></li>
+<li><p><strong>genome_annotation</strong> (<cite>str</cite>) – Genome annotation file for the reference genome that the input BAM aligned on or the synthetic BAM should align on.</p></li>
+<li><p><strong>genome_size_file</strong> (<cite>str</cite>) – Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicates the size.</p></li>
+<li><p><strong>ref_peakfile</strong> (<cite>str</cite>) – Specify the name of output foreground feature bed file.</p></li>
+<li><p><strong>ref_comple_peakfile</strong> (<cite>str</cite>) – Specify the name of output background feature bed file.</p></li>
 </ul>
 </dd>
 </dl>

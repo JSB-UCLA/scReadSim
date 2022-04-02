@@ -36,7 +36,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Overview:</span></p>
+              <p class="caption"><span class="caption-text">Overview</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../API.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../API.html#utility">Utility</a></li>
@@ -49,6 +49,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../Tutorials.html">Tutorials</a></li>
 </ul>
 
         </div>
@@ -104,15 +105,15 @@
 <h1>scReadSim.GenerateSyntheticCount.scATAC_GenerateSyntheticCount<a class="headerlink" href="#screadsim-generatesyntheticcount-scatac-generatesyntheticcount" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="scReadSim.GenerateSyntheticCount.scATAC_GenerateSyntheticCount">
-<code class="sig-prename descclassname"><span class="pre">scReadSim.GenerateSyntheticCount.</span></code><code class="sig-name descname"><span class="pre">scATAC_GenerateSyntheticCount</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samplename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_prestep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scReadSim/GenerateSyntheticCount.html#scATAC_GenerateSyntheticCount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.GenerateSyntheticCount.scATAC_GenerateSyntheticCount" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">scReadSim.GenerateSyntheticCount.</span></code><code class="sig-name descname"><span class="pre">scATAC_GenerateSyntheticCount</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">count_mat_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_prestep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scReadSim/GenerateSyntheticCount.html#scATAC_GenerateSyntheticCount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.GenerateSyntheticCount.scATAC_GenerateSyntheticCount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simulate synthetic count matrix.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>samplename</strong> (<cite>str</cite>) – Base name of the count matrix output by function bam2countmat().</p></li>
+<li><p><strong>count_mat_filename</strong> (<cite>str</cite>) – Base name of the count matrix output by function bam2countmat().</p></li>
 <li><p><strong>directory</strong> (<cite>str</cite>) – Path of the count matrix.</p></li>
 <li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory of coordinate files.</p></li>
-<li><p><strong>cluster_prestep</strong> (<cite>bool</cite>) – Set <cite>cluster_prestep=True</cite> to do a Louvain clustering before implementing scDesign2.</p></li>
+<li><p><strong>cluster_prestep</strong> (<cite>bool</cite>) – Set <cite>cluster_prestep=True</cite> to perform a Louvain clustering before implementing scDesign2.</p></li>
 </ul>
 </dd>
 </dl>

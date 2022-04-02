@@ -50,9 +50,9 @@ def scRNA_SampleSyntheticReads(coordinate_file, samtools_directory, INPUT_bamfil
 	coordinate_file: `str`
 		Specify name of the coordinates file storing synthetic reads. This is not a final output of scReadSim.
 	samtools_directory: `str`
-		Directory of software samtools.
+		Path to software samtools.
 	INPUT_bamfile: `str`
-		Directory of input BAM file.
+		Path to input BAM file.
 	outdirectory: `str`
 		Output directory of coordinate files.
 	ref_peakfile: `str`

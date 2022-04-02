@@ -33,9 +33,10 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Overview:</span></p>
+              <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../API.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Tutorials.html">Tutorials</a></li>
 </ul>
 
         </div>
@@ -69,19 +70,19 @@
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
 <span class="kn">import</span> <span class="nn">os</span>
 
-<div class="viewcode-block" id="scATAC_GenerateSyntheticCount"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.GenerateSyntheticCount.scATAC_GenerateSyntheticCount">[docs]</a><span class="k">def</span> <span class="nf">scATAC_GenerateSyntheticCount</span><span class="p">(</span><span class="n">samplename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">cluster_prestep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="scATAC_GenerateSyntheticCount"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.GenerateSyntheticCount.scATAC_GenerateSyntheticCount">[docs]</a><span class="k">def</span> <span class="nf">scATAC_GenerateSyntheticCount</span><span class="p">(</span><span class="n">count_mat_filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">cluster_prestep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;Simulate synthetic count matrix.</span>
 
 <span class="sd">	Parameters</span>
 <span class="sd">	----------</span>
-<span class="sd">	samplename: `str`</span>
+<span class="sd">	count_mat_filename: `str`</span>
 <span class="sd">		Base name of the count matrix output by function bam2countmat().</span>
 <span class="sd">	directory: `str`</span>
 <span class="sd">		Path of the count matrix.</span>
 <span class="sd">	outdirectory: `str`</span>
 <span class="sd">		Output directory of coordinate files.</span>
 <span class="sd">	cluster_prestep: `bool`</span>
-<span class="sd">		Set `cluster_prestep=True` to do a Louvain clustering before implementing scDesign2.</span>
+<span class="sd">		Set `cluster_prestep=True` to perform a Louvain clustering before implementing scDesign2.</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="n">r</span> <span class="o">=</span> <span class="n">robjects</span><span class="o">.</span><span class="n">r</span>
 	<span class="n">rscript_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s1">&#39;Rscript/SyntheticCountFunctions.R&#39;</span><span class="p">)</span>
@@ -90,23 +91,23 @@
 	<span class="n">r</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">](</span><span class="n">rscript_dir</span><span class="p">)</span>
 	<span class="n">scATAC_runSyntheticCount</span> <span class="o">=</span> <span class="n">robjects</span><span class="o">.</span><span class="n">globalenv</span><span class="p">[</span><span class="s1">&#39;scATAC_runSyntheticCount&#39;</span><span class="p">]</span>
 	<span class="k">if</span> <span class="n">cluster_prestep</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
-		<span class="n">scATAC_runSyntheticCount</span><span class="p">(</span><span class="n">samplename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">cluster_prestep</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+		<span class="n">scATAC_runSyntheticCount</span><span class="p">(</span><span class="n">count_mat_filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">cluster_prestep</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
 	<span class="k">else</span><span class="p">:</span>
-		<span class="n">scATAC_runSyntheticCount</span><span class="p">(</span><span class="n">samplename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">cluster_prestep</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span></div>
+		<span class="n">scATAC_runSyntheticCount</span><span class="p">(</span><span class="n">count_mat_filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">cluster_prestep</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="scRNA_GenerateSyntheticCount"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.GenerateSyntheticCount.scRNA_GenerateSyntheticCount">[docs]</a><span class="k">def</span> <span class="nf">scRNA_GenerateSyntheticCount</span><span class="p">(</span><span class="n">samplename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">cluster_prestep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="scRNA_GenerateSyntheticCount"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.GenerateSyntheticCount.scRNA_GenerateSyntheticCount">[docs]</a><span class="k">def</span> <span class="nf">scRNA_GenerateSyntheticCount</span><span class="p">(</span><span class="n">count_mat_filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">cluster_prestep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;Simulate synthetic count matrix.</span>
 
 <span class="sd">	Parameters</span>
 <span class="sd">	----------</span>
-<span class="sd">	samplename: `str`</span>
+<span class="sd">	count_mat_filename: `str`</span>
 <span class="sd">		Base name of the count matrix output by function bam2countmat().</span>
 <span class="sd">	directory: `str`</span>
 <span class="sd">		Path of the count matrix.</span>
 <span class="sd">	outdirectory: `str`</span>
 <span class="sd">		Output directory of coordinate files.</span>
 <span class="sd">	cluster_prestep: `bool`</span>
-<span class="sd">		Set `cluster_prestep=True` to do a Louvain clustering before implementing scDesign2.</span>
+<span class="sd">		Set `cluster_prestep=True` to perform a Louvain clustering before implementing scDesign2.</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="n">r</span> <span class="o">=</span> <span class="n">robjects</span><span class="o">.</span><span class="n">r</span>
 	<span class="n">rscript_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s1">&#39;Rscript/SyntheticCountFunctions.R&#39;</span><span class="p">)</span>
@@ -115,9 +116,9 @@
 	<span class="n">r</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">](</span><span class="n">rscript_dir</span><span class="p">)</span>
 	<span class="n">scRNA_runSyntheticCount</span> <span class="o">=</span> <span class="n">robjects</span><span class="o">.</span><span class="n">globalenv</span><span class="p">[</span><span class="s1">&#39;scRNA_runSyntheticCount&#39;</span><span class="p">]</span>
 	<span class="k">if</span> <span class="n">cluster_prestep</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
-		<span class="n">scRNA_runSyntheticCount</span><span class="p">(</span><span class="n">samplename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">cluster_prestep</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+		<span class="n">scRNA_runSyntheticCount</span><span class="p">(</span><span class="n">count_mat_filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">cluster_prestep</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
 	<span class="k">else</span><span class="p">:</span>
-		<span class="n">scRNA_runSyntheticCount</span><span class="p">(</span><span class="n">samplename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">cluster_prestep</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span></div>
+		<span class="n">scRNA_runSyntheticCount</span><span class="p">(</span><span class="n">count_mat_filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">cluster_prestep</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

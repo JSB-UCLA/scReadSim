@@ -21,6 +21,6 @@ scReadSim is a single-cell synthetic reads simulator for multiple omics data. It
    :caption: Overview
 
    API
-
+   Tutorials
 
 

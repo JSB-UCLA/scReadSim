@@ -33,9 +33,10 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Overview:</span></p>
+              <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../API.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Tutorials.html">Tutorials</a></li>
 </ul>
 
         </div>
@@ -77,7 +78,7 @@
 <div class="viewcode-block" id="CallPeak"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.Utility.CallPeak">[docs]</a><span class="k">def</span> <span class="nf">CallPeak</span><span class="p">(</span><span class="n">macs3_directory</span><span class="p">,</span> <span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">MACS3_peakname_pre</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Perform peak calling using MACS3 </span>
 
-<span class="sd">    Arguments</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    macs3_directory: `str`</span>
 <span class="sd">        Directory of software MACS3.</span>
@@ -98,7 +99,7 @@
 <div class="viewcode-block" id="ExtractBAMCoverage"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.Utility.ExtractBAMCoverage">[docs]</a><span class="k">def</span> <span class="nf">ExtractBAMCoverage</span><span class="p">(</span><span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">samtools_directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Examine the covered chromosome names for the input bam file.</span>
 
-<span class="sd">    Arguments</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    INPUT_bamfile: `str`</span>
 <span class="sd">        Directory of input BAM file.</span>
@@ -124,7 +125,7 @@
 <div class="viewcode-block" id="scATAC_CreateFeatureSets"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.Utility.scATAC_CreateFeatureSets">[docs]</a><span class="k">def</span> <span class="nf">scATAC_CreateFeatureSets</span><span class="p">(</span><span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">samtools_directory</span><span class="p">,</span> <span class="n">bedtools_directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">genome_size_file</span><span class="p">,</span> <span class="n">ref_peakfile</span><span class="p">,</span> <span class="n">ref_comple_peakfile</span><span class="p">,</span> <span class="n">MACS3_peakname_pre</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create the foreground and background feature set for the input scATAC-seq bam file.</span>
 
-<span class="sd">    Arguments</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    INPUT_bamfile: `str`</span>
 <span class="sd">        Directory of input BAM file.</span>
@@ -163,24 +164,24 @@
 <div class="viewcode-block" id="scRNA_CreateFeatureSets"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.Utility.scRNA_CreateFeatureSets">[docs]</a><span class="k">def</span> <span class="nf">scRNA_CreateFeatureSets</span><span class="p">(</span><span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">samtools_directory</span><span class="p">,</span> <span class="n">bedtools_directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">genome_annotation</span><span class="p">,</span> <span class="n">genome_size_file</span><span class="p">,</span> <span class="n">ref_peakfile</span><span class="p">,</span> <span class="n">ref_comple_peakfile</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create the foreground and background feature set for the input scRNA-seq bam file.</span>
 
-<span class="sd">    Arguments</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    INPUT_bamfile: `str`</span>
-<span class="sd">        Directory of input BAM file.</span>
+<span class="sd">        Input BAM file.</span>
 <span class="sd">    samtools_directory: `str`</span>
-<span class="sd">        Directory of software samtools.</span>
+<span class="sd">        Path to software `samtools`.</span>
 <span class="sd">    bedtools_directory: `str`</span>
-<span class="sd">        Directory of software bedtools.</span>
+<span class="sd">        Path to software `bedtools`.</span>
 <span class="sd">    outdirectory: `str`</span>
 <span class="sd">        Output directory.</span>
 <span class="sd">    genome_annotation: `str`</span>
-<span class="sd">        Directory of Genome annotation file for the reference genome that the input bamfile aligned on.</span>
+<span class="sd">        Genome annotation file for the reference genome that the input BAM aligned on or the synthetic BAM should align on.</span>
 <span class="sd">    genome_size_file: `str`</span>
-<span class="sd">        Directory of Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicates the size.</span>
+<span class="sd">        Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicates the size.</span>
 <span class="sd">    ref_peakfile: `str`</span>
-<span class="sd">        Specify the base name of output foreground feature bed file.</span>
+<span class="sd">        Specify the name of output foreground feature bed file.</span>
 <span class="sd">    ref_comple_peakfile: `str`</span>
-<span class="sd">        Specify the base name of output background feature bed file.    </span>
+<span class="sd">        Specify the name of output background feature bed file.    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">genome_size_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">genome_size_file</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">chromosomes_coverd</span> <span class="o">=</span> <span class="n">ExtractBAMCoverage</span><span class="p">(</span><span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">samtools_directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">)</span>
@@ -208,23 +209,23 @@
 <div class="viewcode-block" id="bam2countmat"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.Utility.bam2countmat">[docs]</a><span class="k">def</span> <span class="nf">bam2countmat</span><span class="p">(</span><span class="n">cells_barcode_file</span><span class="p">,</span> <span class="n">bed_file</span><span class="p">,</span> <span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">count_mat_filename</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Construct count matrix.</span>
 
-<span class="sd">    Arguments</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    cells_barcode_file: `str`</span>
-<span class="sd">        Directory of the cell barcode file corresponding to the input BAM file.</span>
+<span class="sd">        Cell barcode file corresponding to the input BAM file.</span>
 <span class="sd">    bed_file: `str`</span>
-<span class="sd">        Directory of the features bed file that the count matrix constructs based on.</span>
+<span class="sd">        Features bed file to generate the count matrix.</span>
 <span class="sd">    INPUT_bamfile: `str`</span>
-<span class="sd">        Directory of input BAM file.</span>
+<span class="sd">        Input BAM file for anlaysis.</span>
 <span class="sd">    outdirectory: `str`</span>
-<span class="sd">        Output directory.</span>
+<span class="sd">        Specify the output directory of the count matrix file.</span>
 <span class="sd">    count_mat_filename: `str`</span>
 <span class="sd">        Specify the base name of output count matrix.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cells</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">cells_barcode_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">cells</span> <span class="o">=</span> <span class="n">cells</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="n">cells_barcode</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">cells</span><span class="p">]</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">count_mat_filename</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outsfile</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.txt&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">count_mat_filename</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outsfile</span><span class="p">:</span>
         <span class="n">samfile</span> <span class="o">=</span> <span class="n">pysam</span><span class="o">.</span><span class="n">AlignmentFile</span><span class="p">(</span><span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">bed_directory</span><span class="p">,</span> <span class="n">bed_file</span><span class="p">))</span> <span class="k">as</span> <span class="n">open_peak</span><span class="p">:</span>
             <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">open_peak</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -265,23 +266,23 @@
 <div class="viewcode-block" id="bam2countmat_INPUT"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.Utility.bam2countmat_INPUT">[docs]</a><span class="k">def</span> <span class="nf">bam2countmat_INPUT</span><span class="p">(</span><span class="n">cells_barcode_file</span><span class="p">,</span> <span class="n">bed_file</span><span class="p">,</span> <span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">count_mat_filename</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Construct count matrix for task with user input features set. </span>
 
-<span class="sd">    Arguments</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    cells_barcode_file: `str`</span>
-<span class="sd">        Directory of the cell barcode file corresponding to the input BAM file.</span>
+<span class="sd">        Cell barcode file corresponding to the input BAM file.</span>
 <span class="sd">    bed_file: `str`</span>
-<span class="sd">        Directory of the features bed file that the count matrix constructs based on.</span>
+<span class="sd">        Features bed file to generate the count matrix.</span>
 <span class="sd">    INPUT_bamfile: `str`</span>
-<span class="sd">        Directory of input BAM file.</span>
+<span class="sd">        Input BAM file for anlaysis.</span>
 <span class="sd">    outdirectory: `str`</span>
-<span class="sd">        Output directory.</span>
+<span class="sd">        Specify the output directory of the count matrix file.</span>
 <span class="sd">    count_mat_filename: `str`</span>
 <span class="sd">        Specify the base name of output count matrix.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cells</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">cells_barcode_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">cells</span> <span class="o">=</span> <span class="n">cells</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="n">cells_barcode</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">cells</span><span class="p">]</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">count_mat_filename</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outsfile</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.txt&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">count_mat_filename</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outsfile</span><span class="p">:</span>
         <span class="n">samfile</span> <span class="o">=</span> <span class="n">pysam</span><span class="o">.</span><span class="n">AlignmentFile</span><span class="p">(</span><span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">bed_directory</span><span class="p">,</span> <span class="n">bed_file</span><span class="p">))</span> <span class="k">as</span> <span class="n">open_peak</span><span class="p">:</span>
             <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">open_peak</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -322,7 +323,7 @@
 <div class="viewcode-block" id="find_nearest"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.Utility.find_nearest">[docs]</a><span class="k">def</span> <span class="nf">find_nearest</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Find the index of peak from `array` with a length closest to `value`.</span>
 
-<span class="sd">    Arguments</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    array: `numpy.array`</span>
 <span class="sd">        Two-column array of peaks indicating the starting and ending positions.</span>
@@ -342,7 +343,7 @@
 <div class="viewcode-block" id="match_peak"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.Utility.match_peak">[docs]</a><span class="k">def</span> <span class="nf">match_peak</span><span class="p">(</span><span class="n">true_peakfile</span><span class="p">,</span> <span class="n">ref_peakfile</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">assignment_file</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Find the reference features for the given features `true_peakfile` according to the similarity of peak length. The assignment would be stored as `assignment_file` within `outdirectory`.</span>
 
-<span class="sd">    Arguments</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    true_peakfile: `str`</span>
 <span class="sd">        Directory of the target features bed file.</span>
@@ -371,7 +372,7 @@
 <div class="viewcode-block" id="ComplementFeature"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.Utility.ComplementFeature">[docs]</a><span class="k">def</span> <span class="nf">ComplementFeature</span><span class="p">(</span><span class="n">feature_file</span><span class="p">,</span> <span class="n">comple_faeture_peakfile</span><span class="p">,</span> <span class="n">genome_size_file</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">bedtools_directory</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create background feature set given the user input foreground feature set `feature_file`.</span>
 
-<span class="sd">    Arguments</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    feature_file: `str`</span>
 <span class="sd">        Directory of the input feature set.</span>
