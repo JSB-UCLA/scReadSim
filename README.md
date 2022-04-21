@@ -3,6 +3,9 @@
 A module for single cell sequencing read simulator.
 
 ## Update Log
+**April 20th**
+- Update read length generation.
+
 **March. 31st**
 - Update documentation of functions.
 
