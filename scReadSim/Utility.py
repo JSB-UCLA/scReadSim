@@ -15,9 +15,9 @@ def CallPeak(macs3_directory, INPUT_bamfile, outdirectory, MACS3_peakname_pre):
     Parameters
     ----------
     macs3_directory: `str`
-        Directory of software MACS3.
+        Path to software MACS3.
     INPUT_bamfile: `str`
-        Directory of input BAM file.
+        Input BAM file for anlaysis.
     outdirectory: `str`
         Output directory of peak calling.
     MACS3_peakname_pre: `str`
@@ -107,7 +107,7 @@ def scRNA_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_director
     bedtools_directory: `str`
         Path to software `bedtools`.
     outdirectory: `str`
-        Output directory.
+        Specify the output directory of the features files.
     genome_annotation: `str`
         Genome annotation file for the reference genome that the input BAM aligned on or the synthetic BAM should align on.
     genome_size_file: `str`
@@ -161,7 +161,7 @@ def bam2countmat(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, coun
     cells_barcode = [item[0] for item in cells]
     with open("%s/%s.txt" % (outdirectory, count_mat_filename), 'w') as outsfile:
         samfile = pysam.AlignmentFile(INPUT_bamfile, "rb")
-        with open("%s/%s" % (bed_directory, bed_file)) as open_peak:
+        with open(bed_file) as open_peak:
             reader = csv.reader(open_peak, delimiter="\t")
             open_peak = np.asarray(list(reader))
         k = 0
@@ -197,15 +197,15 @@ def bam2countmat(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, coun
             print(rec_name + "\t" + "\t".join([str(x) for x in currcounts]),file = outsfile)
 
 
-def bam2countmat_INPUT(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, count_mat_filename):
+def bam2countmat_INPUT(cells_barcode_file, assignment_file, INPUT_bamfile, outdirectory, count_mat_filename):
     """Construct count matrix for task with user input features set. 
 
     Parameters
     ----------
     cells_barcode_file: `str`
         Cell barcode file corresponding to the input BAM file.
-    bed_file: `str`
-        Features bed file to generate the count matrix.
+    assignment_file: `str`
+        Features assignment file output by function `match_peak`.
     INPUT_bamfile: `str`
         Input BAM file for anlaysis.
     outdirectory: `str`
@@ -218,7 +218,7 @@ def bam2countmat_INPUT(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory
     cells_barcode = [item[0] for item in cells]
     with open("%s/%s.txt" % (outdirectory, count_mat_filename), 'w') as outsfile:
         samfile = pysam.AlignmentFile(INPUT_bamfile, "rb")
-        with open("%s/%s" % (bed_directory, bed_file)) as open_peak:
+        with open(assignment_file) as open_peak:
             reader = csv.reader(open_peak, delimiter="\t")
             open_peak = np.asarray(list(reader))
         k = 0
@@ -309,15 +309,15 @@ def ComplementFeature(feature_file, comple_faeture_peakfile, genome_size_file, o
     Parameters
     ----------
     feature_file: `str`
-        Directory of the input feature set.
+        Input feature set
     comple_faeture_peakfile: `str`
         Specify the base name of output background feature bed file.    
     genome_size_file: `str`
-        Directory of Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicates the size.
+        Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicating the size.
     outdirectory: `str`
         Output directory.
     bedtools_directory: `str`
-        Directory of software bedtools.
+        Path to software bedtools.
     """
     genome_size_df = pd.read_csv(genome_size_file, header=None, delimiter="\t")
     input_peak_df = pd.read_csv(feature_file, header=None, delimiter="\t")

@@ -19,6 +19,15 @@ License-File: LICENSE
 A module for single cell sequencing read simulator.
 
 ## Update Log
+**March. 31st**
+- Update documentation of functions.
+
+
+**March. 30th**
+- Set up documentation framework.
+- Update demo data.
+
+
 **March. 11st**
 - Update INPUT moldue.
 - Update test script for scATAC-seq INPUT module using demo data.
@@ -53,7 +62,6 @@ pip install git+https://github.com/Dominic7227/scReadSim.git
 To be done.
 
 ## License
-
 This pacakge is licensed under the terms
 of the **MIT License**.
 

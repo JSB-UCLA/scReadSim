@@ -12,7 +12,7 @@ def scATAC_GenerateSyntheticCount(count_mat_filename, directory, outdirectory, c
 	count_mat_filename: `str`
 		Base name of the count matrix output by function bam2countmat().
 	directory: `str`
-		Path of the count matrix.
+		Path to the count matrix.
 	outdirectory: `str`
 		Output directory of coordinate files.
 	cluster_prestep: `bool`
@@ -37,7 +37,7 @@ def scRNA_GenerateSyntheticCount(count_mat_filename, directory, outdirectory, cl
 	count_mat_filename: `str`
 		Base name of the count matrix output by function bam2countmat().
 	directory: `str`
-		Path of the count matrix.
+		Path to the count matrix.
 	outdirectory: `str`
 		Output directory of coordinate files.
 	cluster_prestep: `bool`

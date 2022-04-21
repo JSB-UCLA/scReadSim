@@ -58,6 +58,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../API.html#generatesyntheticcount">GenerateSyntheticCount</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../Tutorials.html">Tutorials</a></li>
 </ul>
 
         </div>
@@ -113,16 +114,17 @@
 <h1>scReadSim.scATAC_GenerateBAM.scATAC_GenerateBAMCoord<a class="headerlink" href="#screadsim-scatac-generatebam-scatac-generatebamcoord" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="scReadSim.scATAC_GenerateBAM.scATAC_GenerateBAMCoord">
-<code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">scATAC_GenerateBAMCoord</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_peakfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_mat_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellnumberfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">OUTPUT_cells_barcode_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jitter_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scReadSim/scATAC_GenerateBAM.html#scATAC_GenerateBAMCoord"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.scATAC_GenerateBAMCoord" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">scATAC_GenerateBAMCoord</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">count_mat_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samtools_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_peakfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory_cellnumber</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BED_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">OUTPUT_cells_barcode_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jitter_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scReadSim/scATAC_GenerateBAM.html#scATAC_GenerateBAMCoord"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.scATAC_GenerateBAMCoord" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate Synthetic reads in BED format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Output directory of the synthteic bed file and its corresponding cell barcodes file.</p></li>
-<li><p><strong>coordinate_file</strong> (<cite>str</cite>) – Directory of the coordinates file storing synthetic reads output by scATAC_SampleSyntheticReads.</p></li>
-<li><p><strong>ref_peakfile</strong> (<cite>str</cite>) – Directory of the features bed file.</p></li>
-<li><p><strong>count_mat_file</strong> (<cite>str</cite>) – Directory of synthetic count matrix.</p></li>
-<li><p><strong>cellnumberfile</strong> (<cite>str</cite>) – Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.</p></li>
+<li><p><strong>count_mat_filename</strong> (<cite>str</cite>) – The base name of output count matrix in bam2countmat.</p></li>
+<li><p><strong>samtools_directory</strong> (<cite>str</cite>) – Path to software samtools.</p></li>
+<li><p><strong>INPUT_bamfile</strong> (<cite>str</cite>) – Input BAM file for anlaysis.</p></li>
+<li><p><strong>ref_peakfile</strong> (<cite>str</cite>) – Features bed file.</p></li>
+<li><p><strong>directory_cellnumber</strong> (<cite>str</cite>) – Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Specify the output directory for synthetic reads bed file.</p></li>
 <li><p><strong>BED_filename</strong> (<cite>str</cite>) – Specify the base name of output bed file.</p></li>
 <li><p><strong>OUTPUT_cells_barcode_file</strong> (<cite>str</cite>) – Specify the file name storing the synthetic cell barcodes.</p></li>
 <li><p><strong>read_len</strong> (<cite>int</cite> (default: ‘50’)) – Specify the length of synthetic reads. Default value is 50 bp.</p></li>

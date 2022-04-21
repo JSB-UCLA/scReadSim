@@ -112,13 +112,13 @@
 <h1>scReadSim.Utility.bam2countmat_INPUT<a class="headerlink" href="#screadsim-utility-bam2countmat-input" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="scReadSim.Utility.bam2countmat_INPUT">
-<code class="sig-prename descclassname"><span class="pre">scReadSim.Utility.</span></code><code class="sig-name descname"><span class="pre">bam2countmat_INPUT</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cells_barcode_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bed_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_mat_filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scReadSim/Utility.html#bam2countmat_INPUT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.Utility.bam2countmat_INPUT" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">scReadSim.Utility.</span></code><code class="sig-name descname"><span class="pre">bam2countmat_INPUT</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cells_barcode_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assignment_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_mat_filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scReadSim/Utility.html#bam2countmat_INPUT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.Utility.bam2countmat_INPUT" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct count matrix for task with user input features set.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cells_barcode_file</strong> (<cite>str</cite>) – Cell barcode file corresponding to the input BAM file.</p></li>
-<li><p><strong>bed_file</strong> (<cite>str</cite>) – Features bed file to generate the count matrix.</p></li>
+<li><p><strong>assignment_file</strong> (<cite>str</cite>) – Features assignment file output by function <cite>match_peak</cite>.</p></li>
 <li><p><strong>INPUT_bamfile</strong> (<cite>str</cite>) – Input BAM file for anlaysis.</p></li>
 <li><p><strong>outdirectory</strong> (<cite>str</cite>) – Specify the output directory of the count matrix file.</p></li>
 <li><p><strong>count_mat_filename</strong> (<cite>str</cite>) – Specify the base name of output count matrix.</p></li>

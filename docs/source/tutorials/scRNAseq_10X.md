@@ -17,7 +17,7 @@ The example deploys scReadSim on the 10X single cell RNA-seq (give url to origin
 ```{code-block} python3
 INPUT_cells_barcode_file = pkg_resources.resource_filename("scReadSim", 'data/barcodes.tsv') 
 filename = "10X_RNA_chr1_3073253_4526737"
-INPUT_bamfile = pkg_resources.resource_filename("scReadSim", 'data/%s.bam' % filename) # this one work, still need to test if R script works
+INPUT_bamfile = pkg_resources.resource_filename("scReadSim", 'data/%s.bam' % filename)
 INPUT_genome_size_file = pkg_resources.resource_filename("scReadSim", 'data/mm10.chrom.sizes')
 ```
 
@@ -25,7 +25,7 @@ Other required files for this example inlcuding the reference genome FASTA file 
 
 ```{code-block} bash
 wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/reference.genmoe.tar.gz # 292 MB
-wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/gencode.vM10.annotation.gtf # 765MB
+wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/gencode.vM10.annotation.gtf # 765 MB
 ```
 
 ## Step 2: Feature space construction
@@ -48,30 +48,14 @@ Use function `scRNA_CreateFeatureSets` to generate features. This function needs
 ```{code-block} python3
 INPUT_genome_annotation = "gencode.vM10.annotation.gtf" # Change the path
 outdirectory = "example/outputs"
+os.mkdir(outdirectory)
 ref_peakfile = "%s_peaks.bed" % filename
 ref_comple_peakfile = "%s_peaks.COMPLE.bed" % filename
 ```
 ### Generate feature sets 
 
 ```{code-block} python3
-####################### Generate Feature Set ######################## 
 Utility.scRNA_CreateFeatureSets(INPUT_bamfile=INPUT_bamfile, samtools_directory=samtools_directory, bedtools_directory=bedtools_directory, outdirectory=outdirectory, genome_annotation=INPUT_genome_annotation, genome_size_file=INPUT_genome_size_file, ref_peakfile=ref_peakfile, ref_comple_peakfile=ref_comple_peakfile)
-
-```
-
-```
-referenceGenome_name = "chr1"
-referenceGenome_dir = "~/Projects/scATAC_Simulator/package_development/package_data" 
-referenceGenome_file = "%s/%s.fa" % (referenceGenome_dir, referenceGenome_name)
-
-samtools_directory="/home/gayan/Tools/samtools/bin"
-macs3_directory="/home/gayan/.local/bin"
-bedtools_directory="/home/gayan/Tools/bedtools/bedtools2/bin"
-seqtk_directory = "~/Tools/seqtk/seqtk"
-bowtie2_directory = "/usr/bin"
-
-OUTPUT_cells_barcode_file = outdirectory + "/synthetic_cell_barcode.txt"
-
 ```
 
 ## Step 3: Count matrix construction
@@ -86,7 +70,6 @@ Based on the feature sets output in **Step 2**, scReasSim constructs the count m
 For the user specified `count_mat_filename`, scReadSim will generate a count matrix named `count_mat_filename`.txt to directory `outdirectory`.
 
 ```{code-block} python3
-
 count_mat_filename = "%s.countmatrix" % filename
 count_mat_comple_filename = "%s.COMPLE.countmatrix" % filename
 
@@ -94,14 +77,13 @@ count_mat_comple_filename = "%s.COMPLE.countmatrix" % filename
 Utility.bam2countmat(cells_barcode_file=INPUT_cells_barcode_file, bed_file=outdirectory + "/" + ref_peakfile, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, count_mat_filename=count_mat_filename)
 # Construct count matrix for background features
 Utility.bam2countmat(cells_barcode_file=INPUT_cells_barcode_file, bed_file=outdirectory + "/" + ref_comple_peakfile, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, count_mat_filename=count_mat_comple_filename)
-
 ```
 
 ## Step 4: Synthetic count matrix simulation
-The current version of scReadSim implement scDesign2 (reference) to generate synthetic count matrix based on the constructed count matrix from the input BAM file. Use function `GenerateSyntheticCount.scRNA_SampleSyntheticReads` to generate synthetic count matrix with following paramters
+The current version of scReadSim implement scDesign2 (reference) to generate synthetic count matrix based on the constructed count matrix from the input BAM file. Use function `GenerateSyntheticCount.scRNA_GenerateSyntheticCount` to generate synthetic count matrix with following paramters
 
 - `count_mat_filename`: Base name of the count matrix output by function bam2countmat().
-- `directory`: Path of the count matrix.
+- `directory`: Path to the count matrix.
 - `outdirectory`: Output directory of coordinate files.
 - `cluster_prestep`: Set `cluster_prestep=True` to perform a Louvain clustering before implementing scDesign2.
 
@@ -111,42 +93,86 @@ Given the input count matrix `count_mat_filename`.txt, scReadSim generates two f
 - **`count_mat_filename`.scDesign2Simulated.nReadRegionmargional.txt**: The per-feature summation of counts for synthetic count matrix.
 
 ```{code-block} python3
-
-GenerateSyntheticCount.scRNA_SampleSyntheticReads(count_mat_filename=count_mat_filename, directory=outdirectory, outdirectory=outdirectory, cluster_prestep=True)
-GenerateSyntheticCount.scRNA_SampleSyntheticReads(count_mat_filename=count_mat_comple_filename, directory=outdirectory, outdirectory=outdirectory, cluster_prestep=True)
-
+GenerateSyntheticCount.scRNA_GenerateSyntheticCount(count_mat_filename=count_mat_filename, directory=outdirectory, outdirectory=outdirectory, cluster_prestep=True)
+GenerateSyntheticCount.scRNA_GenerateSyntheticCount(count_mat_filename=count_mat_comple_filename, directory=outdirectory, outdirectory=outdirectory, cluster_prestep=True)
 ```
 
-## STEP4: Synthetic BAM file generation
-```{code-block} python3
-cellnumberfile = "%s/%s.scDesign2Simulated.nReadRegionmargional.txt" % (outdirectory, count_mat_filename)
-cellnumberfile_comple = "%s/%s.scDesign2Simulated.nReadRegionmargional.txt" % (outdirectory, count_mat_comple_filename)
-synthetic_countmat_file = "%s.scDesign2Simulated.%s" % (count_mat_filename, count_mat_format)
-synthetic_countmat_file_comple = "%s.scDesign2Simulated.%s" % (count_mat_comple_filename, count_mat_format)
+## Step 5: Synthetic BAM file generation
 
-######################## Generate Synthetic FASTQ file ######################## 
-coordinate_file = "BAMfile_coordinates.txt"
-coordinate_COMPLE_file = "BAMfile_COMPLE_coordinates.txt"
+### Generate synthetic reads in BED format
+Based on the synthetic count matrix, scReadSim generates synthetic reads by randomly sampling from the real BAM file input by users. First use function `scRNA_GenerateBAMCoord` to create the synthetic reads and output in BED file storing the coordinates information. Function `scRNA_GenerateBAMCoord` takes following input arguments:
+- `count_mat_filename`: The base name of output count matrix in bam2countmat.
+- `samtools_directory`: Path to software samtools.
+- `INPUT_bamfile`: Input BAM file for anlaysis.
+- `ref_peakfile`: Features bed file.
+- `directory_cellnumber`: Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.
+- `outdirectory`: Specify the output directory for synthetic reads bed file.
+- `BED_filename`: Specify the base name of output bed file.
+- `OUTPUT_cells_barcode_file`: Specify the file name storing the synthetic cell barcodes.
+- `read_len`: (Optional, default: '80') Specify the length of synthetic reads. Default value is 80 bp.
+- `jitter_size`: (Optional, default: '5') Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.
+
+This function will output a bed file `BED_filename`.bed storing the coordinates information of synthetic reads and its cell barcode file `OUTPUT_cells_barcode_file` in directory `outdirectory`.
+
+```{code-block} python3
+directory_cellnumber = outdirectory
+OUTPUT_cells_barcode_file = "synthetic_cell_barcode.txt"
 BED_filename_pre = "%s.syntheticBAM.CBincluded" % filename
 BED_COMPLE_filename_pre = "%s.syntheticBAM.COMPLE.CBincluded" % filename
 BED_filename_combined_pre = "%s.syntheticBAM.combined.CBincluded" % filename
 
-## Parsing bam files according to referenced features, modify the position according to true features
-scRNA_GenerateBAM.scRNA_GenerateSyntheticReads(coordinate_file, samtools_directory, INPUT_bamfile, outdirectory, outdirectory + "/" + ref_peakfile, cellnumberfile)
-scRNA_GenerateBAM.scRNA_GenerateSyntheticReads(coordinate_COMPLE_file, samtools_directory, INPUT_bamfile, outdirectory, outdirectory + "/" + ref_comple_peakfile, cellnumberfile_comple)
 ## Create synthetic read coordinates
-scRNA_GenerateBAM.scRNA_GenerateBAMCoord(outdirectory, coordinate_file, ref_peakfile, synthetic_countmat_file, cellnumberfile, BED_filename_pre, OUTPUT_cells_barcode_file)
-scRNA_GenerateBAM.scRNA_GenerateBAMCoord(outdirectory, coordinate_COMPLE_file, ref_comple_peakfile, synthetic_countmat_file_comple, cellnumberfile_comple, BED_COMPLE_filename_pre, OUTPUT_cells_barcode_file)
+scRNA_GenerateBAM.scRNA_GenerateBAMCoord(
+	count_mat_filename=count_mat_filename, samtools_directory=samtools_directory, INPUT_bamfile=INPUT_bamfile, ref_peakfile=outdirectory + "/" + ref_peakfile, directory_cellnumber=directory_cellnumber, outdirectory=outdirectory, BED_filename=BED_filename_pre, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file)
+scRNA_GenerateBAM.scRNA_GenerateBAMCoord(
+	count_mat_filename=count_mat_comple_filename, samtools_directory=samtools_directory, INPUT_bamfile=INPUT_bamfile, ref_peakfile=outdirectory + "/" + ref_comple_peakfile, directory_cellnumber=directory_cellnumber, outdirectory=outdirectory, BED_filename=BED_COMPLE_filename_pre, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file)
 
-## Combine peak and comple.peak 
+# Combine foreground and background bed file
 scRNA_GenerateBAM.scRNA_CombineBED(outdirectory, BED_filename_pre, BED_COMPLE_filename_pre, BED_filename_combined_pre)
 
+```
 
-## Convert bed files to FASTQ files
+### Convert BED files to FASTQ files
+Use function `scRNA_BED2FASTQ` to convert BED file to FASTQ file. This function takes the following arguments:
+- `bedtools_directory`: Path to software bedtools.
+- `seqtk_directory`: Path to software seqtk.
+- `referenceGenome_file`: Reference genome FASTA file that the synthteic reads should align.
+- `outdirectory`: Output directory of the synthteic bed file and its corresponding cell barcodes file.
+- `BED_filename_combined`: Base name of the combined bed file output by function `scRNA_CombineBED`.
+- `sort_FASTQ`: (Optional, default: True) Set `True` to sort the output FASTQ file.
+This function will output paired-end reads in FASTQ files named as `BED_filename_combined`.read1.bed2fa.fq, `BED_filename_combined`.read2.bed2fa.fq to directory `outdirectory`.
+
+```{code-block} python3
+referenceGenome_name = "chr1"
+referenceGenome_dir = "~/Projects/scATAC_Simulator/package_development/package_data" 
+referenceGenome_file = "%s/%s.fa" % (referenceGenome_dir, referenceGenome_name)
 output_BAM_pre = "%s.syntheticBAM.CBincluded" % filename
-scRNA_GenerateBAM.scRNA_BED2FASTQ(bedtools_directory, seqtk_directory, referenceGenome_file, outdirectory, BED_filename_combined_pre, sort_FASTQ = True)
 
-######################## Generate BAM file ######################## 
-scRNA_GenerateBAM.AlignSyntheticBam_Pair(bowtie2_directory, samtools_directory, outdirectory, referenceGenome_name, referenceGenome_dir, BED_filename_combined_pre, output_BAM_pre, doIndex = False)
+scRNA_GenerateBAM.scRNA_BED2FASTQ(bedtools_directory=bedtools_directory, seqtk_directory=seqtk_directory, referenceGenome_file=referenceGenome_file, outdirectory=outdirectory, BED_filename_combined=BED_filename_combined_pre, sort_FASTQ = True)
+```
+
+
+### Convert FASTQ files to BAM file
+Use function `AlignSyntheticBam_Pair` to align FASTQ files onto reference genome. It takes the following arguments:
+- `bowtie2_directory`: Path to software bowtie2.
+- `samtools_directory`: Path to software samtools.
+- `outdirectory`: Specify the output directory of the synthteic BAM file.
+- `referenceGenome_name`: Base name of the reference genome FASTA file. For example, you should input "chr1" for file "chr1.fa".
+- `referenceGenome_dir`: Path to the reference genome FASTA file.
+- `BED_filename_combined`: Base name of the combined bed file output by function `scRNA_CombineBED`.
+- `output_BAM_pre`: Specify the base name of the output BAM file.
+
+**Important** Note that before using function `AlignSyntheticBam_Pair`, the reference gemome FASTA file should be indexed by bowtie2 through `bowtie2-build ${referenceGenome_name}.fa referenceGenome_name` command and make sure the output index files are within the same directory to `referenceGenome_name`.fa.
+
+```{code-block} python3
+scRNA_GenerateBAM.AlignSyntheticBam_Pair(bowtie2_directory=bowtie2_directory, samtools_directory=samtools_directory, outdirectory=outdirectory, referenceGenome_name=referenceGenome_name, referenceGenome_dir=referenceGenome_dir, BED_filename_combined=BED_filename_combined_pre, output_BAM_pre=output_BAM_pre)
 
 ```
+
+
+
+
+
+
+
+
