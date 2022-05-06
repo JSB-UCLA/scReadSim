@@ -1,4 +1,4 @@
-# scReadSim <img src="./docs/source/_static/logo_scReadSim.png?raw=true" align="right" width="250"/>
+# scReadSim <img src="./docs/source/_static/logo_scReadSim.png?raw=true" align="right" width="150"/>
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A module for single cell sequencing read simulator.
