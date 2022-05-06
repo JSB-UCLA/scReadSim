@@ -32,10 +32,17 @@ or::
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Overview
 
    API
-   Tutorials
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Tutorials
+
+   scReadSim on 10X scATAC-seq<scATACseq_NoInput_10X>
+   scReadSim on 10X scRNA-seq<scRNAseq_10X>
+   scReadSim on 10X scATAC-seq with user-input chromatin regions<scATACseq_INPUT_10X>
 
 

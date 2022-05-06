@@ -55,3 +55,5 @@ To be done.
 ## License
 This pacakge is licensed under the terms
 of the **MIT License**.
+
+<img src="./docs/source/_static/logo_scReadSim.png?raw=true" width="450">

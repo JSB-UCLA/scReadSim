@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scReadSim on 10X scRNA-seq &mdash; scReadSim  documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" /><link rel="shortcut icon" href="_static/Icon_scReadSim.svg"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="scReadSim on 10X scATAC-seq with user-input chromatin regions" href="scATACseq_INPUT_10X.html" />
+    <link rel="prev" title="scReadSim on 10X scATAC-seq" href="scATACseq_NoInput_10X.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html"><img src="_static/logo_scReadSim.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="API.html">API</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="scATACseq_NoInput_10X.html">scReadSim on 10X scATAC-seq</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">scReadSim on 10X scRNA-seq</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scATACseq_INPUT_10X.html">scReadSim on 10X scATAC-seq with user-input chromatin regions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">scReadSim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>scReadSim on 10X scRNA-seq</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/scRNAseq_10X.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<span class="target" id="module-scReadSim"></span><section id="screadsim-on-10x-scrna-seq">
+<h1>scReadSim on 10X scRNA-seq<a class="headerlink" href="#screadsim-on-10x-scrna-seq" title="Permalink to this headline">¶</a></h1>
+<p>Import modules.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">scReadSim.Utility</span> <span class="k">as</span> <span class="nn">Utility</span>
+<span class="kn">import</span> <span class="nn">scReadSim.GenerateSyntheticCount</span> <span class="k">as</span> <span class="nn">GenerateSyntheticCount</span>
+<span class="kn">import</span> <span class="nn">scReadSim.scRNA_GenerateBAM</span> <span class="k">as</span> <span class="nn">scRNA_GenerateBAM</span>
+<span class="kn">import</span> <span class="nn">pkg_resources</span>
+</pre></div>
+</div>
+<section id="step-1-download-test-sample">
+<h2>Step 1: Download test sample.<a class="headerlink" href="#step-1-download-test-sample" title="Permalink to this headline">¶</a></h2>
+<p>The example deploys scReadSim on the 10X single cell RNA-seq (give url to original website). The demo BAM file and its corresponding cell barcode file could be accessed through the following chunk. This BAM file uses mm10 as reference genome, the required chromosome size file is also embedded within the package.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">INPUT_cells_barcode_file</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;scReadSim&quot;</span><span class="p">,</span> <span class="s1">&#39;data/barcodes.tsv&#39;</span><span class="p">)</span>
+<span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;10X_RNA_chr1_3073253_4526737&quot;</span>
+<span class="n">INPUT_bamfile</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;scReadSim&quot;</span><span class="p">,</span> <span class="s1">&#39;data/</span><span class="si">%s</span><span class="s1">.bam&#39;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+<span class="n">INPUT_genome_size_file</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;scReadSim&quot;</span><span class="p">,</span> <span class="s1">&#39;data/mm10.chrom.sizes&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Other required files for this example inlcuding the reference genome FASTA file and annotation gtf file are downloadable through the following chunk.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/reference.genmoe.tar.gz <span class="c1"># 292 MB</span>
+wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/gencode.vM10.annotation.gtf <span class="c1"># 765 MB</span>
+</pre></div>
+</div>
+</section>
+<section id="step-2-feature-space-construction">
+<h2>Step 2: Feature space construction<a class="headerlink" href="#step-2-feature-space-construction" title="Permalink to this headline">¶</a></h2>
+<p>For scRNA-seq, scReadSim autamatically uses gene transcript regions as the feature space. Specifically, scReasSim takes gene regions as foreground features and the copmlementary regions along the reference genome as the background features.</p>
+<p>Use function <code class="docutils literal notranslate"><span class="pre">scRNA_CreateFeatureSets</span></code> to generate features. This function needs user to specify</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">INPUT_bamfile</span></code>: Input BAM file for anlaysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">samtools_directory</span></code>: Path to software <em>samtools</em>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bedtools_directory</span></code>: Path to software <em>bedtools</em>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">outdirectory</span></code>: Specify the output directory of the features files.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">genome_annotation</span></code>: Genome annotation file for the reference genome that the input BAM aligned on or the synthetic BAM should align on.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">genome_size_file</span></code>: Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicating the size.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ref_peakfile</span></code>: Specify the name of output foreground feature bed file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ref_comple_peakfile</span></code>: Specify the name of output background feature bed file.</p></li>
+</ul>
+<section id="specify-input-parameters">
+<h3>Specify input parameters<a class="headerlink" href="#specify-input-parameters" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">INPUT_genome_annotation</span> <span class="o">=</span> <span class="s2">&quot;gencode.vM10.annotation.gtf&quot;</span> <span class="c1"># Change the path</span>
+<span class="n">outdirectory</span> <span class="o">=</span> <span class="s2">&quot;example/outputs&quot;</span>
+<span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">outdirectory</span><span class="p">)</span>
+<span class="n">ref_peakfile</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_peaks.bed&quot;</span> <span class="o">%</span> <span class="n">filename</span>
+<span class="n">ref_comple_peakfile</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_peaks.COMPLE.bed&quot;</span> <span class="o">%</span> <span class="n">filename</span>
+</pre></div>
+</div>
+</section>
+<section id="generate-feature-sets">
+<h3>Generate feature sets<a class="headerlink" href="#generate-feature-sets" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">Utility</span><span class="o">.</span><span class="n">scRNA_CreateFeatureSets</span><span class="p">(</span><span class="n">INPUT_bamfile</span><span class="o">=</span><span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">samtools_directory</span><span class="o">=</span><span class="n">samtools_directory</span><span class="p">,</span> <span class="n">bedtools_directory</span><span class="o">=</span><span class="n">bedtools_directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="o">=</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">genome_annotation</span><span class="o">=</span><span class="n">INPUT_genome_annotation</span><span class="p">,</span> <span class="n">genome_size_file</span><span class="o">=</span><span class="n">INPUT_genome_size_file</span><span class="p">,</span> <span class="n">ref_peakfile</span><span class="o">=</span><span class="n">ref_peakfile</span><span class="p">,</span> <span class="n">ref_comple_peakfile</span><span class="o">=</span><span class="n">ref_comple_peakfile</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="step-3-count-matrix-construction">
+<h2>Step 3: Count matrix construction<a class="headerlink" href="#step-3-count-matrix-construction" title="Permalink to this headline">¶</a></h2>
+<p>Based on the feature sets output in <strong>Step 2</strong>, scReasSim constructs the count matrices for both foreground feautures and background features through function <code class="docutils literal notranslate"><span class="pre">bam2countmat</span></code>. This function needs user to specify</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cells_barcode_file</span></code>: Cell barcode file corresponding to the input BAM file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bed_file</span></code>: Features bed file to generate the count matrix.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">INPUT_bamfile</span></code>: Input BAM file for anlaysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">outdirectory</span></code>: Specify the output directory of the count matrix file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">count_mat_filename</span></code>: Specify the base name of output count matrix.</p></li>
+</ul>
+<p>For the user specified <code class="docutils literal notranslate"><span class="pre">count_mat_filename</span></code>, scReadSim will generate a count matrix named <code class="docutils literal notranslate"><span class="pre">count_mat_filename</span></code>.txt to directory <code class="docutils literal notranslate"><span class="pre">outdirectory</span></code>.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">count_mat_filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.countmatrix&quot;</span> <span class="o">%</span> <span class="n">filename</span>
+<span class="n">count_mat_comple_filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.COMPLE.countmatrix&quot;</span> <span class="o">%</span> <span class="n">filename</span>
+
+<span class="c1"># Construct count matrix for foregroud features</span>
+<span class="n">Utility</span><span class="o">.</span><span class="n">bam2countmat</span><span class="p">(</span><span class="n">cells_barcode_file</span><span class="o">=</span><span class="n">INPUT_cells_barcode_file</span><span class="p">,</span> <span class="n">bed_file</span><span class="o">=</span><span class="n">outdirectory</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">ref_peakfile</span><span class="p">,</span> <span class="n">INPUT_bamfile</span><span class="o">=</span><span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">outdirectory</span><span class="o">=</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">count_mat_filename</span><span class="o">=</span><span class="n">count_mat_filename</span><span class="p">)</span>
+<span class="c1"># Construct count matrix for background features</span>
+<span class="n">Utility</span><span class="o">.</span><span class="n">bam2countmat</span><span class="p">(</span><span class="n">cells_barcode_file</span><span class="o">=</span><span class="n">INPUT_cells_barcode_file</span><span class="p">,</span> <span class="n">bed_file</span><span class="o">=</span><span class="n">outdirectory</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">ref_comple_peakfile</span><span class="p">,</span> <span class="n">INPUT_bamfile</span><span class="o">=</span><span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">outdirectory</span><span class="o">=</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">count_mat_filename</span><span class="o">=</span><span class="n">count_mat_comple_filename</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="step-4-synthetic-count-matrix-simulation">
+<h2>Step 4: Synthetic count matrix simulation<a class="headerlink" href="#step-4-synthetic-count-matrix-simulation" title="Permalink to this headline">¶</a></h2>
+<p>The current version of scReadSim implement scDesign2 (reference) to generate synthetic count matrix based on the constructed count matrix from the input BAM file. Use function <code class="docutils literal notranslate"><span class="pre">GenerateSyntheticCount.scRNA_GenerateSyntheticCount</span></code> to generate synthetic count matrix with following paramters</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">count_mat_filename</span></code>: Base name of the count matrix output by function bam2countmat().</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">directory</span></code>: Path to the count matrix.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">outdirectory</span></code>: Output directory of coordinate files.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cluster_prestep</span></code>: Set <code class="docutils literal notranslate"><span class="pre">cluster_prestep=True</span></code> to perform a Louvain clustering before implementing scDesign2.</p></li>
+</ul>
+<p>Given the input count matrix <code class="docutils literal notranslate"><span class="pre">count_mat_filename</span></code>.txt, scReadSim generates two files to <code class="docutils literal notranslate"><span class="pre">outdirectory</span></code> for following analysis:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">count_mat_filename</span></code>.scDesign2Simulated.txt</strong>: Synthetic count matrix.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">count_mat_filename</span></code>.scDesign2Simulated.nReadRegionmargional.txt</strong>: The per-feature summation of counts for synthetic count matrix.</p></li>
+</ul>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">GenerateSyntheticCount</span><span class="o">.</span><span class="n">scRNA_GenerateSyntheticCount</span><span class="p">(</span><span class="n">count_mat_filename</span><span class="o">=</span><span class="n">count_mat_filename</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="o">=</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">cluster_prestep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">GenerateSyntheticCount</span><span class="o">.</span><span class="n">scRNA_GenerateSyntheticCount</span><span class="p">(</span><span class="n">count_mat_filename</span><span class="o">=</span><span class="n">count_mat_comple_filename</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="o">=</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">cluster_prestep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="step-5-synthetic-bam-file-generation">
+<h2>Step 5: Synthetic BAM file generation<a class="headerlink" href="#step-5-synthetic-bam-file-generation" title="Permalink to this headline">¶</a></h2>
+<section id="generate-synthetic-reads-in-bed-format">
+<h3>Generate synthetic reads in BED format<a class="headerlink" href="#generate-synthetic-reads-in-bed-format" title="Permalink to this headline">¶</a></h3>
+<p>Based on the synthetic count matrix, scReadSim generates synthetic reads by randomly sampling from the real BAM file input by users. First use function <code class="docutils literal notranslate"><span class="pre">scRNA_GenerateBAMCoord</span></code> to create the synthetic reads and output in BED file storing the coordinates information. Function <code class="docutils literal notranslate"><span class="pre">scRNA_GenerateBAMCoord</span></code> takes following input arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">count_mat_filename</span></code>: The base name of output count matrix in bam2countmat.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">samtools_directory</span></code>: Path to software samtools.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">INPUT_bamfile</span></code>: Input BAM file for anlaysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ref_peakfile</span></code>: Features bed file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">directory_cellnumber</span></code>: Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">outdirectory</span></code>: Specify the output directory for synthetic reads bed file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BED_filename</span></code>: Specify the base name of output bed file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OUTPUT_cells_barcode_file</span></code>: Specify the file name storing the synthetic cell barcodes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">read_len</span></code>: (Optional, default: ‘80’) Specify the length of synthetic reads. Default value is 80 bp.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">jitter_size</span></code>: (Optional, default: ‘5’) Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.</p></li>
+</ul>
+<p>This function will output a bed file <code class="docutils literal notranslate"><span class="pre">BED_filename</span></code>.bed storing the coordinates information of synthetic reads and its cell barcode file <code class="docutils literal notranslate"><span class="pre">OUTPUT_cells_barcode_file</span></code> in directory <code class="docutils literal notranslate"><span class="pre">outdirectory</span></code>.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">directory_cellnumber</span> <span class="o">=</span> <span class="n">outdirectory</span>
+<span class="n">OUTPUT_cells_barcode_file</span> <span class="o">=</span> <span class="s2">&quot;synthetic_cell_barcode.txt&quot;</span>
+<span class="n">BED_filename_pre</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.syntheticBAM.CBincluded&quot;</span> <span class="o">%</span> <span class="n">filename</span>
+<span class="n">BED_COMPLE_filename_pre</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.syntheticBAM.COMPLE.CBincluded&quot;</span> <span class="o">%</span> <span class="n">filename</span>
+<span class="n">BED_filename_combined_pre</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.syntheticBAM.combined.CBincluded&quot;</span> <span class="o">%</span> <span class="n">filename</span>
+
+<span class="c1">## Create synthetic read coordinates</span>
+<span class="n">scRNA_GenerateBAM</span><span class="o">.</span><span class="n">scRNA_GenerateBAMCoord</span><span class="p">(</span>
+        <span class="n">count_mat_filename</span><span class="o">=</span><span class="n">count_mat_filename</span><span class="p">,</span> <span class="n">samtools_directory</span><span class="o">=</span><span class="n">samtools_directory</span><span class="p">,</span> <span class="n">INPUT_bamfile</span><span class="o">=</span><span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">ref_peakfile</span><span class="o">=</span><span class="n">outdirectory</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">ref_peakfile</span><span class="p">,</span> <span class="n">directory_cellnumber</span><span class="o">=</span><span class="n">directory_cellnumber</span><span class="p">,</span> <span class="n">outdirectory</span><span class="o">=</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename</span><span class="o">=</span><span class="n">BED_filename_pre</span><span class="p">,</span> <span class="n">OUTPUT_cells_barcode_file</span><span class="o">=</span><span class="n">OUTPUT_cells_barcode_file</span><span class="p">)</span>
+<span class="n">scRNA_GenerateBAM</span><span class="o">.</span><span class="n">scRNA_GenerateBAMCoord</span><span class="p">(</span>
+        <span class="n">count_mat_filename</span><span class="o">=</span><span class="n">count_mat_comple_filename</span><span class="p">,</span> <span class="n">samtools_directory</span><span class="o">=</span><span class="n">samtools_directory</span><span class="p">,</span> <span class="n">INPUT_bamfile</span><span class="o">=</span><span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">ref_peakfile</span><span class="o">=</span><span class="n">outdirectory</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">ref_comple_peakfile</span><span class="p">,</span> <span class="n">directory_cellnumber</span><span class="o">=</span><span class="n">directory_cellnumber</span><span class="p">,</span> <span class="n">outdirectory</span><span class="o">=</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename</span><span class="o">=</span><span class="n">BED_COMPLE_filename_pre</span><span class="p">,</span> <span class="n">OUTPUT_cells_barcode_file</span><span class="o">=</span><span class="n">OUTPUT_cells_barcode_file</span><span class="p">)</span>
+
+<span class="c1"># Combine foreground and background bed file</span>
+<span class="n">scRNA_GenerateBAM</span><span class="o">.</span><span class="n">scRNA_CombineBED</span><span class="p">(</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_pre</span><span class="p">,</span> <span class="n">BED_COMPLE_filename_pre</span><span class="p">,</span> <span class="n">BED_filename_combined_pre</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="convert-bed-files-to-fastq-files">
+<h3>Convert BED files to FASTQ files<a class="headerlink" href="#convert-bed-files-to-fastq-files" title="Permalink to this headline">¶</a></h3>
+<p>Use function <code class="docutils literal notranslate"><span class="pre">scRNA_BED2FASTQ</span></code> to convert BED file to FASTQ file. This function takes the following arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">bedtools_directory</span></code>: Path to software bedtools.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">seqtk_directory</span></code>: Path to software seqtk.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">referenceGenome_file</span></code>: Reference genome FASTA file that the synthteic reads should align.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">outdirectory</span></code>: Output directory of the synthteic bed file and its corresponding cell barcodes file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BED_filename_combined</span></code>: Base name of the combined bed file output by function <code class="docutils literal notranslate"><span class="pre">scRNA_CombineBED</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">synthetic_fastq_prename</span></code>: Specify the base name of the output FASTQ files.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sort_FASTQ</span></code>: (Optional, default: True) Set <code class="docutils literal notranslate"><span class="pre">True</span></code> to sort the output FASTQ file.
+This function will output paired-end reads in FASTQ files named as <code class="docutils literal notranslate"><span class="pre">BED_filename_combined</span></code>.read1.bed2fa.fq, <code class="docutils literal notranslate"><span class="pre">BED_filename_combined</span></code>.read2.bed2fa.fq to directory <code class="docutils literal notranslate"><span class="pre">outdirectory</span></code>.</p></li>
+</ul>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">referenceGenome_name</span> <span class="o">=</span> <span class="s2">&quot;chr1&quot;</span>
+<span class="n">referenceGenome_dir</span> <span class="o">=</span> <span class="s2">&quot;~/Projects/scATAC_Simulator/package_development/package_data&quot;</span>
+<span class="n">referenceGenome_file</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">.fa&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">referenceGenome_dir</span><span class="p">,</span> <span class="n">referenceGenome_name</span><span class="p">)</span>
+<span class="n">synthetic_fastq_prename</span> <span class="o">=</span> <span class="n">BED_filename_combined_pre</span>
+<span class="n">output_BAM_pre</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.syntheticBAM.CBincluded&quot;</span> <span class="o">%</span> <span class="n">filename</span>
+
+<span class="n">scRNA_GenerateBAM</span><span class="o">.</span><span class="n">scRNA_BED2FASTQ</span><span class="p">(</span><span class="n">bedtools_directory</span><span class="o">=</span><span class="n">bedtools_directory</span><span class="p">,</span> <span class="n">seqtk_directory</span><span class="o">=</span><span class="n">seqtk_directory</span><span class="p">,</span> <span class="n">referenceGenome_file</span><span class="o">=</span><span class="n">referenceGenome_file</span><span class="p">,</span> <span class="n">outdirectory</span><span class="o">=</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">BED_filename_combined</span><span class="o">=</span><span class="n">BED_filename_combined_pre</span><span class="p">,</span> <span class="n">synthetic_fastq_prename</span><span class="o">=</span><span class="n">synthetic_fastq_prename</span><span class="p">,</span> <span class="n">sort_FASTQ</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="convert-fastq-files-to-bam-file">
+<h3>Convert FASTQ files to BAM file<a class="headerlink" href="#convert-fastq-files-to-bam-file" title="Permalink to this headline">¶</a></h3>
+<p>Use function <code class="docutils literal notranslate"><span class="pre">AlignSyntheticBam_Pair</span></code> to align FASTQ files onto reference genome. It takes the following arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">bowtie2_directory</span></code>: Path to software bowtie2.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">samtools_directory</span></code>: Path to software samtools.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">outdirectory</span></code>: Specify the output directory of the synthteic BAM file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">referenceGenome_name</span></code>: Base name of the reference genome FASTA file. For example, you should input “chr1” for file “chr1.fa”.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">referenceGenome_dir</span></code>: Path to the reference genome FASTA file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">synthetic_fastq_prename</span></code>: Base name of the synthetic FASTQ files output by function <code class="docutils literal notranslate"><span class="pre">scRNA_BED2FASTQ</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_BAM_pre</span></code>: Specify the base name of the output BAM file.</p></li>
+</ul>
+<p><strong>Important</strong> Note that before using function <code class="docutils literal notranslate"><span class="pre">AlignSyntheticBam_Pair</span></code>, the reference gemome FASTA file should be indexed by bowtie2 through <code class="docutils literal notranslate"><span class="pre">bowtie2-build</span> <span class="pre">${referenceGenome_name}.fa</span> <span class="pre">referenceGenome_name</span></code> command and make sure the output index files are within the same directory to <code class="docutils literal notranslate"><span class="pre">referenceGenome_name</span></code>.fa.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">scRNA_GenerateBAM</span><span class="o">.</span><span class="n">AlignSyntheticBam_Pair</span><span class="p">(</span><span class="n">bowtie2_directory</span><span class="o">=</span><span class="n">bowtie2_directory</span><span class="p">,</span> <span class="n">samtools_directory</span><span class="o">=</span><span class="n">samtools_directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="o">=</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">referenceGenome_name</span><span class="o">=</span><span class="n">referenceGenome_name</span><span class="p">,</span> <span class="n">referenceGenome_dir</span><span class="o">=</span><span class="n">referenceGenome_dir</span><span class="p">,</span> <span class="n">synthetic_fastq_prename</span><span class="o">=</span><span class="n">synthetic_fastq_prename</span><span class="p">,</span> <span class="n">output_BAM_pre</span><span class="o">=</span><span class="n">output_BAM_pre</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="introduce-error-to-synthetic-data">
+<h3>Introduce Error to synthetic data<a class="headerlink" href="#introduce-error-to-synthetic-data" title="Permalink to this headline">¶</a></h3>
+<p>Use function <code class="docutils literal notranslate"><span class="pre">scRNA_ErrorBase</span></code> to introduce random error to synthetic reads. It takes the following arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">fgbio_jarfile</span></code>: Path to software fgbio jar script.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">INPUT_bamfile</span></code>: Input BAM file for anlaysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">referenceGenome_file</span></code>: Reference genome FASTA file that the synthteic reads should align.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">outdirectory</span></code>: Specify the output directory of the synthteic FASTQ file with random errors.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">synthetic_fastq_prename</span></code>: Base name of the synthetic FASTQ files output by function <code class="docutils literal notranslate"><span class="pre">scRNA_BED2FASTQ</span></code>.
+This function will output synthetic reads with random errors in FASTQ files named as <code class="docutils literal notranslate"><span class="pre">synthetic_fastq_prename</span></code>.ErrorIncluded.read1.bed2fa.fq, <code class="docutils literal notranslate"><span class="pre">synthetic_fastq_prename</span></code>.ErrorIncluded.read2.bed2fa.fq to directory <code class="docutils literal notranslate"><span class="pre">outdirectory</span></code>.</p></li>
+</ul>
+<p><strong>Important</strong> Note that before using function <code class="docutils literal notranslate"><span class="pre">scRNA_ErrorBase</span></code>, please create the reference dictionary with function <code class="docutils literal notranslate"><span class="pre">CreateSequenceDictionary</span></code> using software Picard and make sure the output .dict files are within the same directory to <code class="docutils literal notranslate"><span class="pre">referenceGenome_name</span></code>.fa.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">scRNA_GenerateBAM</span><span class="o">.</span><span class="n">scRNA_ErrorBase</span><span class="p">(</span><span class="n">fgbio_jarfile</span><span class="o">=</span><span class="n">fgbio_jarfile</span><span class="p">,</span> <span class="n">INPUT_bamfile</span><span class="o">=</span><span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">referenceGenome_file</span><span class="o">=</span><span class="n">referenceGenome_file</span><span class="p">,</span> <span class="n">outdirectory</span><span class="o">=</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">synthetic_fastq_prename</span><span class="o">=</span><span class="n">synthetic_fastq_prename</span><span class="p">)</span>
+<span class="n">scRNA_GenerateBAM</span><span class="o">.</span><span class="n">AlignSyntheticBam_Pair</span><span class="p">(</span><span class="n">bowtie2_directory</span><span class="o">=</span><span class="n">bowtie2_directory</span><span class="p">,</span> <span class="n">samtools_directory</span><span class="o">=</span><span class="n">samtools_directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="o">=</span><span class="n">outdirectory</span><span class="p">,</span> <span class="n">referenceGenome_name</span><span class="o">=</span><span class="n">referenceGenome_name</span><span class="p">,</span> <span class="n">referenceGenome_dir</span><span class="o">=</span><span class="n">referenceGenome_dir</span><span class="p">,</span> <span class="n">synthetic_fastq_prename</span><span class="o">=</span><span class="n">synthetic_fastq_prename</span> <span class="o">+</span> <span class="s2">&quot;.ErrorIncluded&quot;</span> <span class="p">,</span> <span class="n">output_BAM_pre</span><span class="o">=</span><span class="n">output_BAM_pre</span><span class="o">+</span> <span class="s2">&quot;.ErrorIncluded&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="scATACseq_NoInput_10X.html" class="btn btn-neutral float-left" title="scReadSim on 10X scATAC-seq" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="scATACseq_INPUT_10X.html" class="btn btn-neutral float-right" title="scReadSim on 10X scATAC-seq with user-input chromatin regions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Guanao Yan.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

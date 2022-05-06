@@ -1,0 +1,7 @@
+.. automodule:: scReadSim
+
+Tutorials
+=========
+
+.. include:: tutorials/scRNAseq_10X.md
+   :parser: myst_parser.sphinx_

@@ -5,7 +5,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>scReadSim.scATAC_GenerateBAM.cellbarode_generator &mdash; scReadSim  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" /><link rel="shortcut icon" href="../_static/Icon_scReadSim.svg"/>
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -26,7 +26,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> scReadSim
+            <a href="../index.html"><img src="../_static/logo_scReadSim.svg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -38,27 +38,13 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../API.html">API</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../API.html#utility">Utility</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../API.html#scatac-generatebam">scATAC_GenerateBAM</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="scReadSim.scATAC_GenerateBAM.flatten.html">scReadSim.scATAC_GenerateBAM.flatten</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">scReadSim.scATAC_GenerateBAM.cellbarode_generator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="scReadSim.scATAC_GenerateBAM.scATAC_INPUT_PerTruePeakEdition.html">scReadSim.scATAC_GenerateBAM.scATAC_INPUT_PerTruePeakEdition</a></li>
-<li class="toctree-l3"><a class="reference internal" href="scReadSim.scATAC_GenerateBAM.scATAC_PerTruePeakEdition.html">scReadSim.scATAC_GenerateBAM.scATAC_PerTruePeakEdition</a></li>
-<li class="toctree-l3"><a class="reference internal" href="scReadSim.scATAC_GenerateBAM.scATAC_SampleSyntheticReads.html">scReadSim.scATAC_GenerateBAM.scATAC_SampleSyntheticReads</a></li>
-<li class="toctree-l3"><a class="reference internal" href="scReadSim.scATAC_GenerateBAM.scATAC_GenerateBAMCoord.html">scReadSim.scATAC_GenerateBAM.scATAC_GenerateBAMCoord</a></li>
-<li class="toctree-l3"><a class="reference internal" href="scReadSim.scATAC_GenerateBAM.scATAC_SampleSyntheticReads_INPUT.html">scReadSim.scATAC_GenerateBAM.scATAC_SampleSyntheticReads_INPUT</a></li>
-<li class="toctree-l3"><a class="reference internal" href="scReadSim.scATAC_GenerateBAM.scATAC_GenerateBAMCoord_INPUT.html">scReadSim.scATAC_GenerateBAM.scATAC_GenerateBAMCoord_INPUT</a></li>
-<li class="toctree-l3"><a class="reference internal" href="scReadSim.scATAC_GenerateBAM.scATAC_CombineBED.html">scReadSim.scATAC_GenerateBAM.scATAC_CombineBED</a></li>
-<li class="toctree-l3"><a class="reference internal" href="scReadSim.scATAC_GenerateBAM.scATAC_BED2FASTQ.html">scReadSim.scATAC_GenerateBAM.scATAC_BED2FASTQ</a></li>
-<li class="toctree-l3"><a class="reference internal" href="scReadSim.scATAC_GenerateBAM.AlignSyntheticBam_Pair.html">scReadSim.scATAC_GenerateBAM.AlignSyntheticBam_Pair</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../API.html">API</a></li>
 </ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../API.html#scrna-generatebam">scRNA_GenerateBAM</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../API.html#generatesyntheticcount">GenerateSyntheticCount</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../Tutorials.html">Tutorials</a></li>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../scATACseq_NoInput_10X.html">scReadSim on 10X scATAC-seq</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scRNAseq_10X.html">scReadSim on 10X scRNA-seq</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scATACseq_INPUT_10X.html">scReadSim on 10X scATAC-seq with user-input chromatin regions</a></li>
 </ul>
 
         </div>
@@ -112,26 +98,6 @@
 </style>
 <section id="screadsim-scatac-generatebam-cellbarode-generator">
 <h1>scReadSim.scATAC_GenerateBAM.cellbarode_generator<a class="headerlink" href="#screadsim-scatac-generatebam-cellbarode-generator" title="Permalink to this headline">¶</a></h1>
-<dl class="py function">
-<dt id="scReadSim.scATAC_GenerateBAM.cellbarode_generator">
-<code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">cellbarode_generator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scReadSim/scATAC_GenerateBAM.html#cellbarode_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.cellbarode_generator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate random cellbarcode.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>length</strong> (<cite>int</cite>) – Number of cells.</p></li>
-<li><p><strong>size</strong> (<cite>int</cite> (default: ‘10’)) – Size of cell barcode. Default value is 10 bp.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>cb_list</strong> – List of randomly generated cell barcodes.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><cite>list</cite></p>
-</dd>
-</dl>
-</dd></dl>
-
 </section>
 
 
@@ -148,9 +114,6 @@
     <p>&#169; Copyright 2022, Guanao Yan.</p>
   </div>
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
    
 
 </footer>

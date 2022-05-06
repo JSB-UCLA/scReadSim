@@ -23,7 +23,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> scReadSim
+            <a href="../../index.html"><img src="../../_static/logo_scReadSim.svg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -89,7 +89,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="cellbarode_generator"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.scATAC_GenerateBAM.cellbarode_generator">[docs]</a><span class="k">def</span> <span class="nf">cellbarode_generator</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<div class="viewcode-block" id="cellbarcode_generator"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.scATAC_GenerateBAM.cellbarcode_generator">[docs]</a><span class="k">def</span> <span class="nf">cellbarcode_generator</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;Generate random cellbarcode.</span>
 
 <span class="sd">    Parameters</span>
@@ -121,7 +121,7 @@
 <span class="sd">	read_lines: `pandas.dataframe`</span>
 <span class="sd">		Coordinates of synthetic reads sampled from the input BAM file.</span>
 <span class="sd">	random_cellbarcode_list: `list`</span>
-<span class="sd">		List of cell barcodes randomly generated using cellbarode_generator().</span>
+<span class="sd">		List of cell barcodes randomly generated using cellbarcode_generator().</span>
 <span class="sd">	read_len: `int` (default: &#39;50&#39;)</span>
 <span class="sd">		Specify the length of synthetic reads. Default value is 50 bp.</span>
 <span class="sd">	jitter_size: `int` (default: &#39;50&#39;)</span>
@@ -178,7 +178,7 @@
 <span class="sd">	read_lines: `pandas.dataframe`</span>
 <span class="sd">		Coordinates of synthetic reads sampled from the input BAM file.</span>
 <span class="sd">	random_cellbarcode_list: `list`</span>
-<span class="sd">    	List of cell barcodes randomly generated using cellbarode_generator().</span>
+<span class="sd">    	List of cell barcodes randomly generated using cellbarcode_generator().</span>
 <span class="sd">	read_len: `int` (default: &#39;50&#39;)</span>
 <span class="sd">		Specify the length of synthetic reads. Default value is 50 bp.</span>
 <span class="sd">	jitter_size: `int` (default: &#39;5&#39;)</span>
@@ -281,7 +281,7 @@
 <span class="c1"># 	count_mat = pd.read_csv(count_mat_file, header=0, delimiter=&quot;\t&quot;).to_numpy()</span>
 <span class="c1"># 	marginal_cell_number = pd.read_csv(cellnumberfile, header=None, delimiter=&quot;\t&quot;).to_numpy()</span>
 <span class="c1"># 	n_cell = np.shape(count_mat)[1]</span>
-<span class="c1"># 	random_cellbarcode_list = cellbarode_generator(n_cell, size=16)</span>
+<span class="c1"># 	random_cellbarcode_list = cellbarcode_generator(n_cell, size=16)</span>
 <span class="c1"># 	read1_bedfile=&quot;%s.read1.bed&quot; % BED_filename</span>
 <span class="c1"># 	read2_bedfile=&quot;%s.read2.bed&quot; % BED_filename</span>
 <span class="c1"># 	start = time.time()</span>
@@ -352,7 +352,7 @@
 	<span class="n">count_mat</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">directory_cellnumber</span><span class="p">,</span> <span class="n">count_mat_file</span><span class="p">),</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
 	<span class="n">marginal_cell_number</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">cellnumberfile</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
 	<span class="n">n_cell</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">count_mat</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-	<span class="n">random_cellbarcode_list</span> <span class="o">=</span> <span class="n">cellbarode_generator</span><span class="p">(</span><span class="n">n_cell</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+	<span class="n">random_cellbarcode_list</span> <span class="o">=</span> <span class="n">cellbarcode_generator</span><span class="p">(</span><span class="n">n_cell</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 	<span class="n">read1_bedfile</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.read1.bed&quot;</span> <span class="o">%</span> <span class="n">BED_filename</span>
 	<span class="n">read2_bedfile</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.read2.bed&quot;</span> <span class="o">%</span> <span class="n">BED_filename</span>
 	<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -437,7 +437,7 @@
 <span class="c1"># 	count_mat = pd.read_csv(count_mat_file, header=0, delimiter=&quot;\t&quot;).to_numpy()</span>
 <span class="c1"># 	marginal_cell_number = pd.read_csv(cellnumberfile, header=None, delimiter=&quot;\t&quot;).to_numpy()</span>
 <span class="c1"># 	n_cell = np.shape(count_mat)[1]</span>
-<span class="c1"># 	random_cellbarcode_list = cellbarode_generator(n_cell, size=16)</span>
+<span class="c1"># 	random_cellbarcode_list = cellbarcode_generator(n_cell, size=16)</span>
 <span class="c1"># 	read1_bedfile=&quot;%s.read1.bed&quot; % BED_filename</span>
 <span class="c1"># 	read2_bedfile=&quot;%s.read2.bed&quot; % BED_filename</span>
 <span class="c1"># 	start = time.time()</span>
@@ -510,7 +510,7 @@
 	<span class="n">count_mat</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">outdirectory</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">count_mat_file</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
 	<span class="n">marginal_cell_number</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">cellnumberfile</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
 	<span class="n">n_cell</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">count_mat</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-	<span class="n">random_cellbarcode_list</span> <span class="o">=</span> <span class="n">cellbarode_generator</span><span class="p">(</span><span class="n">n_cell</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+	<span class="n">random_cellbarcode_list</span> <span class="o">=</span> <span class="n">cellbarcode_generator</span><span class="p">(</span><span class="n">n_cell</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 	<span class="n">read1_bedfile</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.read1.bed&quot;</span> <span class="o">%</span> <span class="n">BED_filename</span>
 	<span class="n">read2_bedfile</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.read2.bed&quot;</span> <span class="o">%</span> <span class="n">BED_filename</span>
 	<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outdirectory</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">OUTPUT_cells_barcode_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -668,14 +668,19 @@
 	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Done!</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
 
-<span class="c1">### Introduce Error rate</span>
 <div class="viewcode-block" id="ErrorBase"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.scATAC_GenerateBAM.ErrorBase">[docs]</a><span class="k">def</span> <span class="nf">ErrorBase</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">base_call_ref</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;Sample random errors. </span>
+
+<span class="sd">	&quot;&quot;&quot;</span>
 	<span class="n">err_base_call_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">prop</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>      
 	<span class="n">err_base_call</span> <span class="o">=</span> <span class="n">base_call_ref</span><span class="p">[</span><span class="n">base</span><span class="p">][</span><span class="n">err_base_call_id</span><span class="p">]</span>
 	<span class="k">return</span> <span class="n">err_base_call</span></div>
 
 
 <div class="viewcode-block" id="ErroneousRead"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.scATAC_GenerateBAM.ErroneousRead">[docs]</a><span class="k">def</span> <span class="nf">ErroneousRead</span><span class="p">(</span><span class="n">real_error_rate_read</span><span class="p">,</span> <span class="n">read_df</span><span class="p">,</span> <span class="n">output_fq_file</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;Generate random errors according to input real data error rates. </span>
+
+<span class="sd">	&quot;&quot;&quot;</span>
 	<span class="n">n_read</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">read_df</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span>
 	<span class="c1">## Prepare Error rate</span>
 	<span class="n">real_error_rate_read_A</span> <span class="o">=</span> <span class="n">real_error_rate_read</span><span class="p">[[</span><span class="s1">&#39;a_to_c_error_rate&#39;</span><span class="p">,</span> <span class="s1">&#39;a_to_g_error_rate&#39;</span><span class="p">,</span> <span class="s1">&#39;a_to_t_error_rate&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> 
@@ -728,6 +733,17 @@
 
 
 <div class="viewcode-block" id="SubstiError_Pair"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.scATAC_GenerateBAM.SubstiError_Pair">[docs]</a><span class="k">def</span> <span class="nf">SubstiError_Pair</span><span class="p">(</span><span class="n">real_error_rate_file</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">synthetic_fastq_prename</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;Generate random errors for paired-end sequencing reads according to input real data error rates. </span>
+
+<span class="sd">	Parameters</span>
+<span class="sd">	----------</span>
+<span class="sd">	real_error_rate_file: `str`</span>
+<span class="sd">		Path to software fgbio jar script.</span>
+<span class="sd">	outdirectory: `str`</span>
+<span class="sd">		Specify the output directory of the synthteic FASTQ file with random errors.</span>
+<span class="sd">	synthetic_fastq_prename: `str`</span>
+<span class="sd">		Specify the base name of the synthetic erroneous reads&#39; FASTQ files.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
 	<span class="c1"># Read in real error rates</span>
 	<span class="n">real_error_rate_dir</span> <span class="o">=</span> <span class="n">real_error_rate_file</span>
 	<span class="n">real_error_rate</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">real_error_rate_dir</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -738,21 +754,27 @@
 	<span class="n">read2_fq</span> <span class="o">=</span> <span class="n">outdirectory</span>  <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">synthetic_fastq_prename</span> <span class="o">+</span> <span class="s2">&quot;.read2.bed2fa.fq&quot;</span>
 	<span class="n">read1_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">read1_fq</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
 	<span class="n">read2_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">read2_fq</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
-	<span class="c1"># Real data quality score</span>
-	<span class="c1"># Error rate to Qscore</span>
-	<span class="c1"># err_rate_qscore_read1 = -10 * np.log10(real_error_rate_read1[&#39;error_rate&#39;])</span>
-	<span class="c1"># fastqc_result = &quot;/home/gayan/Projects/scATAC_Simulator/results/20220408_e18_mouse_brain_fresh_5k_atac_possorted_bam_chr1_1_5000000_NONINPUT/VerifyQuality/fastqc_Real/10X_ATAC_chr1_1_5000000_fastqc/fastqc_data.txt&quot;</span>
-	<span class="c1"># with open(fastqc_result) as f:</span>
-	<span class="c1">#     fastqc_result_contents = f.read().splitlines()</span>
-	<span class="c1"># fastqc_result_contents = np.array(fastqc_result_contents)</span>
-	<span class="c1"># real_quality_range = np.where(fastqc_result_contents == &#39;&gt;&gt;END_MODULE&#39;)[0][0:2]</span>
-	<span class="c1"># real_quality = list(fastqc_result_contents[(real_quality_range[0]+2) : real_quality_range[1]])</span>
-	<span class="c1"># real_quality_array = np.array([i.split(&#39;\t&#39;) for i in real_quality])</span>
+	<span class="c1"># Generate random error according to Real data</span>
 	<span class="n">ErroneousRead</span><span class="p">(</span><span class="n">real_error_rate_read1</span><span class="p">,</span> <span class="n">read1_df</span><span class="p">,</span> <span class="n">outdirectory</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">synthetic_fastq_prename</span> <span class="o">+</span> <span class="s2">&quot;.ErrorIncluded.read1.bed2fa.fq&quot;</span><span class="p">)</span> 
 	<span class="n">ErroneousRead</span><span class="p">(</span><span class="n">real_error_rate_read2</span><span class="p">,</span> <span class="n">read2_df</span><span class="p">,</span> <span class="n">outdirectory</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">synthetic_fastq_prename</span> <span class="o">+</span> <span class="s2">&quot;.ErrorIncluded.read2.bed2fa.fq&quot;</span><span class="p">)</span> </div>
 
 
 <div class="viewcode-block" id="scATAC_ErrorBase"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.scATAC_GenerateBAM.scATAC_ErrorBase">[docs]</a><span class="k">def</span> <span class="nf">scATAC_ErrorBase</span><span class="p">(</span><span class="n">fgbio_jarfile</span><span class="p">,</span> <span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">referenceGenome_file</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">synthetic_fastq_prename</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;Introduce random substitution errors into synthetic reads according to real data error rates.</span>
+
+<span class="sd">	Parameters</span>
+<span class="sd">	----------</span>
+<span class="sd">	fgbio_jarfile: `str`</span>
+<span class="sd">		Path to software fgbio jar script.</span>
+<span class="sd">	INPUT_bamfile: `str`</span>
+<span class="sd">		Input BAM file for anlaysis.</span>
+<span class="sd">	referenceGenome_file: &#39;str&#39;</span>
+<span class="sd">		Reference genome FASTA file that the synthteic reads should align.</span>
+<span class="sd">	outdirectory: `str`</span>
+<span class="sd">		Specify the output directory of the synthteic FASTQ file with random errors.</span>
+<span class="sd">	synthetic_fastq_prename: `str`</span>
+<span class="sd">		Base name of the synthetic FASTQ files output by function `scATAC_BED2FASTQ`.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
 	<span class="n">combine_read1_cmd</span> <span class="o">=</span> <span class="s2">&quot;java -jar </span><span class="si">%s</span><span class="s2"> ErrorRateByReadPosition -i </span><span class="si">%s</span><span class="s2"> -r </span><span class="si">%s</span><span class="s2"> -o </span><span class="si">%s</span><span class="s2">/Real --collapse false&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fgbio_jarfile</span><span class="p">,</span> <span class="n">INPUT_bamfile</span><span class="p">,</span> <span class="n">referenceGenome_file</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">)</span>
 	<span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">combine_read1_cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="s2">&quot;/bin/bash&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
 	<span class="k">if</span> <span class="n">error</span><span class="p">:</span>
@@ -791,9 +813,6 @@
     <p>&#169; Copyright 2022, Guanao Yan.</p>
   </div>
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
    
 
 </footer>

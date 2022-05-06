@@ -15,10 +15,14 @@ Description-Content-Type: text/markdown
 License-File: LICENSE
 
 # scReadSim
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A module for single cell sequencing read simulator.
 
 ## Update Log
+**May 4th**
+- Update random error module.
+
 **April 20th**
 - Update read length generation.
 

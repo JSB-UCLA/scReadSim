@@ -86,7 +86,7 @@ def scRNA_PerTruePeakEdition(peak_record, count_vec, read_lines, random_cellbarc
 	read_lines: `pandas.dataframe`
 		Coordinates of synthetic reads sampled from the input BAM file.
 	random_cellbarcode_list: `list`
-    	List of cell barcodes randomly generated using cellbarode_generator().
+    	List of cell barcodes randomly generated using [cellbarcode_generator().
 	read_len: `int` (default: '50')
 		Specify the length of synthetic reads. Default value is 50 bp.
 	jitter_size: `int` (default: '5')
@@ -407,12 +407,18 @@ def AlignSyntheticBam_Pair(bowtie2_directory, samtools_directory, outdirectory, 
 
 ## Error rate
 def ErrorBase(base, prop, base_call_ref):
+	"""Sample random errors. 
+
+	"""
 	err_base_call_id = np.random.choice(a=[0, 1, 2], size=1, p=prop)[0]      
 	err_base_call = base_call_ref[base][err_base_call_id]
 	return err_base_call
 
 
 def ErroneousRead(real_error_rate_read, read_df, output_fq_file):
+	"""Generate random errors according to input real data error rates. 
+
+	"""
 	n_read = int(np.shape(read_df)[0]/4)
 	## Prepare Error rate
 	real_error_rate_read_A = real_error_rate_read[['a_to_c_error_rate', 'a_to_g_error_rate', 'a_to_t_error_rate']].to_numpy() 
@@ -465,6 +471,17 @@ def ErroneousRead(real_error_rate_read, read_df, output_fq_file):
 
 
 def SubstiError(real_error_rate_file, outdirectory, synthetic_fastq_prename):
+	"""Generate random errors for single-end sequencing reads according to input real data error rates. 
+
+	Parameters
+	----------
+	real_error_rate_file: `str`
+		Path to software fgbio jar script.
+	outdirectory: `str`
+		Specify the output directory of the synthteic FASTQ file with random errors.
+	synthetic_fastq_prename: `str`
+		Specify the base name of the synthetic erroneous reads' FASTQ files.
+	"""
 	# Read in real error rates
 	real_error_rate_dir = real_error_rate_file
 	real_error_rate = pd.read_csv(real_error_rate_dir, header=0, delimiter="\t")
@@ -485,6 +502,21 @@ def SubstiError(real_error_rate_file, outdirectory, synthetic_fastq_prename):
 
 
 def scRNA_ErrorBase(fgbio_jarfile, INPUT_bamfile, referenceGenome_file, outdirectory, synthetic_fastq_prename):
+	"""Introduce random substitution errors into synthetic reads according to real data error rates.
+
+	Parameters
+	----------
+	fgbio_jarfile: `str`
+		Path to software fgbio jar script.
+	INPUT_bamfile: `str`
+		Input BAM file for anlaysis.
+	referenceGenome_file: 'str'
+		Reference genome FASTA file that the synthteic reads should align.
+	outdirectory: `str`
+		Specify the output directory of the synthteic FASTQ file with random errors.
+	synthetic_fastq_prename: `str`
+		Base name of the synthetic FASTQ files output by function `scATAC_BED2FASTQ`.
+	"""
 	combine_read1_cmd = "java -jar %s ErrorRateByReadPosition -i %s -r %s -o %s/Real --collapse false" % (fgbio_jarfile, INPUT_bamfile, referenceGenome_file, outdirectory)
 	output, error = subprocess.Popen(combine_read1_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:

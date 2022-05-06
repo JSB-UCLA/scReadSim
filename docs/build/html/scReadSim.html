@@ -5,7 +5,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>scReadSim package &mdash; scReadSim  documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" /><link rel="shortcut icon" href="_static/Icon_scReadSim.svg"/>
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -24,7 +24,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> scReadSim
+            <a href="index.html"><img src="_static/logo_scReadSim.svg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -37,7 +37,12 @@
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="API.html">API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Tutorials.html">Tutorials</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="scATACseq_NoInput_10X.html">scReadSim on 10X scATAC-seq</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scRNAseq_10X.html">scReadSim on 10X scRNA-seq</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scATACseq_INPUT_10X.html">scReadSim on 10X scATAC-seq with user-input chromatin regions</a></li>
 </ul>
 
         </div>
@@ -333,21 +338,33 @@
 <dl class="py function">
 <dt id="scReadSim.scATAC_GenerateBAM.ErroneousRead">
 <code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">ErroneousRead</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">real_error_rate_read</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_fq_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scATAC_GenerateBAM.html#ErroneousRead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.ErroneousRead" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Generate random errors according to input real data error rates.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt id="scReadSim.scATAC_GenerateBAM.ErrorBase">
 <code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">ErrorBase</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_call_ref</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scATAC_GenerateBAM.html#ErrorBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.ErrorBase" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sample random errors.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt id="scReadSim.scATAC_GenerateBAM.SubstiError_Pair">
 <code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">SubstiError_Pair</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">real_error_rate_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synthetic_fastq_prename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scATAC_GenerateBAM.html#SubstiError_Pair"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.SubstiError_Pair" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Generate random errors for paired-end sequencing reads according to input real data error rates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>real_error_rate_file</strong> (<cite>str</cite>) – Path to software fgbio jar script.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Specify the output directory of the synthteic FASTQ file with random errors.</p></li>
+<li><p><strong>synthetic_fastq_prename</strong> (<cite>str</cite>) – Specify the base name of the synthetic erroneous reads’ FASTQ files.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
-<dt id="scReadSim.scATAC_GenerateBAM.cellbarode_generator">
-<code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">cellbarode_generator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scATAC_GenerateBAM.html#cellbarode_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.cellbarode_generator" title="Permalink to this definition">¶</a></dt>
+<dt id="scReadSim.scATAC_GenerateBAM.cellbarcode_generator">
+<code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">cellbarcode_generator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scATAC_GenerateBAM.html#cellbarcode_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.cellbarcode_generator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate random cellbarcode.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -399,7 +416,19 @@
 <dl class="py function">
 <dt id="scReadSim.scATAC_GenerateBAM.scATAC_ErrorBase">
 <code class="sig-prename descclassname"><span class="pre">scReadSim.scATAC_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">scATAC_ErrorBase</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fgbio_jarfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">referenceGenome_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synthetic_fastq_prename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scATAC_GenerateBAM.html#scATAC_ErrorBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scATAC_GenerateBAM.scATAC_ErrorBase" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Introduce random substitution errors into synthetic reads according to real data error rates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fgbio_jarfile</strong> (<cite>str</cite>) – Path to software fgbio jar script.</p></li>
+<li><p><strong>INPUT_bamfile</strong> (<cite>str</cite>) – Input BAM file for anlaysis.</p></li>
+<li><p><strong>referenceGenome_file</strong> (<em>'str'</em>) – Reference genome FASTA file that the synthteic reads should align.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Specify the output directory of the synthteic FASTQ file with random errors.</p></li>
+<li><p><strong>synthetic_fastq_prename</strong> (<cite>str</cite>) – Base name of the synthetic FASTQ files output by function <cite>scATAC_BED2FASTQ</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="scReadSim.scATAC_GenerateBAM.scATAC_GenerateBAMCoord">
@@ -456,7 +485,7 @@
 <li><p><strong>of an input foreground</strong><strong>(</strong><strong>/background</strong><strong>) </strong><strong>peak</strong><strong> (</strong><strong>columns 1</strong> (<em>Coordinates</em>) – </p></li>
 <li><p><strong>count_vec</strong> (<cite>numpy.array</cite>) – Count vector of the input foreground(/background) peak.</p></li>
 <li><p><strong>read_lines</strong> (<cite>pandas.dataframe</cite>) – Coordinates of synthetic reads sampled from the input BAM file.</p></li>
-<li><p><strong>random_cellbarcode_list</strong> (<cite>list</cite>) – List of cell barcodes randomly generated using cellbarode_generator().</p></li>
+<li><p><strong>random_cellbarcode_list</strong> (<cite>list</cite>) – List of cell barcodes randomly generated using cellbarcode_generator().</p></li>
 <li><p><strong>read_len</strong> (<cite>int</cite> (default: ‘50’)) – Specify the length of synthetic reads. Default value is 50 bp.</p></li>
 <li><p><strong>jitter_size</strong> (<cite>int</cite> (default: ‘50’)) – Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.</p></li>
 </ul>
@@ -483,7 +512,7 @@
 <li><p><strong>vector of the query peak.</strong> (<em>Count</em>) – </p></li>
 <li><p><strong>read_lines</strong> (<cite>pandas.dataframe</cite>) – Coordinates of synthetic reads sampled from the input BAM file.</p></li>
 <li><p><strong>random_cellbarcode_list</strong> (<cite>list</cite>) – </p></li>
-<li><p><strong>of cell barcodes randomly generated using cellbarode_generator</strong><strong>(</strong><strong>)</strong><strong></strong> (<em>List</em>) – </p></li>
+<li><p><strong>of cell barcodes randomly generated using cellbarcode_generator</strong><strong>(</strong><strong>)</strong><strong></strong> (<em>List</em>) – </p></li>
 <li><p><strong>read_len</strong> (<cite>int</cite> (default: ‘50’)) – Specify the length of synthetic reads. Default value is 50 bp.</p></li>
 <li><p><strong>jitter_size</strong> (<cite>int</cite> (default: ‘5’)) – Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.</p></li>
 </ul>
@@ -523,17 +552,29 @@
 <dl class="py function">
 <dt id="scReadSim.scRNA_GenerateBAM.ErroneousRead">
 <code class="sig-prename descclassname"><span class="pre">scReadSim.scRNA_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">ErroneousRead</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">real_error_rate_read</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_fq_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scRNA_GenerateBAM.html#ErroneousRead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scRNA_GenerateBAM.ErroneousRead" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Generate random errors according to input real data error rates.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt id="scReadSim.scRNA_GenerateBAM.ErrorBase">
 <code class="sig-prename descclassname"><span class="pre">scReadSim.scRNA_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">ErrorBase</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_call_ref</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scRNA_GenerateBAM.html#ErrorBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scRNA_GenerateBAM.ErrorBase" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sample random errors.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt id="scReadSim.scRNA_GenerateBAM.SubstiError">
 <code class="sig-prename descclassname"><span class="pre">scReadSim.scRNA_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">SubstiError</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">real_error_rate_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synthetic_fastq_prename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scRNA_GenerateBAM.html#SubstiError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scRNA_GenerateBAM.SubstiError" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Generate random errors for single-end sequencing reads according to input real data error rates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>real_error_rate_file</strong> (<cite>str</cite>) – Path to software fgbio jar script.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Specify the output directory of the synthteic FASTQ file with random errors.</p></li>
+<li><p><strong>synthetic_fastq_prename</strong> (<cite>str</cite>) – Specify the base name of the synthetic erroneous reads’ FASTQ files.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="scReadSim.scRNA_GenerateBAM.cellbarcode_generator">
@@ -589,7 +630,19 @@
 <dl class="py function">
 <dt id="scReadSim.scRNA_GenerateBAM.scRNA_ErrorBase">
 <code class="sig-prename descclassname"><span class="pre">scReadSim.scRNA_GenerateBAM.</span></code><code class="sig-name descname"><span class="pre">scRNA_ErrorBase</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fgbio_jarfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">INPUT_bamfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">referenceGenome_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synthetic_fastq_prename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scReadSim/scRNA_GenerateBAM.html#scRNA_ErrorBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scReadSim.scRNA_GenerateBAM.scRNA_ErrorBase" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Introduce random substitution errors into synthetic reads according to real data error rates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fgbio_jarfile</strong> (<cite>str</cite>) – Path to software fgbio jar script.</p></li>
+<li><p><strong>INPUT_bamfile</strong> (<cite>str</cite>) – Input BAM file for anlaysis.</p></li>
+<li><p><strong>referenceGenome_file</strong> (<em>'str'</em>) – Reference genome FASTA file that the synthteic reads should align.</p></li>
+<li><p><strong>outdirectory</strong> (<cite>str</cite>) – Specify the output directory of the synthteic FASTQ file with random errors.</p></li>
+<li><p><strong>synthetic_fastq_prename</strong> (<cite>str</cite>) – Base name of the synthetic FASTQ files output by function <cite>scATAC_BED2FASTQ</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="scReadSim.scRNA_GenerateBAM.scRNA_GenerateBAMCoord">
@@ -625,7 +678,7 @@
 <li><p><strong>vector of the query peak.</strong> (<em>Count</em>) – </p></li>
 <li><p><strong>read_lines</strong> (<cite>pandas.dataframe</cite>) – Coordinates of synthetic reads sampled from the input BAM file.</p></li>
 <li><p><strong>random_cellbarcode_list</strong> (<cite>list</cite>) – </p></li>
-<li><p><strong>of cell barcodes randomly generated using cellbarode_generator</strong><strong>(</strong><strong>)</strong><strong></strong> (<em>List</em>) – </p></li>
+<li><p><strong>of cell barcodes randomly generated using</strong><strong> [</strong><strong>cellbarcode_generator</strong><strong>(</strong><strong>)</strong><strong></strong> (<em>List</em>) – </p></li>
 <li><p><strong>read_len</strong> (<cite>int</cite> (default: ‘50’)) – Specify the length of synthetic reads. Default value is 50 bp.</p></li>
 <li><p><strong>jitter_size</strong> (<cite>int</cite> (default: ‘5’)) – Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.</p></li>
 </ul>
@@ -675,9 +728,6 @@
     <p>&#169; Copyright 2022, Guanao Yan.</p>
   </div>
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
    
 
 </footer>

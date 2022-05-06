@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Index &mdash; scReadSim  documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" /><link rel="shortcut icon" href="_static/Icon_scReadSim.svg"/>
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -23,7 +23,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> scReadSim
+            <a href="index.html"><img src="_static/logo_scReadSim.svg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -36,7 +36,12 @@
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="API.html">API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Tutorials.html">Tutorials</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="scATACseq_NoInput_10X.html">scReadSim on 10X scATAC-seq</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scRNAseq_10X.html">scReadSim on 10X scRNA-seq</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scATACseq_INPUT_10X.html">scReadSim on 10X scATAC-seq with user-input chromatin regions</a></li>
 </ul>
 
         </div>
@@ -104,12 +109,14 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/scReadSim.Utility.CallPeak.html#scReadSim.Utility.CallPeak">CallPeak() (in module scReadSim.Utility)</a>, <a href="scReadSim.html#scReadSim.Utility.CallPeak">[1]</a>
 </li>
-      <li><a href="scReadSim.html#scReadSim.scRNA_GenerateBAM.cellbarcode_generator">cellbarcode_generator() (in module scReadSim.scRNA_GenerateBAM)</a>
+      <li><a href="scReadSim.html#scReadSim.scATAC_GenerateBAM.cellbarcode_generator">cellbarcode_generator() (in module scReadSim.scATAC_GenerateBAM)</a>
+
+      <ul>
+        <li><a href="scReadSim.html#scReadSim.scRNA_GenerateBAM.cellbarcode_generator">(in module scReadSim.scRNA_GenerateBAM)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="_autosummary/scReadSim.scATAC_GenerateBAM.cellbarode_generator.html#scReadSim.scATAC_GenerateBAM.cellbarode_generator">cellbarode_generator() (in module scReadSim.scATAC_GenerateBAM)</a>, <a href="scReadSim.html#scReadSim.scATAC_GenerateBAM.cellbarode_generator">[1]</a>
-</li>
       <li><a href="_autosummary/scReadSim.Utility.ComplementFeature.html#scReadSim.Utility.ComplementFeature">ComplementFeature() (in module scReadSim.Utility)</a>, <a href="scReadSim.html#scReadSim.Utility.ComplementFeature">[1]</a>
 </li>
   </ul></td>
@@ -162,7 +169,7 @@
     module
 
       <ul>
-        <li><a href="API.html#module-scReadSim">scReadSim</a>, <a href="Tutorials.html#module-scReadSim">[1]</a>, <a href="scReadSim.html#module-scReadSim">[2]</a>
+        <li><a href="API.html#module-scReadSim">scReadSim</a>, <a href="Tutorials.html#module-scReadSim">[1]</a>, <a href="scATACseq_INPUT_10X.html#module-scReadSim">[2]</a>, <a href="scATACseq_NoInput_10X.html#module-scReadSim">[3]</a>, <a href="scRNAseq_10X.html#module-scReadSim">[4]</a>, <a href="scReadSim.html#module-scReadSim">[5]</a>
 </li>
         <li><a href="scReadSim.data.html#module-scReadSim.data">scReadSim.data</a>
 </li>
@@ -203,7 +210,7 @@
     scReadSim
 
       <ul>
-        <li><a href="API.html#module-scReadSim">module</a>, <a href="Tutorials.html#module-scReadSim">[1]</a>, <a href="scReadSim.html#module-scReadSim">[2]</a>
+        <li><a href="API.html#module-scReadSim">module</a>, <a href="Tutorials.html#module-scReadSim">[1]</a>, <a href="scATACseq_INPUT_10X.html#module-scReadSim">[2]</a>, <a href="scATACseq_NoInput_10X.html#module-scReadSim">[3]</a>, <a href="scRNAseq_10X.html#module-scReadSim">[4]</a>, <a href="scReadSim.html#module-scReadSim">[5]</a>
 </li>
       </ul></li>
       <li>
@@ -278,9 +285,6 @@
     <p>&#169; Copyright 2022, Guanao Yan.</p>
   </div>
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
    
 
 </footer>

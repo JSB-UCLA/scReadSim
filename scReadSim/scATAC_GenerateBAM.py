@@ -23,7 +23,7 @@ def flatten(x):
         return [x]
 
 
-def cellbarode_generator(length, size=10):
+def cellbarcode_generator(length, size=10):
 	"""Generate random cellbarcode.
 
     Parameters
@@ -55,7 +55,7 @@ def scATAC_INPUT_PerTruePeakEdition(peak_record, count_vec, read_lines, random_c
 	read_lines: `pandas.dataframe`
 		Coordinates of synthetic reads sampled from the input BAM file.
 	random_cellbarcode_list: `list`
-		List of cell barcodes randomly generated using cellbarode_generator().
+		List of cell barcodes randomly generated using cellbarcode_generator().
 	read_len: `int` (default: '50')
 		Specify the length of synthetic reads. Default value is 50 bp.
 	jitter_size: `int` (default: '50')
@@ -112,7 +112,7 @@ def scATAC_PerTruePeakEdition(peak_record, count_vec, read_lines, random_cellbar
 	read_lines: `pandas.dataframe`
 		Coordinates of synthetic reads sampled from the input BAM file.
 	random_cellbarcode_list: `list`
-    	List of cell barcodes randomly generated using cellbarode_generator().
+    	List of cell barcodes randomly generated using cellbarcode_generator().
 	read_len: `int` (default: '50')
 		Specify the length of synthetic reads. Default value is 50 bp.
 	jitter_size: `int` (default: '5')
@@ -215,7 +215,7 @@ def scATAC_PerTruePeakEdition(peak_record, count_vec, read_lines, random_cellbar
 # 	count_mat = pd.read_csv(count_mat_file, header=0, delimiter="\t").to_numpy()
 # 	marginal_cell_number = pd.read_csv(cellnumberfile, header=None, delimiter="\t").to_numpy()
 # 	n_cell = np.shape(count_mat)[1]
-# 	random_cellbarcode_list = cellbarode_generator(n_cell, size=16)
+# 	random_cellbarcode_list = cellbarcode_generator(n_cell, size=16)
 # 	read1_bedfile="%s.read1.bed" % BED_filename
 # 	read2_bedfile="%s.read2.bed" % BED_filename
 # 	start = time.time()
@@ -286,7 +286,7 @@ def scATAC_GenerateBAMCoord(count_mat_filename, samtools_directory, INPUT_bamfil
 	count_mat = pd.read_csv("%s/%s" % (directory_cellnumber, count_mat_file), header=0, delimiter="\t").to_numpy()
 	marginal_cell_number = pd.read_csv(cellnumberfile, header=None, delimiter="\t").to_numpy()
 	n_cell = np.shape(count_mat)[1]
-	random_cellbarcode_list = cellbarode_generator(n_cell, size=16)
+	random_cellbarcode_list = cellbarcode_generator(n_cell, size=16)
 	read1_bedfile="%s.read1.bed" % BED_filename
 	read2_bedfile="%s.read2.bed" % BED_filename
 	start = time.time()
@@ -371,7 +371,7 @@ def scATAC_GenerateBAMCoord(count_mat_filename, samtools_directory, INPUT_bamfil
 # 	count_mat = pd.read_csv(count_mat_file, header=0, delimiter="\t").to_numpy()
 # 	marginal_cell_number = pd.read_csv(cellnumberfile, header=None, delimiter="\t").to_numpy()
 # 	n_cell = np.shape(count_mat)[1]
-# 	random_cellbarcode_list = cellbarode_generator(n_cell, size=16)
+# 	random_cellbarcode_list = cellbarcode_generator(n_cell, size=16)
 # 	read1_bedfile="%s.read1.bed" % BED_filename
 # 	read2_bedfile="%s.read2.bed" % BED_filename
 # 	start = time.time()
@@ -444,7 +444,7 @@ def scATAC_GenerateBAMCoord_INPUT(count_mat_filename, samtools_directory, INPUT_
 	count_mat = pd.read_csv(outdirectory + "/" + count_mat_file, header=0, delimiter="\t").to_numpy()
 	marginal_cell_number = pd.read_csv(cellnumberfile, header=None, delimiter="\t").to_numpy()
 	n_cell = np.shape(count_mat)[1]
-	random_cellbarcode_list = cellbarode_generator(n_cell, size=16)
+	random_cellbarcode_list = cellbarcode_generator(n_cell, size=16)
 	read1_bedfile="%s.read1.bed" % BED_filename
 	read2_bedfile="%s.read2.bed" % BED_filename
 	with open(outdirectory + "/" + OUTPUT_cells_barcode_file, 'w') as f:
@@ -602,14 +602,19 @@ def AlignSyntheticBam_Pair(bowtie2_directory, samtools_directory, outdirectory, 
 	print('Done!\n')
 
 
-### Introduce Error rate
 def ErrorBase(base, prop, base_call_ref):
+	"""Sample random errors. 
+
+	"""
 	err_base_call_id = np.random.choice(a=[0, 1, 2], size=1, p=prop)[0]      
 	err_base_call = base_call_ref[base][err_base_call_id]
 	return err_base_call
 
 
 def ErroneousRead(real_error_rate_read, read_df, output_fq_file):
+	"""Generate random errors according to input real data error rates. 
+
+	"""
 	n_read = int(np.shape(read_df)[0]/4)
 	## Prepare Error rate
 	real_error_rate_read_A = real_error_rate_read[['a_to_c_error_rate', 'a_to_g_error_rate', 'a_to_t_error_rate']].to_numpy() 
@@ -662,6 +667,17 @@ def ErroneousRead(real_error_rate_read, read_df, output_fq_file):
 
 
 def SubstiError_Pair(real_error_rate_file, outdirectory, synthetic_fastq_prename):
+	"""Generate random errors for paired-end sequencing reads according to input real data error rates. 
+
+	Parameters
+	----------
+	real_error_rate_file: `str`
+		Path to software fgbio jar script.
+	outdirectory: `str`
+		Specify the output directory of the synthteic FASTQ file with random errors.
+	synthetic_fastq_prename: `str`
+		Specify the base name of the synthetic erroneous reads' FASTQ files.
+	"""
 	# Read in real error rates
 	real_error_rate_dir = real_error_rate_file
 	real_error_rate = pd.read_csv(real_error_rate_dir, header=0, delimiter="\t")
@@ -672,21 +688,27 @@ def SubstiError_Pair(real_error_rate_file, outdirectory, synthetic_fastq_prename
 	read2_fq = outdirectory  + "/" + synthetic_fastq_prename + ".read2.bed2fa.fq"
 	read1_df = pd.read_csv(read1_fq, header=None).to_numpy()
 	read2_df = pd.read_csv(read2_fq, header=None).to_numpy()
-	# Real data quality score
-	# Error rate to Qscore
-	# err_rate_qscore_read1 = -10 * np.log10(real_error_rate_read1['error_rate'])
-	# fastqc_result = "/home/gayan/Projects/scATAC_Simulator/results/20220408_e18_mouse_brain_fresh_5k_atac_possorted_bam_chr1_1_5000000_NONINPUT/VerifyQuality/fastqc_Real/10X_ATAC_chr1_1_5000000_fastqc/fastqc_data.txt"
-	# with open(fastqc_result) as f:
-	#     fastqc_result_contents = f.read().splitlines()
-	# fastqc_result_contents = np.array(fastqc_result_contents)
-	# real_quality_range = np.where(fastqc_result_contents == '>>END_MODULE')[0][0:2]
-	# real_quality = list(fastqc_result_contents[(real_quality_range[0]+2) : real_quality_range[1]])
-	# real_quality_array = np.array([i.split('\t') for i in real_quality])
+	# Generate random error according to Real data
 	ErroneousRead(real_error_rate_read1, read1_df, outdirectory + "/" + synthetic_fastq_prename + ".ErrorIncluded.read1.bed2fa.fq") 
 	ErroneousRead(real_error_rate_read2, read2_df, outdirectory + "/" + synthetic_fastq_prename + ".ErrorIncluded.read2.bed2fa.fq") 
 
 
 def scATAC_ErrorBase(fgbio_jarfile, INPUT_bamfile, referenceGenome_file, outdirectory, synthetic_fastq_prename):
+	"""Introduce random substitution errors into synthetic reads according to real data error rates.
+
+	Parameters
+	----------
+	fgbio_jarfile: `str`
+		Path to software fgbio jar script.
+	INPUT_bamfile: `str`
+		Input BAM file for anlaysis.
+	referenceGenome_file: 'str'
+		Reference genome FASTA file that the synthteic reads should align.
+	outdirectory: `str`
+		Specify the output directory of the synthteic FASTQ file with random errors.
+	synthetic_fastq_prename: `str`
+		Base name of the synthetic FASTQ files output by function `scATAC_BED2FASTQ`.
+	"""
 	combine_read1_cmd = "java -jar %s ErrorRateByReadPosition -i %s -r %s -o %s/Real --collapse false" % (fgbio_jarfile, INPUT_bamfile, referenceGenome_file, outdirectory)
 	output, error = subprocess.Popen(combine_read1_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
