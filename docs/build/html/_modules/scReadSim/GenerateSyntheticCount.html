@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>scReadSim.GenerateSyntheticCount &mdash; scReadSim  documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" /><link rel="shortcut icon" href="../../_static/Icon_scReadSim.svg"/>
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -23,7 +23,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> scReadSim
+            <a href="../../index.html"><img src="../../_static/logo_scReadSim.svg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -36,7 +36,12 @@
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../API.html">API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../Tutorials.html">Tutorials</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../scATACseq_NoInput_10X.html">scReadSim on 10X scATAC-seq</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scRNAseq_10X.html">scReadSim on 10X scRNA-seq</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scATACseq_INPUT_10X.html">scReadSim on 10X scATAC-seq with user-input chromatin regions</a></li>
 </ul>
 
         </div>
@@ -70,7 +75,7 @@
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
 <span class="kn">import</span> <span class="nn">os</span>
 
-<div class="viewcode-block" id="scATAC_GenerateSyntheticCount"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.GenerateSyntheticCount.scATAC_GenerateSyntheticCount">[docs]</a><span class="k">def</span> <span class="nf">scATAC_GenerateSyntheticCount</span><span class="p">(</span><span class="n">count_mat_filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">cluster_prestep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="scATAC_GenerateSyntheticCount"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.GenerateSyntheticCount.scATAC_GenerateSyntheticCount">[docs]</a><span class="k">def</span> <span class="nf">scATAC_GenerateSyntheticCount</span><span class="p">(</span><span class="n">count_mat_filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">n_cell_new</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">total_count_new</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">celllabel_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;Simulate synthetic count matrix.</span>
 
 <span class="sd">	Parameters</span>
@@ -81,8 +86,12 @@
 <span class="sd">		Path to the count matrix.</span>
 <span class="sd">	outdirectory: `str`</span>
 <span class="sd">		Output directory of coordinate files.</span>
-<span class="sd">	cluster_prestep: `bool`</span>
-<span class="sd">		Set `cluster_prestep=True` to perform a Louvain clustering before implementing scDesign2.</span>
+<span class="sd">	n_cell_new: `int` (default: &#39;None&#39;)</span>
+<span class="sd">		Number of synthetic cells. If not specified, scReadSim uses the number of real cells.</span>
+<span class="sd">	total_count_new: `int` (default: &#39;None&#39;)</span>
+<span class="sd">		Number of (expected) sequencing depth. If not specified, scReadSim uses the real sequencing depth.</span>
+<span class="sd">	celllabel_file: `str` (default: &#39;None&#39;)</span>
+<span class="sd">		Specify the file containing the predefined cell labels. If no cell labels are specified, scReadSim performs a Louvain clustering before implementing scDesign2.</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="n">r</span> <span class="o">=</span> <span class="n">robjects</span><span class="o">.</span><span class="n">r</span>
 	<span class="n">rscript_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s1">&#39;Rscript/SyntheticCountFunctions.R&#39;</span><span class="p">)</span>
@@ -90,12 +99,19 @@
 	<span class="c1"># rscript_dir = pkg_resources.resource_stream(__name__, &#39;Rscript/scATAC_SyntheticCountFunctions.R&#39;).read().decode()</span>
 	<span class="n">r</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">](</span><span class="n">rscript_dir</span><span class="p">)</span>
 	<span class="n">scATAC_runSyntheticCount</span> <span class="o">=</span> <span class="n">robjects</span><span class="o">.</span><span class="n">globalenv</span><span class="p">[</span><span class="s1">&#39;scATAC_runSyntheticCount&#39;</span><span class="p">]</span>
-	<span class="k">if</span> <span class="n">cluster_prestep</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
-		<span class="n">scATAC_runSyntheticCount</span><span class="p">(</span><span class="n">count_mat_filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">cluster_prestep</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
-	<span class="k">else</span><span class="p">:</span>
-		<span class="n">scATAC_runSyntheticCount</span><span class="p">(</span><span class="n">count_mat_filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">cluster_prestep</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span></div>
+	<span class="k">if</span> <span class="n">n_cell_new</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+		<span class="n">n_cell_new</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
+	<span class="k">if</span> <span class="n">total_count_new</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+		<span class="n">total_count_new</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
+	<span class="k">if</span> <span class="n">celllabel_file</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+		<span class="n">celllabel_file</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
+	<span class="n">scATAC_runSyntheticCount</span><span class="p">(</span><span class="n">count_mat_filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">n_cell_new</span><span class="p">,</span> <span class="n">total_count_new</span><span class="p">,</span> <span class="n">celllabel_file</span><span class="p">)</span></div>
+	<span class="c1"># if cluster_prestep == True:</span>
+	<span class="c1"># 	scATAC_runSyntheticCount(count_mat_filename, directory, outdirectory, cluster_prestep = 1)</span>
+	<span class="c1"># else:</span>
+	<span class="c1"># 	scATAC_runSyntheticCount(count_mat_filename, directory, outdirectory, cluster_prestep = 0)</span>
 
-<div class="viewcode-block" id="scRNA_GenerateSyntheticCount"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.GenerateSyntheticCount.scRNA_GenerateSyntheticCount">[docs]</a><span class="k">def</span> <span class="nf">scRNA_GenerateSyntheticCount</span><span class="p">(</span><span class="n">count_mat_filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">cluster_prestep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="scRNA_GenerateSyntheticCount"><a class="viewcode-back" href="../../scReadSim.html#scReadSim.GenerateSyntheticCount.scRNA_GenerateSyntheticCount">[docs]</a><span class="k">def</span> <span class="nf">scRNA_GenerateSyntheticCount</span><span class="p">(</span><span class="n">count_mat_filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">n_cell_new</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">total_count_new</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">celllabel_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;Simulate synthetic count matrix.</span>
 
 <span class="sd">	Parameters</span>
@@ -106,8 +122,12 @@
 <span class="sd">		Path to the count matrix.</span>
 <span class="sd">	outdirectory: `str`</span>
 <span class="sd">		Output directory of coordinate files.</span>
-<span class="sd">	cluster_prestep: `bool`</span>
-<span class="sd">		Set `cluster_prestep=True` to perform a Louvain clustering before implementing scDesign2.</span>
+<span class="sd">	n_cell_new: `int` (default: &#39;None&#39;)</span>
+<span class="sd">		Number of synthetic cells. If not specified, scReadSim uses the number of real cells.</span>
+<span class="sd">	total_count_new: `int` (default: &#39;None&#39;)</span>
+<span class="sd">		Number of (expected) sequencing depth. If not specified, scReadSim uses the real sequencing depth.</span>
+<span class="sd">	celllabel_file: `str` (default: &#39;None&#39;)</span>
+<span class="sd">		Specify the file containing the predefined cell labels. If no cell labels are specified, scReadSim performs a Louvain clustering before implementing scDesign2.</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="n">r</span> <span class="o">=</span> <span class="n">robjects</span><span class="o">.</span><span class="n">r</span>
 	<span class="n">rscript_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s1">&#39;Rscript/SyntheticCountFunctions.R&#39;</span><span class="p">)</span>
@@ -115,10 +135,17 @@
 	<span class="c1"># rscript_dir = pkg_resources.resource_stream(__name__, &#39;Rscript/scATAC_SyntheticCountFunctions.R&#39;).read().decode()</span>
 	<span class="n">r</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">](</span><span class="n">rscript_dir</span><span class="p">)</span>
 	<span class="n">scRNA_runSyntheticCount</span> <span class="o">=</span> <span class="n">robjects</span><span class="o">.</span><span class="n">globalenv</span><span class="p">[</span><span class="s1">&#39;scRNA_runSyntheticCount&#39;</span><span class="p">]</span>
-	<span class="k">if</span> <span class="n">cluster_prestep</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
-		<span class="n">scRNA_runSyntheticCount</span><span class="p">(</span><span class="n">count_mat_filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">cluster_prestep</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
-	<span class="k">else</span><span class="p">:</span>
-		<span class="n">scRNA_runSyntheticCount</span><span class="p">(</span><span class="n">count_mat_filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">cluster_prestep</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span></div>
+	<span class="k">if</span> <span class="n">n_cell_new</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+		<span class="n">n_cell_new</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
+	<span class="k">if</span> <span class="n">total_count_new</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+		<span class="n">total_count_new</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
+	<span class="k">if</span> <span class="n">celllabel_file</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+		<span class="n">celllabel_file</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
+	<span class="n">scRNA_runSyntheticCount</span><span class="p">(</span><span class="n">count_mat_filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">outdirectory</span><span class="p">,</span> <span class="n">n_cell_new</span><span class="p">,</span> <span class="n">total_count_new</span><span class="p">,</span> <span class="n">celllabel_file</span><span class="p">)</span></div>
+	<span class="c1"># if cluster_prestep == True:</span>
+	<span class="c1"># 	scRNA_runSyntheticCount(count_mat_filename, directory, outdirectory, cluster_prestep = 1)</span>
+	<span class="c1"># else:</span>
+	<span class="c1"># 	scRNA_runSyntheticCount(count_mat_filename, directory, outdirectory, cluster_prestep = 0)</span>
 </pre></div>
 
            </div>
@@ -131,9 +158,6 @@
     <p>&#169; Copyright 2022, Guanao Yan.</p>
   </div>
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
    
 
 </footer>

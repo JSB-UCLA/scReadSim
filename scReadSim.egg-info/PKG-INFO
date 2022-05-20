@@ -14,7 +14,7 @@ Requires-Python: >=3.6
 Description-Content-Type: text/markdown
 License-File: LICENSE
 
-# scReadSim
+# scReadSim <img src="./docs/source/_static/logo_scReadSim.png?raw=true" align="right" width="150"/>
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A module for single cell sequencing read simulator.
@@ -71,4 +71,6 @@ To be done.
 ## License
 This pacakge is licensed under the terms
 of the **MIT License**.
+
+
 

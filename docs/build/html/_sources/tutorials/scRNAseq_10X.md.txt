@@ -85,7 +85,9 @@ The current version of scReadSim implement scDesign2 (reference) to generate syn
 - `count_mat_filename`: Base name of the count matrix output by function bam2countmat().
 - `directory`: Path to the count matrix.
 - `outdirectory`: Output directory of coordinate files.
-- `cluster_prestep`: Set `cluster_prestep=True` to perform a Louvain clustering before implementing scDesign2.
+- `n_cell_new`: (Optional, default: 'None') Number of synthetic cells. If not specified, scReadSim uses the number of real cells.
+- `total_count_new`: (Optional, default: 'None') Number of (expected) sequencing depth. If not specified, scReadSim uses the real sequencing depth.
+- `celllabel_file`: (Optional, default: 'None') Specify the file containing the predefined cell labels. If no cell labels are specified, scReadSim performs a Louvain clustering before implementing scDesign2.
 
 Given the input count matrix `count_mat_filename`.txt, scReadSim generates two files to `outdirectory` for following analysis:
 
@@ -93,8 +95,8 @@ Given the input count matrix `count_mat_filename`.txt, scReadSim generates two f
 - **`count_mat_filename`.scDesign2Simulated.nReadRegionmargional.txt**: The per-feature summation of counts for synthetic count matrix.
 
 ```{code-block} python3
-GenerateSyntheticCount.scRNA_GenerateSyntheticCount(count_mat_filename=count_mat_filename, directory=outdirectory, outdirectory=outdirectory, cluster_prestep=True)
-GenerateSyntheticCount.scRNA_GenerateSyntheticCount(count_mat_filename=count_mat_comple_filename, directory=outdirectory, outdirectory=outdirectory, cluster_prestep=True)
+GenerateSyntheticCount.scRNA_GenerateSyntheticCount(count_mat_filename=count_mat_filename, directory=outdirectory, outdirectory=outdirectory)
+GenerateSyntheticCount.scRNA_GenerateSyntheticCount(count_mat_filename=count_mat_comple_filename, directory=outdirectory, outdirectory=outdirectory)
 ```
 
 ## Step 5: Synthetic BAM file generation
