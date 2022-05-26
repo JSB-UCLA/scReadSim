@@ -1,4 +1,4 @@
-# scReadSim on 10X scATAC-seq with user-input chromatin regions
+# scReadSim on 10x scATAC-seq with user-input chromatin regions
 
 Import modules.
 
@@ -12,7 +12,7 @@ import pkg_resources
 
 
 ## Step 1: Download test sample. 
-The example deploys scReadSim on the 10X single cell ATAC-seq (give url to original website). The demo BAM file and its corresponding cell barcode file could be accessed through the following chunk. This BAM file uses mm10 as reference genome, the required chromosome size file is also embedded within the package.  
+The example deploys scReadSim on the 10x single cell ATAC-seq (give url to original website). The demo BAM file and its corresponding cell barcode file could be accessed through the following chunk. This BAM file uses mm10 as reference genome, the required chromosome size file is also embedded within the package.  
 
 ```{code-block} python3
 INPUT_cells_barcode_file = pkg_resources.resource_filename("scReadSim", 'data/barcodes.tsv') 
