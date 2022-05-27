@@ -8,7 +8,7 @@ setuptools.setup(
     version="0.1.0",
     author="Guanao Yan",
     author_email="gayan@g.ucla.com",
-    description="A single cell sequencing reads simulator.",
+    description="A single-cell multi-omics read simulator.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Dominic7227/scReadSim",
