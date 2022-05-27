@@ -1,8 +1,7 @@
 version: 2
 
 build:
-  image: latest3
-  tools: 
+  image: latest
 
 sphinx:
     builder: html

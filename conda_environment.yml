@@ -1,7 +1,7 @@
 name: scReadSim_env
 channels:
-  - conda-forge
   - defaults
+  - conda-forge
 dependencies:
   - _libgcc_mutex=0.1=main
   - _openmp_mutex=4.5=1_gnu
@@ -79,3 +79,4 @@ dependencies:
     - sphinx-rtd-theme==1.0.0
     - toml==0.10.2
     - urllib3==1.26.8
+prefix: /home/gayan/miniconda3/envs/scReadSim_env
