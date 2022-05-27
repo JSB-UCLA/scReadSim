@@ -1,7 +1,8 @@
 version: 2
 
 build:
-  image: latest
+  image: latest3
+  tools: 
 
 sphinx:
     builder: html
@@ -14,7 +15,10 @@ python:
         path: .
     - requirements: docs/requirements.txt
     - requirements: requirements.txt
-
         # extra_requirements: 
         # -   docs
         # - requirements.txt
+
+# Use conda instead of python
+conda:
+  environment: docs/environment.yml
