@@ -1,5 +1,3 @@
-.. automodule:: scReadSim
-
 .. scReadSim on 10X scATAC-seq with user-input chromatin regions
 .. =============================================================
 
