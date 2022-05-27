@@ -40,7 +40,7 @@ extensions = ['sphinx.ext.autodoc',
     "myst_parser"] 
 
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
-
+autodoc_mock_imports = ["rpy2"]
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
