@@ -12,7 +12,7 @@ Utility
 .. autosummary::
    :toctree: _autosummary
 
-   scReadSim.Utility.CallPeak
+   scReadSim.scReadSim.Utility.CallPeak
    scReadSim.Utility.ExtractBAMCoverage
    scReadSim.Utility.scATAC_CreateFeatureSets
    scReadSim.Utility.scRNA_CreateFeatureSets
