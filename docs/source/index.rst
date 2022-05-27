@@ -2,6 +2,7 @@
    sphinx-quickstart on Thu Mar 31 04:57:31 2022.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
+|MIT license| |Docs|
 
 **scReadSim**: a single-cell multi-omics read simulator
 =======================================================
@@ -47,3 +48,9 @@ or::
    scReadSim on 10x scATAC-seq with user-input chromatin regions<scATACseq_INPUT_10X>
 
 
+.. |Docs| image:: https://readthedocs.org/projects/screadsim/badge/?version=latest
+:target: https://screadsim.readthedocs.io/en/latest/?badge=latest
+:alt: Documentation Status
+
+.. |MIT license| image:: https://img.shields.io/badge/License-MIT-blue.svg
+   :target: https://lbesson.mit-license.org/
