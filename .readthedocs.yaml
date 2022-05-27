@@ -6,13 +6,15 @@ build:
 sphinx:
     builder: html
     configuration: docs/source/conf.py
-    fail_on_warning: false
+    fail_on_warning: true
 
 python:
     install:
     - requirements: docs/requirements.txt
+    - requirements: requirements.txt
     # install:
     # -   method: pip
     #     path: .
-    #     extra_requirements:
+    #     extra_requirements: 
     #     -   docs
+    #     - requirements.txt
