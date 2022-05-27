@@ -1,5 +1,3 @@
-.. automodule:: scReadSim
-
 API
 ===
 
@@ -11,7 +9,7 @@ Utility
 ~~~~~~~~~~~~~~~~~~~~~~~
 .. autosummary::
    :toctree: _autosummary
-   
+
    Utility.CallPeak
    Utility.ExtractBAMCoverage
    Utility.scATAC_CreateFeatureSets
