@@ -1,7 +1,7 @@
 # scReadSim <img src="./docs/source/_static/logo_scReadSim.png?raw=true" align="right" width="150"/>
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A module for single cell sequencing read simulator.
+A module for single cell multi-omics read simulator.
 
 ## Update Log
 **May 4th**
@@ -46,7 +46,7 @@ Currently, scReadSim doesn't support installation from PyPI.
 
 Install scReadSim from Github
 ```bash
-pip install git+https://github.com/Dominic7227/scReadSim.git
+pip install git+https://github.com/JSB-UCLA/scReadSim.git
 ```
 
 ## Tutorial
