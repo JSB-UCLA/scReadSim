@@ -7,10 +7,15 @@ Import scReadSim as::
 
    import scReadSim
 
-Main
-~~~~
-.. automodule:: scReadSim
-   :members:
+Utility
+~~~~~~~~~~~~~~~~~~~~~~~
+.. autosummary::
+   :toctree: _autosummary
+   Utility.CallPeak
+   Utility.ExtractBAMCoverage
+   Utility.scATAC_CreateFeatureSets
+
+
 
    
 
