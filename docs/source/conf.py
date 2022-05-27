@@ -20,6 +20,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
+autodoc_mock_imports = ["rpy2"]
 
 
 # -- General configuration ------------------------------------------------
@@ -40,7 +41,7 @@ extensions = ['sphinx.ext.autodoc',
     "myst_parser"] 
 
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
-autodoc_mock_imports = ["rpy2"]
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
