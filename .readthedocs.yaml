@@ -19,5 +19,5 @@ python:
         # - requirements.txt
 
 # Use conda instead of python
-conda:
-  environment: docs/environment.yml
+# conda:
+#   environment: docs/environment.yml
