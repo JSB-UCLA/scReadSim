@@ -18,16 +18,16 @@ scReadSim is a single-cell synthetic reads simulator for multiple omics data. It
 Installation
 ------------
 
-To install the latest version on `GitHub <https://github.com/Dominic7227/scReadSim>`_, 
+To install the latest version on `GitHub <https://github.com/JSB-UCLA/scReadSim>`_, 
 
 run::
 
-    git clone https://github.com/Dominic7227/scReadSim.git
+    git clone https://github.com/JSB-UCLA/scReadSim.git
     pip install scReadSim --user
 
 or::
 
-    pip install git+https://github.com/Dominic7227/scReadSim.git
+    pip install git+https://github.com/JSB-UCLA/scReadSim.git
 
 
 
@@ -41,8 +41,8 @@ or::
    :maxdepth: 1
    :caption: Tutorials
 
-   scReadSim on 10X scATAC-seq<scATACseq_NoInput_10X>
-   scReadSim on 10X scRNA-seq<scRNAseq_10X>
-   scReadSim on 10X scATAC-seq with user-input chromatin regions<scATACseq_INPUT_10X>
+   scReadSim on 10x scATAC-seq<scATACseq_NoInput_10X>
+   scReadSim on 10x scRNA-seq<scRNAseq_10X>
+   scReadSim on 10x scATAC-seq with user-input chromatin regions<scATACseq_INPUT_10X>
 
 

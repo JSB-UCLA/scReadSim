@@ -36,7 +36,7 @@ extensions = ['sphinx.ext.autodoc',
 'sphinx.ext.napoleon',
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
-    "sphinx.ext.viewcode"] # add notebool to sphinx
+    "sphinx.ext.viewcode"] 
 
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
 
