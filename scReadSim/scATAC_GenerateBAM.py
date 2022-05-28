@@ -77,7 +77,7 @@ def scATAC_INPUT_PerTruePeakEdition(peak_record, count_vec, read_lines, random_c
 	shift_number = peak_record[1] - peak_record[4] # ref + shift_number = true position
 	# Add cell information
 	nonempty_cell_ind = np.where(count_frag_vec != 0)[0]
-	read_code_simu_cur = [random_cellbarcode_list[nonempty_cell_ind[ind]] + ":CellType1" + "CellNo" + str(nonempty_cell_ind[ind] + 1) + ":" + str(true_peak_concat) + "#" + str(count).zfill(4) for ind in range(len(nonempty_cell_ind)) for count in range(count_frag_vec[nonempty_cell_ind[ind]])]
+	read_code_simu_cur = [random_cellbarcode_list[nonempty_cell_ind[ind]] + ":" + "CellNo" + str(nonempty_cell_ind[ind] + 1) + ":" + str(true_peak_concat) + "#" + str(count).zfill(4) for ind in range(len(nonempty_cell_ind)) for count in range(count_frag_vec[nonempty_cell_ind[ind]])]
 	jitter_value_vec = np.random.random_integers(-jitter_size,jitter_size,size=np.shape(reads_cur)[0])  # nrow(reads_cur) should equal to nfrag_cur
 	contain_read_indicator = reads_cur['r1_start'] == reads_cur['r2_start']
 	reads_cur['read_length'] = read_len
