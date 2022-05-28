@@ -23,9 +23,11 @@ INPUT_genome_size_file = pkg_resources.resource_filename("scReadSim", 'data/mm10
 
 Other required files for this example inlcuding the reference genome FASTA file and annotation gtf file are downloadable through the following chunk.  
 
-```{code-block} bash
-wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/reference.genome.tar.gz # 292 MB
-wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/gencode.vM10.annotation.gtf # 765 MB
+```{code-block} console
+$ mkdir example/refgenome_dir
+$ wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/reference.genome.tar.gz -P example/refgenome_dir # 292 MB
+$ wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/gencode.vM10.annotation.gtf -P example/refgenome_dir # 765 MB
+$ tar -xf example/refgenome_dir/reference.genome.tar.gz
 ```
 
 
@@ -51,7 +53,7 @@ To identify chromatin open regions for scATAC-seq, scReadSim utilizes MACS3 thro
 - `outdirectory`: Output directory of peak calling.
 - `MACS3_peakname_pre`: Base name of peak calling results for MACS3.
 
-The peak calling results by MACS3 would be output into directory `outdirectory`.
+The peak calling results by MACS3 would be output into directory `outdirectory`. 
 
 ```{code-block} python3
 Utility.CallPeak(macs3_directory, INPUT_bamfile, outdirectory, MACS3_peakname_pre)
@@ -98,7 +100,7 @@ Utility.bam2countmat(cells_barcode_file=INPUT_cells_barcode_file, bed_file=outdi
 
 
 ## Step 4: Synthetic count matrix simulation
-The current version of scReadSim implement scDesign2 (reference) to generate synthetic count matrix based on the constructed count matrix from the input BAM file. Use function `GenerateSyntheticCount.scATAC_GenerateSyntheticCount` to generate synthetic count matrix with following paramters
+The current version of scReadSim implement [scDesign2](https://github.com/JSB-UCLA/scDesign2) to generate synthetic count matrix based on the constructed count matrix from the input BAM file. Use function `GenerateSyntheticCount.scATAC_GenerateSyntheticCount` to generate synthetic count matrix with following paramters
 
 - `count_mat_filename`: Base name of the count matrix output by function bam2countmat().
 - `directory`: Path to the count matrix.
@@ -108,7 +110,7 @@ The current version of scReadSim implement scDesign2 (reference) to generate syn
 - `total_count_new`: (Optional, default: 'None') Number of (expected) sequencing depth. If not specified, scReadSim uses the real sequencing depth.
 - `celllabel_file`: (Optional, default: 'None') Specify the file containing the predefined cell labels. If no cell labels are specified, scReadSim performs a Louvain clustering before implementing scDesign2.
 
-Given the input count matrix `count_mat_filename`.txt, scReadSim generates two files to `outdirectory` for following analysis:
+Given the input count matrix *`count_mat_filename`.txt*, scReadSim generates two files to `outdirectory` for following analysis:
 
 - **`count_mat_filename`.scDesign2Simulated.txt**: Synthetic count matrix.
 - **`count_mat_filename`.scDesign2Simulated.nReadRegionmargional.txt**: The per-feature summation of counts for synthetic count matrix.
@@ -136,7 +138,7 @@ Based on the synthetic count matrix, scReadSim generates synthetic reads by rand
 - `read_len`: (Optional, default: '50') Specify the length of synthetic reads. Default value is 50 bp.
 - `jitter_size`: (Optional, default: '5') Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.
 
-This function will output a bed file `BED_filename`.bed storing the coordinates information of synthetic reads and its cell barcode file `OUTPUT_cells_barcode_file` in directory `outdirectory`.
+This function will output a bed file *`BED_filename`.bed* storing the coordinates information of synthetic reads and its cell barcode file *`OUTPUT_cells_barcode_file`* in directory `outdirectory`.
 
 ```{code-block} python3
 directory_cellnumber = outdirectory
@@ -165,11 +167,11 @@ Use function `scATAC_BED2FASTQ` to convert BED file to FASTQ file. This function
 - `BED_filename_combined`: Base name of the combined bed file output by function `scATAC_CombineBED`.
 - `synthetic_fastq_prename`: Specify the base name of the output FASTQ files.
 - `sort_FASTQ`: (Optional, default: True) Set `True` to sort the output FASTQ file.
-This function will output paired-end reads in FASTQ files named as `synthetic_fastq_prename`.read1.bed2fa.fq, `synthetic_fastq_prename`.read2.bed2fa.fq to directory `outdirectory`.
+This function will output paired-end reads in FASTQ files named as *`synthetic_fastq_prename`.read1.bed2fa.fq*, *`synthetic_fastq_prename`.read2.bed2fa.fq* to directory `outdirectory`.
 
 ```{code-block} python3
 referenceGenome_name = "chr1"
-referenceGenome_dir = "~/Projects/scATAC_Simulator/package_development/package_data" 
+referenceGenome_dir = "example/refgenome_dir" 
 referenceGenome_file = "%s/%s.fa" % (referenceGenome_dir, referenceGenome_name)
 synthetic_fastq_prename = BED_filename_combined_pre
 output_BAM_pre = "%s.syntheticBAM.CBincluded" % filename
@@ -188,8 +190,13 @@ Use function `AlignSyntheticBam_Pair` to align FASTQ files onto reference genome
 - `synthetic_fastq_prename`: Base name of the synthetic FASTQ files output by function `scATAC_BED2FASTQ`.
 - `output_BAM_pre`: Specify the base name of the output BAM file.
 
-**Important** Note that before using function `AlignSyntheticBam_Pair`, the reference gemome FASTA file should be indexed by bowtie2 through `bowtie2-build ${referenceGenome_name}.fa referenceGenome_name` command and make sure the output index files are within the same directory to `referenceGenome_name`.fa.
+**Important** Note that before using function `AlignSyntheticBam_Pair`, the reference gemome FASTA file should be indexed by bowtie2 through following chunk and make sure the output index files are within the same directory to *`referenceGenome_name`.fa*.
+```{code-block} console
+$ cd example/refgenome_dir # change to directory where your reference genome file is
+$ bowtie2-build chr1.fa chr1
+```
 
+Now align the synthetic reads on to the reference genome with bowtie2.
 ```{code-block} python3
 scATAC_GenerateBAM.AlignSyntheticBam_Pair(bowtie2_directory=bowtie2_directory, samtools_directory=samtools_directory, outdirectory=outdirectory, referenceGenome_name=referenceGenome_name, referenceGenome_dir=referenceGenome_dir, synthetic_fastq_prename=synthetic_fastq_prename, output_BAM_pre=output_BAM_pre)
 ```
@@ -201,10 +208,9 @@ Use function `scATAC_ErrorBase` to introduce random error to synthetic reads. It
 - `referenceGenome_file`: Reference genome FASTA file that the synthteic reads should align.
 - `outdirectory`: Specify the output directory of the synthteic FASTQ file with random errors.
 - `synthetic_fastq_prename`: Base name of the synthetic FASTQ files output by function `scATAC_BED2FASTQ`.
-This function will output synthetic reads with random errors in FASTQ files named as `synthetic_fastq_prename`.ErrorIncluded.read1.bed2fa.fq, `synthetic_fastq_prename`.ErrorIncluded.read2.bed2fa.fq to directory `outdirectory`.
+This function will output synthetic reads with random errors in FASTQ files named as *`synthetic_fastq_prename`.ErrorIncluded.read1.bed2fa.fq*, *`synthetic_fastq_prename`.ErrorIncluded.read2.bed2fa.fq* to directory `outdirectory`.
 
-**Note**
-Before using function `scATAC_ErrorBase`, please create the reference dictionary with function `CreateSequenceDictionary` using software Picard and make sure the output .dict files are within the same directory to `referenceGenome_name`.fa.
+> **Important** Note that before using function `scATAC_ErrorBase`, please create the reference dictionary with function `CreateSequenceDictionary` using software Picard and make sure the output *.dict* files are within the same directory to *`referenceGenome_name`.fa*.
 
 ```{code-block} python3
 # Generate reads with errors in FASTQs
