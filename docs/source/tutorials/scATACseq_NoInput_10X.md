@@ -114,7 +114,9 @@ Given the input count matrix `count_mat_filename`.txt, scReadSim generates two f
 - **`count_mat_filename`.scDesign2Simulated.nReadRegionmargional.txt**: The per-feature summation of counts for synthetic count matrix.
 
 ```{code-block} python3
+# Generate synthetic count matrix for foregroud features
 GenerateSyntheticCount.scATAC_GenerateSyntheticCount(count_mat_filename=count_mat_filename, directory=outdirectory, outdirectory=outdirectory)
+# Generate synthetic count matrix for backgroud features
 GenerateSyntheticCount.scATAC_GenerateSyntheticCount(count_mat_filename=count_mat_comple_filename, directory=outdirectory, outdirectory=outdirectory)
 ```
 
@@ -143,9 +145,10 @@ BED_filename_pre = "%s.syntheticBAM.CBincluded" % filename
 BED_COMPLE_filename_pre = "%s.syntheticBAM.COMPLE.CBincluded" % filename
 BED_filename_combined_pre = "%s.syntheticBAM.combined.CBincluded" % filename
 
-## Create synthetic read coordinates
+# Create synthetic read coordinates for foregroud features
 scATAC_GenerateBAM.scATAC_GenerateBAMCoord(
 	count_mat_filename=count_mat_filename, samtools_directory=samtools_directory, INPUT_bamfile=INPUT_bamfile, ref_peakfile=outdirectory + "/" + ref_peakfile, directory_cellnumber=directory_cellnumber, outdirectory=outdirectory, BED_filename=BED_filename_pre, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file)
+# Create synthetic read coordinates for backgroud features
 scATAC_GenerateBAM.scATAC_GenerateBAMCoord(
 	count_mat_filename=count_mat_comple_filename, samtools_directory=samtools_directory, INPUT_bamfile=INPUT_bamfile, ref_peakfile=outdirectory + "/" + ref_comple_peakfile, directory_cellnumber=directory_cellnumber, outdirectory=outdirectory, BED_filename=BED_COMPLE_filename_pre, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file)
 
@@ -171,10 +174,11 @@ referenceGenome_file = "%s/%s.fa" % (referenceGenome_dir, referenceGenome_name)
 synthetic_fastq_prename = BED_filename_combined_pre
 output_BAM_pre = "%s.syntheticBAM.CBincluded" % filename
 
+# Convert bed files into FASTQ files
 scATAC_GenerateBAM.scATAC_BED2FASTQ(bedtools_directory=bedtools_directory, seqtk_directory=seqtk_directory, referenceGenome_file=referenceGenome_file, outdirectory=outdirectory, BED_filename_combined=BED_filename_combined_pre, synthetic_fastq_prename=synthetic_fastq_prename, sort_FASTQ = True)
 ```
 
-### Convert FASTQ files to BAM file
+### Convert FASTQ files to BAM file (optional)
 Use function `AlignSyntheticBam_Pair` to align FASTQ files onto reference genome. It takes the following arguments:
 - `bowtie2_directory`: Path to software bowtie2.
 - `samtools_directory`: Path to software samtools.
@@ -190,7 +194,7 @@ Use function `AlignSyntheticBam_Pair` to align FASTQ files onto reference genome
 scATAC_GenerateBAM.AlignSyntheticBam_Pair(bowtie2_directory=bowtie2_directory, samtools_directory=samtools_directory, outdirectory=outdirectory, referenceGenome_name=referenceGenome_name, referenceGenome_dir=referenceGenome_dir, synthetic_fastq_prename=synthetic_fastq_prename, output_BAM_pre=output_BAM_pre)
 ```
 
-### Introduce Error to synthetic data
+### Introduce Error to synthetic data 
 Use function `scATAC_ErrorBase` to introduce random error to synthetic reads. It takes the following arguments:
 - `fgbio_jarfile`: Path to software fgbio jar script.
 - `INPUT_bamfile`: Input BAM file for anlaysis.
@@ -199,10 +203,13 @@ Use function `scATAC_ErrorBase` to introduce random error to synthetic reads. It
 - `synthetic_fastq_prename`: Base name of the synthetic FASTQ files output by function `scATAC_BED2FASTQ`.
 This function will output synthetic reads with random errors in FASTQ files named as `synthetic_fastq_prename`.ErrorIncluded.read1.bed2fa.fq, `synthetic_fastq_prename`.ErrorIncluded.read2.bed2fa.fq to directory `outdirectory`.
 
-**Important** Note that before using function `scATAC_ErrorBase`, please create the reference dictionary with function `CreateSequenceDictionary` using software Picard and make sure the output .dict files are within the same directory to `referenceGenome_name`.fa.
+**Note**
+Before using function `scATAC_ErrorBase`, please create the reference dictionary with function `CreateSequenceDictionary` using software Picard and make sure the output .dict files are within the same directory to `referenceGenome_name`.fa.
 
 ```{code-block} python3
+# Generate reads with errors in FASTQs
 scATAC_GenerateBAM.scATAC_ErrorBase(fgbio_jarfile=fgbio_jarfile, INPUT_bamfile=INPUT_bamfile, referenceGenome_file=referenceGenome_file, outdirectory=outdirectory, synthetic_fastq_prename=synthetic_fastq_prename)
+# Reads alignment (optional)
 scATAC_GenerateBAM.AlignSyntheticBam_Pair(bowtie2_directory=bowtie2_directory, samtools_directory=samtools_directory, outdirectory=outdirectory, referenceGenome_name=referenceGenome_name, referenceGenome_dir=referenceGenome_dir, synthetic_fastq_prename=synthetic_fastq_prename + ".ErrorIncluded" , output_BAM_pre=output_BAM_pre+ ".ErrorIncluded")
 ```
 

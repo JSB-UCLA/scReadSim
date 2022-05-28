@@ -53,7 +53,7 @@ pip install git+https://github.com/JSB-UCLA/scReadSim.git
 Single-cell sequencing technologies emerged and diversified rapidly in the past few years, along with the successful development of many computational tools. Realistic simulators can help researchers benchmark computational tools. However, few simulators can generate single-cell multi-omics data, and none can generate reads directly. To fill in this gap, we propose scReadSim, a simulator for single-cell multi-omics reads. Trained on real data, scReadSim generates synthetic sequencing reads in BAM or FASTQ formats. We deployed scReadSim on a sci-ATAC-seq dataset and a single-cell multimodal dataset to show the resemblance between synthetic data and real data at the read and count levels. Moreover, we show that scReadSim allows user-specified ground truths of accessible chromatin regions for single-cell chromatin accessibility data generation. In addition, scReadSim is flexible for allowing varying throughputs and library sizes as input parameters to guide experimental design.
 
 ## Website
-For tutorials and other details, check our website: http://screadsim.readthedocs.io/.
+For tutorials and other details, check [our website](http://screadsim.readthedocs.io/).
 
 ## License
 This pacakge is licensed under the terms
