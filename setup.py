@@ -20,7 +20,7 @@ setuptools.setup(
     python_requires=">=3.6",
     include_package_data=True,
     # packages=['scReadSim'],
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages('scReadSim'),
     # package_dir={'scReadSim': 'scReadSim'},
     package_data={'scReadSim': ['Rscript/*.R'],
     'scReadSim': ['data/*']}
