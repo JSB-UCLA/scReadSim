@@ -74,7 +74,7 @@ def scRNA_SampleSyntheticReads(count_mat_filename, samtools_directory, INPUT_bam
 
 
 
-def scRNA_PerTruePeakEdition(peak_record, count_vec, read_lines, random_cellbarcode_list, read_len=80, jitter_size=5):
+def scRNA_PerTruePeakEdition(peak_record, count_vec, read_lines, random_cellbarcode_list, read_len=90, jitter_size=5):
 	"""Formulate Synthetic reads.
 
 	Parameters
@@ -180,7 +180,7 @@ def scRNA_PerTruePeakEdition(peak_record, count_vec, read_lines, random_cellbarc
 # 	marginal_cell_number = pd.read_csv("%s" %  cellnumberfile, header=None, delimiter="\t").to_numpy()
 # 	n_cell = np.shape(count_mat)[1]
 # 	random_cellbarcode_list = cellbarcode_generator(n_cell, size=16)
-# 	read_len = 80
+# 	read_len = 90
 # 	jitter_size = 5
 # 	read1_bedfile="%s.read.bed" % BED_filename
 # 	start = time.time()
@@ -208,7 +208,7 @@ def scRNA_PerTruePeakEdition(peak_record, count_vec, read_lines, random_cellbarc
 # 	end = time.time()
 # 	print(end - start)
 
-def scRNA_GenerateBAMCoord(count_mat_filename, samtools_directory, INPUT_bamfile, ref_peakfile, directory_cellnumber, outdirectory, BED_filename, OUTPUT_cells_barcode_file, read_len=80, jitter_size=5):
+def scRNA_GenerateBAMCoord(count_mat_filename, samtools_directory, INPUT_bamfile, ref_peakfile, directory_cellnumber, outdirectory, BED_filename, OUTPUT_cells_barcode_file, read_len=90, jitter_size=5):
 	"""Generate Synthetic reads in BED format. 
 
 	Parameters
@@ -229,8 +229,8 @@ def scRNA_GenerateBAMCoord(count_mat_filename, samtools_directory, INPUT_bamfile
 		Specify the base name of output bed file.
 	OUTPUT_cells_barcode_file: `str`
 		Specify the file name storing the synthetic cell barcodes.
-	read_len: `int` (default: '80')
-		Specify the length of synthetic reads. Default value is 50 bp.
+	read_len: `int` (default: '90')
+		Specify the length of synthetic reads. Default value is 90 bp.
 	jitter_size: `int` (default: '5')
 		Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.
 	"""
