@@ -303,14 +303,14 @@ def match_peak(true_peakfile, ref_peakfile, outdirectory, assignment_file):
     print('Done!')
 
 
-def ComplementFeature(feature_file, comple_faeture_peakfile, genome_size_file, outdirectory, bedtools_directory):
+def ComplementFeature(feature_file, comple_feature_peakfile, genome_size_file, outdirectory, bedtools_directory):
     """Create background feature set given the user input foreground feature set `feature_file`.
 
     Parameters
     ----------
     feature_file: `str`
         Input feature set
-    comple_faeture_peakfile: `str`
+    comple_feature_peakfile: `str`
         Specify the base name of output background feature bed file.    
     genome_size_file: `str`
         Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicating the size.
@@ -328,7 +328,7 @@ def ComplementFeature(feature_file, comple_faeture_peakfile, genome_size_file, o
     output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     if error:
         print('[ERROR] Fail to extract corresponding chromosomes from genome size file:\n', error.decode())
-    complement_cmd = "%s/bedtools complement -i %s -g %s/genome_size_selected.txt > %s/%s" % (bedtools_directory, feature_file, outdirectory, outdirectory, comple_faeture_peakfile)
+    complement_cmd = "%s/bedtools complement -i %s -g %s/genome_size_selected.txt > %s/%s" % (bedtools_directory, feature_file, outdirectory, outdirectory, comple_feature_peakfile)
     output, error = subprocess.Popen(complement_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     if error:
         print('[ERROR] Fail to create complementary feature set:\n', error.decode())

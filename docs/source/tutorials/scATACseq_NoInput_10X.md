@@ -12,7 +12,7 @@ import pkg_resources
 
 
 ## Step 1: Download test sample
-The example deploys scReadSim on the [10x single cell ATAC-seq](https://www.10xgenomics.com/resources/datasets/fresh-embryonic-e-18-mouse-brain-5-k-1-standard-2-0-0) dataset. The demo BAM file and its corresponding cell barcode file could be accessed through the following chunk. This BAM file uses mm10 as reference genome, the required chromosome size file is also embedded within the package.  
+The example deploys scReadSim on the [10x single cell ATAC-seq](https://www.10xgenomics.com/resources/datasets/fresh-embryonic-e-18-mouse-brain-5-k-1-standard-2-0-0) dataset. The demo BAM file and its corresponding cell barcode file could be accessed through the following chunk. This BAM file uses mm10 as reference genome, the required chromosome size file is also pacakged for this example. 
 
 ```{code-block} python3
 INPUT_cells_barcode_file = pkg_resources.resource_filename("scReadSim", 'data/barcodes.tsv') 
@@ -21,7 +21,7 @@ INPUT_bamfile = pkg_resources.resource_filename("scReadSim", 'data/%s.bam' % fil
 INPUT_genome_size_file = pkg_resources.resource_filename("scReadSim", 'data/mm10.chrom.sizes')
 ```
 
-Other required files for this example inlcuding the reference genome FASTA file and annotation gtf file are downloadable through the following chunk.  
+Use the folloqing chunk to download other required files for this example, inlcuding the reference genome FASTA file (indexed by bowtie2) and annotation gtf file.
 
 ```{code-block} console
 $ mkdir example/refgenome_dir
@@ -72,7 +72,7 @@ Use function `scATAC_CreateFeatureSets` to generate features. This function need
 - `MACS3_peakname_pre`: Base name of peak calling results for MACS3.
 
 ```{code-block} python3
-######################## Generate Feature Set ######################## 
+# Generate features
 Utility.scATAC_CreateFeatureSets(INPUT_bamfile=INPUT_bamfile, samtools_directory=samtools_directory, bedtools_directory=bedtools_directory, outdirectory=outdirectory, genome_size_file=INPUT_genome_size_file, ref_peakfile=ref_peakfile, ref_comple_peakfile=ref_comple_peakfile, MACS3_peakname_pre=MACS3_peakname_pre)
 ```
 
@@ -86,7 +86,7 @@ Based on the feature sets output in **Step 2**, scReasSim constructs the count m
 - `outdirectory`: Specify the output directory of the count matrix file.
 - `count_mat_filename`: Specify the base name of output count matrix.
 
-For the user specified `count_mat_filename`, scReadSim will generate a count matrix named `count_mat_filename`.txt to directory `outdirectory`.
+For the user specified `count_mat_filename`, scReadSim will generate a count matrix named  *`count_mat_filename`.txt* to directory `outdirectory`.
 
 ```{code-block} python3
 count_mat_filename = "%s.countmatrix" % filename
@@ -138,7 +138,7 @@ Based on the synthetic count matrix, scReadSim generates synthetic reads by rand
 - `read_len`: (Optional, default: '50') Specify the length of synthetic reads. Default value is 50 bp.
 - `jitter_size`: (Optional, default: '5') Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.
 
-This function will output a bed file *`BED_filename`.bed* storing the coordinates information of synthetic reads and its cell barcode file *`OUTPUT_cells_barcode_file`* in directory `outdirectory`.
+This function will output a bed file *`BED_filename`.bed* storing the coordinates information of synthetic reads and its cell barcode file `OUTPUT_cells_barcode_file` in directory `outdirectory`.
 
 ```{code-block} python3
 directory_cellnumber = outdirectory
@@ -190,7 +190,8 @@ Use function `AlignSyntheticBam_Pair` to align FASTQ files onto reference genome
 - `synthetic_fastq_prename`: Base name of the synthetic FASTQ files output by function `scATAC_BED2FASTQ`.
 - `output_BAM_pre`: Specify the base name of the output BAM file.
 
-**Important** Note that before using function `AlignSyntheticBam_Pair`, the reference gemome FASTA file should be indexed by bowtie2 through following chunk and make sure the output index files are within the same directory to *`referenceGenome_name`.fa*.
+> **Important** Note that before using function `AlignSyntheticBam_Pair`, the reference gemome FASTA file should be indexed by bowtie2 through following chunk and make sure the output index files are within the same directory to *`referenceGenome_name`.fa*.
+
 ```{code-block} console
 $ cd example/refgenome_dir # change to directory where your reference genome file is
 $ bowtie2-build chr1.fa chr1
