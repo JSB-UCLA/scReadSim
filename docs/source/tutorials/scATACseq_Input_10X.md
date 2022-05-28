@@ -11,8 +11,8 @@ import pkg_resources
 ```
 
 
-## Step 1: Download test sample. 
-The example deploys scReadSim on the 10x single cell ATAC-seq (give url to original website). The demo BAM file and its corresponding cell barcode file could be accessed through the following chunk. This BAM file uses mm10 as reference genome, the required chromosome size file is also embedded within the package.  
+## Step 1: Download test sample
+The example deploys scReadSim on the [10x single cell ATAC-seq](https://www.10xgenomics.com/resources/datasets/fresh-embryonic-e-18-mouse-brain-5-k-1-standard-2-0-0) dataset. The demo BAM file and its corresponding cell barcode file could be accessed through the following chunk. This BAM file uses mm10 as reference genome, the required chromosome size file is also embedded within the package.  
 
 ```{code-block} python3
 INPUT_cells_barcode_file = pkg_resources.resource_filename("scReadSim", 'data/barcodes.tsv') 
@@ -33,7 +33,7 @@ wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/genc
 ## Step 2: Feature space construction
 When users specify features for their synthetic scATAC-seq data, scReadSim takes the user input features as the foreground features, and uses the copmlementary regions along the reference genome as the background features. The deom input chromatin open regions used in this example are truncated from the transcription starting sites of genes with length randomly chosen from $[250, 550]$ bp. 
 
-Meanwhile, scReadSim also needs to construct another pair of foreground and background features by using the real data. Specifically, scReadSim uses the chromatin open regions (peaks) identified by MACS3 (url attached here) as the feature space. Specifically, scReasSim takes peak regions as foreground features and the copmlementary regions along the reference genome as the background features. 
+Meanwhile, scReadSim also needs to construct another pair of foreground and background features by using the real data. Specifically, scReadSim uses the chromatin open regions (peaks) identified by [MACS3](https://github.com/macs3-project/MACS) as the feature space. Specifically, scReasSim takes peak regions as foreground features and the copmlementary regions along the reference genome as the background features. 
 
 ### Specify input parameters 
 Create output directory if it does not exist. 
