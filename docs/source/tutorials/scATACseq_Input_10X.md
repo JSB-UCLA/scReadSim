@@ -25,7 +25,7 @@ INPUT_peakfile = pkg_resources.resource_filename("scReadSim", 'data/%s.INPUT.pea
 Other required files for this example inlcuding the reference genome FASTA file and annotation gtf file are downloadable through the following chunk.  
 
 ```{code-block} bash
-wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/reference.genmoe.tar.gz # 292 MB
+wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/reference.genome.tar.gz # 292 MB
 wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/gencode.vM10.annotation.gtf # 765 MB
 ```
 
