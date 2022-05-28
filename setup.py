@@ -11,7 +11,7 @@ setuptools.setup(
     description="A single-cell multi-omics read simulator.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/Dominic7227/scReadSim",
+    url="https://github.com/JSB-UCLA/scReadSim",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
@@ -21,7 +21,7 @@ setuptools.setup(
     include_package_data=True,
     # packages=['scReadSim'],
     packages=setuptools.find_packages(),
-    package_dir={'scReadSim': 'scReadSim'},
+    # package_dir={'scReadSim': 'scReadSim'},
     package_data={'scReadSim': ['Rscript/*.R'],
     'scReadSim': ['data/*']}
 )
