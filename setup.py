@@ -18,6 +18,10 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.6",
+    install_requires=[
+        x.strip() for x in
+        Path('requirements.txt').read_text('utf-8').splitlines()
+    ],
     include_package_data=True,
     # packages=['scReadSim'],
     packages=setuptools.find_packages(),
