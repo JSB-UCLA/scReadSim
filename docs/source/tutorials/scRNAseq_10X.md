@@ -35,6 +35,7 @@ $ tar -xf reference.genome.tar.gz
 For scRNA-seq, scReadSim autamatically uses gene transcript regions as the feature space. Specifically, scReasSim takes gene regions as foreground features and the copmlementary regions along the reference genome as the background features. 
 
 ### Specify input parameters 
+Specify the absolute path of output directory. Create output directory if it does not exist.
 
 ```{code-block} python3
 outdirectory = "example/outputs" # use absolute path
