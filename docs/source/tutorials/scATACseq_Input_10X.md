@@ -25,7 +25,7 @@ INPUT_peakfile = pkg_resources.resource_filename("scReadSim", 'data/%s.INPUT.pea
 Use the folloqing chunk to download other required files for this example, inlcuding the reference genome FASTA file (indexed by bowtie2) and annotation gtf file. 
 
 ```{code-block} console
-$ mkdir example/refgenome_dir
+$ mkdir example/refgenome_dir 
 $ cd example/refgenome_dir
 $ wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/reference.genome.tar.gz # 292 MB
 $ wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/gencode.vM10.annotation.gtf # 765 MB
@@ -41,7 +41,7 @@ Meanwhile, scReadSim also needs to construct another pair of foreground and back
 Create output directory if it does not exist. 
 
 ```{code-block} python3
-outdirectory = "example/outputs"
+outdirectory = "example/outputs" # use absolute path
 os.mkdir(outdirectory)
 ```
 

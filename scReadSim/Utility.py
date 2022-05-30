@@ -26,8 +26,7 @@ def CallPeak(macs3_directory, INPUT_bamfile, outdirectory, MACS3_peakname_pre):
     """
     macs_cmd = "%s/macs3 callpeak -f BAMPE -t %s -g mm -n %s/%s -B -q 0.01 --outdir %s" % (macs3_directory, INPUT_bamfile, outdirectory, MACS3_peakname_pre, outdirectory)
     output, error = subprocess.Popen(macs_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-    if error:
-         print('[ERROR] Fail to call peaks:\n', error.decode())
+    print('[MACS3] Call peaks:\n', error.decode())
 
 
 def ExtractBAMCoverage(INPUT_bamfile, samtools_directory, outdirectory):

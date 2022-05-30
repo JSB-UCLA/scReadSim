@@ -39,7 +39,7 @@ For scATAC-seq, scReadSim uses the chromatin open regions (peaks) identified by 
 Create output directory if it does not exist.
 
 ```{code-block} python3
-outdirectory = "example/outputs"
+outdirectory = "example/outputs" # use absolute path
 os.mkdir(outdirectory)
 
 MACS3_peakname_pre = filename + ".MACS3"

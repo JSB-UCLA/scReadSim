@@ -37,7 +37,7 @@ For scRNA-seq, scReadSim autamatically uses gene transcript regions as the featu
 ### Specify input parameters 
 
 ```{code-block} python3
-outdirectory = "example/outputs"
+outdirectory = "example/outputs" # use absolute path
 os.mkdir(outdirectory)
 
 INPUT_genome_annotation = "example/refgenome_dir/gencode.vM10.annotation.gtf" # Change the path
