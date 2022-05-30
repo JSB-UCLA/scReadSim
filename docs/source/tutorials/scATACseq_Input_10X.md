@@ -243,7 +243,8 @@ $ cd example/refgenome_dir # change to directory where your reference genome fil
 $ bowtie2-build chr1.fa chr1
 ```
 
-Now align the synthetic reads on to the reference genome with bowtie2.
+In the demo data, We have indexed chr1.fa stored in reference.genome.chr1.tar.gz. Now align the synthetic reads on to the reference genome with bowtie2.
+
 ```{code-block} python3
 output_BAM_pre = "%s.syntheticBAM.CBincluded" % filename
 
@@ -269,6 +270,8 @@ $ java -jar /home/users/picard/build/libs/picard.jar CreateSequenceDictionary \
 $       -R chr1.fa \
 $       -O chr1.fa.dict
 ```
+
+In the demo data, We have built the dictionary file chr1.fa.dict for chr1.fa stored in reference.genome.chr1.tar.gz. 
 
 ```{code-block} python3
 # Generate reads with errors in FASTQs
