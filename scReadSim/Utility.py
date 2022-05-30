@@ -273,24 +273,24 @@ def find_nearest(array, value):
     return idx
 
 
-def match_peak(true_peakfile, ref_peakfile, outdirectory, assignment_file):
-    """Find the reference features for the given features `true_peakfile` according to the similarity of peak length. The assignment would be stored as `assignment_file` within `outdirectory`.
+def match_peak(input_peakfile, real_peakfile, outdirectory, assignment_file):
+    """Find the `real_peakfile` features for the input features `input_peakfile` according to the similarity of peak length. The assignment would be stored as `assignment_file` within `outdirectory`.
 
     Parameters
     ----------
-    true_peakfile: `str`
-        Directory of the target features bed file.
-    ref_peakfile: `str`
-        Directory of the reference features bed file.
+    input_peakfile: `str`
+        User input foreground(or background) features bed file.
+    real_peakfile: `str`
+        Real foreground(or background) features bed file. 
     outdirectory: `str`
         Output directory.
     assignment_file: `str`
         Specify the name of peak assignment file.
     """
-    with open(true_peakfile) as true_peak_file:
+    with open(input_peakfile) as true_peak_file:
         reader = csv.reader(true_peak_file, delimiter="\t")
         true_peak_set = np.asarray(list(reader))
-    with open(ref_peakfile) as ref_peak_file:
+    with open(real_peakfile) as ref_peak_file:
         reader = csv.reader(ref_peak_file, delimiter="\t")
         ref_peak_set = np.asarray(list(reader))
     ref_peak_fraglen = np.asarray([int(x[2]) - int(x[1]) for x in ref_peak_set])

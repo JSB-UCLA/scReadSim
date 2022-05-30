@@ -27,9 +27,9 @@ Use the folloqing chunk to download other required files for this example, inlcu
 ```{code-block} console
 $ mkdir example/refgenome_dir 
 $ cd example/refgenome_dir
-$ wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/reference.genome.tar.gz # 292 MB
+$ wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/reference.genome.chr1.tar.gz # 292 MB
 $ wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/gencode.vM10.annotation.gtf # 765 MB
-$ tar -xf reference.genome.tar.gz
+$ tar -xf reference.genome.chr1.tar.gz
 ```
 
 ## Step 2: Feature space construction
@@ -46,7 +46,7 @@ os.mkdir(outdirectory)
 ```
 
 ### Prepare user input features
-To generate background features for input features, use function `ComplementFeature` with following arguments:
+To generate background features for input features, use function `Utility.ComplementFeature` with following arguments:
 
 - `feature_file`: Input feature set.
 - `comple_feature_peakfile`: Specify the base name of output background feature bed file.    
@@ -63,7 +63,7 @@ Utility.ComplementFeature(feature_file=INPUT_peakfile, comple_feature_peakfile=i
 
 ### Prepare real features
 
-To identify chromatin open regions for scATAC-seq, scReadSim utilizes MACS3 through function `CallPeak` with following arguments
+To identify chromatin open regions for scATAC-seq, scReadSim utilizes MACS3 through function `Utility.CallPeak` with following arguments
 - `macs3_directory`: Path to software MACS3.
 - `INPUT_bamfile`: Input BAM file for anlaysis.
 - `outdirectory`: Output directory of peak calling.
@@ -76,7 +76,7 @@ MACS3_peakname_pre = filename + ".MACS3"
 Utility.CallPeak(macs3_directory=macs3_directory, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, MACS3_peakname_pre=MACS3_peakname_pre)
 ```
 
-Use function `scATAC_CreateFeatureSets` to generate features. This function needs user to specify
+Use function `Utility.scATAC_CreateFeatureSets` to generate features. This function needs user to specify
 
 - `INPUT_bamfile`: Input BAM file for anlaysis.
 - `samtools_directory`: Path to software *samtools*.
@@ -97,12 +97,12 @@ Utility.scATAC_CreateFeatureSets(INPUT_bamfile=INPUT_bamfile, samtools_directory
 
 
 ## Step 3: Count matrix construction
-To consturct count matrix for user-input foreground features and its corresponding background counterparts, scReadSim first uses function `match_peak` to assign a real foreground(or background) feature to each user-input foreground (or background) feature based on the feature length. 
+To consturct count matrix for user-input foreground features and its corresponding background counterparts, scReadSim first uses function `Utility.match_peak` to assign a real foreground(or background) feature to each user-input foreground (or background) feature based on the feature length. 
 
-Function `match_peak` takes following input arguments:
+Function `Utility.match_peak` takes following input arguments:
 
-- `true_peakfile`: User input foreground(or background) features bed file.
-- `ref_peakfile`: Reference foreground(or background) features bed file. 
+- `input_peakfile`: User input foreground(or background) features bed file.
+- `real_peakfile`: Real foreground(or background) features bed file. 
 - `outdirectory`: Output directory of the features assingment file.
 - `assignment_file`: Specify the name of features assignment file.
 
@@ -118,7 +118,7 @@ Utility.match_peak(true_peakfile=INPUT_peakfile, ref_peakfile=outdirectory + "/"
 Utility.match_peak(true_peakfile=outdirectory + "/" + input_comple_peakfile, ref_peakfile=outdirectory + "/" + ref_comple_peakfile, outdirectory=outdirectory, assignment_file=assignment_comple_file)
 ```
 
-Based on the feature sets output in **Step 2**, scReasSim constructs the count matrices for foreground and background features through function `bam2countmat_INPUT`. This function needs user to specify
+Based on the feature sets output in **Step 2**, scReasSim constructs the count matrices for foreground and background features through function `Utility.bam2countmat_INPUT`. This function needs user to specify
 
 - `cells_barcode_file`: Cell barcode file corresponding to the input BAM file.
 - `assignment_file`: Features assignment file output by function `match_peak`.
@@ -166,7 +166,7 @@ GenerateSyntheticCount.scATAC_GenerateSyntheticCount(count_mat_filename=count_ma
 ## Step 5: Synthetic BAM file generation
 
 ### Generate synthetic reads in BED format
-Based on the synthetic count matrix, scReadSim generates synthetic reads by randomly sampling from the real BAM file input by users. First use function `scATAC_GenerateBAMCoord` to create the synthetic reads and output in BED file storing the coordinates information. Function `scATAC_GenerateBAMCoord` takes following input arguments:
+Based on the synthetic count matrix, scReadSim generates synthetic reads by randomly sampling from the real BAM file input by users. First use function `scATAC_GenerateBAM.scATAC_GenerateBAMCoord_INPUT` to create the synthetic reads and output in BED file storing the coordinates information. Function `scATAC_GenerateBAM.scATAC_GenerateBAMCoord_INPUT` takes following input arguments:
 - `count_mat_filename`: The base name of output count matrix in bam2countmat.
 - `samtools_directory`: Path to software samtools.
 - `INPUT_bamfile`: Input BAM file for anlaysis.
@@ -206,7 +206,7 @@ scATAC_GenerateBAM.scATAC_CombineBED(outdirectory=outdirectory, BED_filename_pre
 
 
 ### Convert BED files to FASTQ files
-Use function `scATAC_BED2FASTQ` to convert BED file to FASTQ file. This function takes the following arguments:
+Use function `scATAC_GenerateBAM.scATAC_BED2FASTQ` to convert BED file to FASTQ file. This function takes the following arguments:
 - `bedtools_directory`: Path to software bedtools.
 - `seqtk_directory`: Path to software seqtk.
 - `referenceGenome_file`: Reference genome FASTA file that the synthteic reads should align.
@@ -214,20 +214,20 @@ Use function `scATAC_BED2FASTQ` to convert BED file to FASTQ file. This function
 - `BED_filename_combined`: Base name of the combined bed file output by function `scATAC_CombineBED`.
 - `synthetic_fastq_prename`: Specify the base name of the output FASTQ files.
 - `sort_FASTQ`: (Optional, default: True) Set `True` to sort the output FASTQ file.
+
 This function will output paired-end reads in FASTQ files named as *`synthetic_fastq_prename`.read1.bed2fa.fq*, *`synthetic_fastq_prename`.read2.bed2fa.fq* to directory `outdirectory`.
 
 ```{code-block} python3
 referenceGenome_name = "chr1"
 referenceGenome_dir = "/home/users/example/refgenome_dir" # Use absolut path
 referenceGenome_file = "%s/%s.fa" % (referenceGenome_dir, referenceGenome_name)
-output_BAM_pre = "%s.syntheticBAM.CBincluded" % filename
 
 # Convert bed files into FASTQ files
 scATAC_GenerateBAM.scATAC_BED2FASTQ(bedtools_directory=bedtools_directory, seqtk_directory=seqtk_directory, referenceGenome_file=referenceGenome_file, outdirectory=outdirectory, BED_filename_combined=BED_filename_combined_pre, synthetic_fastq_prename=synthetic_fastq_prename, sort_FASTQ = True)
 ```
 
 ### Convert FASTQ files to BAM file (optional)
-Use function `AlignSyntheticBam_Pair` to align FASTQ files onto reference genome. It takes the following arguments:
+Use function `scATAC_GenerateBAM.AlignSyntheticBam_Pair` to align FASTQ files onto reference genome. It takes the following arguments:
 - `bowtie2_directory`: Path to software bowtie2.
 - `samtools_directory`: Path to software samtools.
 - `outdirectory`: Specify the output directory of the synthteic BAM file.
@@ -236,7 +236,7 @@ Use function `AlignSyntheticBam_Pair` to align FASTQ files onto reference genome
 - `synthetic_fastq_prename`: Base name of the synthetic FASTQ files output by function `scATAC_BED2FASTQ`.
 - `output_BAM_pre`: Specify the base name of the output BAM file.
 
-> **Important** Note that before using function `AlignSyntheticBam_Pair`, the reference gemome FASTA file should be indexed by bowtie2 through following chunk and make sure the output index files are within the same directory to *`referenceGenome_name`.fa*.
+> **Important** Note that before using function `scATAC_GenerateBAM.AlignSyntheticBam_Pair`, the reference gemome FASTA file should be indexed by bowtie2 through following chunk and make sure the output index files are within the same directory to *`referenceGenome_name`.fa*.
 
 ```{code-block} console
 $ cd example/refgenome_dir # change to directory where your reference genome file is
@@ -245,19 +245,30 @@ $ bowtie2-build chr1.fa chr1
 
 Now align the synthetic reads on to the reference genome with bowtie2.
 ```{code-block} python3
+output_BAM_pre = "%s.syntheticBAM.CBincluded" % filename
+
+# Convert FASTQ files to BAM file
 scATAC_GenerateBAM.AlignSyntheticBam_Pair(bowtie2_directory=bowtie2_directory, samtools_directory=samtools_directory, outdirectory=outdirectory, referenceGenome_name=referenceGenome_name, referenceGenome_dir=referenceGenome_dir, synthetic_fastq_prename=synthetic_fastq_prename, output_BAM_pre=output_BAM_pre)
 ```
 
 ### Introduce Error to synthetic data 
-Use function `scATAC_ErrorBase` to introduce random error to synthetic reads. It takes the following arguments:
+Use function `scATAC_GenerateBAM.scATAC_ErrorBase` to introduce random error to synthetic reads. It takes the following arguments:
 - `fgbio_jarfile`: Path to software fgbio jar script.
 - `INPUT_bamfile`: Input BAM file for anlaysis.
 - `referenceGenome_file`: Reference genome FASTA file that the synthteic reads should align.
 - `outdirectory`: Specify the output directory of the synthteic FASTQ file with random errors.
 - `synthetic_fastq_prename`: Base name of the synthetic FASTQ files output by function `scATAC_BED2FASTQ`.
+
 This function will output synthetic reads with random errors in FASTQ files named as *`synthetic_fastq_prename`.ErrorIncluded.read1.bed2fa.fq*, *`synthetic_fastq_prename`.ErrorIncluded.read2.bed2fa.fq* to directory `outdirectory`.
 
-> **Important** Note that before using function `scATAC_ErrorBase`, please create the reference dictionary with function `CreateSequenceDictionary` using software Picard and make sure the output *.dict* files are within the same directory to *`referenceGenome_name`.fa*.
+> **Important** Note that before using function `scATAC_GenerateBAM.scATAC_ErrorBase`, please create the reference dictionary with function `CreateSequenceDictionary` using software Picard and make sure the output *.dict* files are within the same directory to *`referenceGenome_name`.fa*.
+
+```{code-block} console
+$ cd example/refgenome_dir # change to directory where your reference genome file is
+$ java -jar /home/users/picard/build/libs/picard.jar CreateSequenceDictionary \
+$       -R chr1.fa \
+$       -O chr1.fa.dict
+```
 
 ```{code-block} python3
 # Generate reads with errors in FASTQs

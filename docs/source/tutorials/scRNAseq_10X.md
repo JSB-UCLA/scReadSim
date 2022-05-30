@@ -26,9 +26,9 @@ Use the folloqing chunk to download other required files for this example, inlcu
 ```{code-block} console
 $ mkdir example/refgenome_dir
 $ cd example/refgenome_dir
-$ wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/reference.genome.tar.gz # 292 MB
+$ wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/reference.genome.chr1.tar.gz # 292 MB
 $ wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/gencode.vM10.annotation.gtf # 765 MB
-$ tar -xf reference.genome.tar.gz
+$ tar -xf reference.genome.chr1.tar.gz
 ```
 
 ## Step 2: Feature space construction
@@ -145,7 +145,7 @@ scRNA_GenerateBAM.scRNA_GenerateBAMCoord(
 	count_mat_filename=count_mat_comple_filename, samtools_directory=samtools_directory, INPUT_bamfile=INPUT_bamfile, ref_peakfile=outdirectory + "/" + ref_comple_peakfile, directory_cellnumber=directory_cellnumber, outdirectory=outdirectory, BED_filename=BED_COMPLE_filename_pre, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file)
 
 # Combine foreground and background bed file
-scRNA_GenerateBAM.scRNA_CombineBED(outdirectory, BED_filename_pre, BED_COMPLE_filename_pre, BED_filename_combined_pre)
+scRNA_GenerateBAM.scRNA_CombineBED(outdirectory=outdirectory, BED_filename_pre=BED_filename_pre, BED_COMPLE_filename_pre=BED_COMPLE_filename_pre, BED_filename_combined_pre=BED_filename_combined_pre)
 ```
 
 ### Convert BED files to FASTQ files
@@ -157,6 +157,7 @@ Use function `scRNA_BED2FASTQ` to convert BED file to FASTQ file. This function 
 - `BED_filename_combined`: Base name of the combined bed file output by function `scRNA_CombineBED`.
 - `synthetic_fastq_prename`: Specify the base name of the output FASTQ files.
 - `sort_FASTQ`: (Optional, default: True) Set `True` to sort the output FASTQ file.
+
 This function will output paired-end reads in FASTQ files named as *`BED_filename_combined`.read1.bed2fa.fq*, *`BED_filename_combined`.read2.bed2fa.fq* to directory `outdirectory`.
 
 ```{code-block} python3
@@ -164,7 +165,6 @@ referenceGenome_name = "chr1"
 referenceGenome_dir = "/home/users/example/refgenome_dir" 
 referenceGenome_file = "%s/%s.fa" % (referenceGenome_dir, referenceGenome_name)
 synthetic_fastq_prename = BED_filename_combined_pre
-output_BAM_pre = "%s.syntheticBAM.CBincluded" % filename
 
 # Convert bed files into FASTQ files
 scRNA_GenerateBAM.scRNA_BED2FASTQ(bedtools_directory=bedtools_directory, seqtk_directory=seqtk_directory, referenceGenome_file=referenceGenome_file, outdirectory=outdirectory, BED_filename_combined=BED_filename_combined_pre, synthetic_fastq_prename=synthetic_fastq_prename, sort_FASTQ = True)
@@ -189,6 +189,9 @@ $ bowtie2-build chr1.fa chr1
 
 Now align the synthetic reads on to the reference genome with bowtie2.
 ```{code-block} python3
+output_BAM_pre = "%s.syntheticBAM.CBincluded" % filename
+
+# Convert FASTQ files to BAM file
 scRNA_GenerateBAM.AlignSyntheticBam_Pair(bowtie2_directory=bowtie2_directory, samtools_directory=samtools_directory, outdirectory=outdirectory, referenceGenome_name=referenceGenome_name, referenceGenome_dir=referenceGenome_dir, synthetic_fastq_prename=synthetic_fastq_prename, output_BAM_pre=output_BAM_pre)
 ```
 
@@ -199,9 +202,17 @@ Use function `scRNA_ErrorBase` to introduce random error to synthetic reads. It 
 - `referenceGenome_file`: Reference genome FASTA file that the synthteic reads should align.
 - `outdirectory`: Specify the output directory of the synthteic FASTQ file with random errors.
 - `synthetic_fastq_prename`: Base name of the synthetic FASTQ files output by function `scRNA_BED2FASTQ`.
+
 This function will output synthetic reads with random errors in FASTQ files named as *`synthetic_fastq_prename`.ErrorIncluded.read1.bed2fa.fq*, *`synthetic_fastq_prename`.ErrorIncluded.read2.bed2fa.fq* to directory `outdirectory`.
 
 > **Important** Note that before using function `scRNA_ErrorBase`, please create the reference dictionary with function `CreateSequenceDictionary` using software Picard and make sure the output *.dict* files are within the same directory to *`referenceGenome_name`.fa*.
+
+```{code-block} console
+$ cd example/refgenome_dir # change to directory where your reference genome file is
+$ java -jar /home/users/picard/build/libs/picard.jar CreateSequenceDictionary \
+$       -R chr1.fa \
+$       -O chr1.fa.dict
+```
 
 ```{code-block} python3
 # Generate reads with errors in FASTQs
