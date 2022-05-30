@@ -287,6 +287,16 @@ def scRNA_GenerateBAMCoord(count_mat_filename, samtools_directory, INPUT_bamfile
 def scRNA_CombineBED(outdirectory, BED_filename_pre, BED_COMPLE_filename_pre, BED_filename_combined_pre):
 	"""Combine the bed files of foreground and background feature sets into one bed file.
 
+	Parameters
+	----------
+	outdirectory: `str`
+		Directory of `BED_filename_pre`.txt and `BED_COMPLE_filename_pre`.txt.
+	BED_filename_pre: 'str'
+		File prename of foreground synthetic reads bed file.
+	BED_COMPLE_filename_pre: 'str'
+		File prename of background synthetic reads bed file.
+	BED_filename_combined_pre: 'str'
+		Specify the combined syntehtic reads bed file prename. The combined bed file will be output to `outdirectory`.
 	"""
 	combine_read_cmd = "cat %s/%s.read.bed %s/%s.read.bed | sort -k1,1 -k2,2n | cut -f1-5 > %s/%s.read.bed" % (outdirectory, BED_filename_pre, outdirectory, BED_COMPLE_filename_pre, outdirectory, BED_filename_combined_pre)
 	output, error = subprocess.Popen(combine_read_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()

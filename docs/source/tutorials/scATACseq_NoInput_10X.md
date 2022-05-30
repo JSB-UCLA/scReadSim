@@ -39,7 +39,7 @@ For scATAC-seq, scReadSim uses the chromatin open regions (peaks) identified by 
 Specify the absolute path of output directory. Create output directory if it does not exist.
 
 ```{code-block} python3
-outdirectory = "example/outputs" # use absolute path
+outdirectory = "/home/users/example/outputs" # use absolute path
 os.mkdir(outdirectory)
 
 MACS3_peakname_pre = filename + ".MACS3"
@@ -106,10 +106,9 @@ The current version of scReadSim implement [scDesign2](https://github.com/JSB-UC
 - `count_mat_filename`: Base name of the count matrix output by function bam2countmat().
 - `directory`: Path to the count matrix.
 - `outdirectory`: Output directory of coordinate files.
-- `cluster_prestep`: Set `cluster_prestep=True` to perform a Louvain clustering before implementing scDesign2.
 - `n_cell_new`: (Optional, default: 'None') Number of synthetic cells. If not specified, scReadSim uses the number of real cells.
 - `total_count_new`: (Optional, default: 'None') Number of (expected) sequencing depth. If not specified, scReadSim uses the real sequencing depth.
-- `celllabel_file`: (Optional, default: 'None') Specify the file containing the predefined cell labels. If no cell labels are specified, scReadSim performs a Louvain clustering before implementing scDesign2.
+- `celllabel_file`: (Optional, default: 'None') Specify the one-column text file containing the predefined cell labels. Make sure that the order of cell labels correspond to the cell barcode file. If no cell labels are specified, scReadSim performs a Louvain clustering before implementing scDesign2.
 
 Given the input count matrix *`count_mat_filename`.txt*, scReadSim generates two files to `outdirectory` for following analysis:
 
@@ -141,6 +140,13 @@ Based on the synthetic count matrix, scReadSim generates synthetic reads by rand
 
 This function will output a bed file *`BED_filename`.bed* storing the coordinates information of synthetic reads and its cell barcode file `OUTPUT_cells_barcode_file` in directory `outdirectory`.
 
+After generation of synthetic reads for both foreground and background features, combine the two bed files using function `scATAC_GenerateBAM.scATAC_CombineBED`, which takes following input arguments:
+- `outdirectory`: Directory of `BED_filename_pre`.txt and `BED_COMPLE_filename_pre`.txt.
+- `BED_filename_pre`: File prename of foreground synthetic reads bed file.
+- `BED_COMPLE_filename_pre`: File prename of background synthetic reads bed file.
+- `BED_filename_combined_pre`: Specify the combined syntehtic reads bed file prename. The combined bed file will be output to `outdirectory`.
+
+
 ```{code-block} python3
 directory_cellnumber = outdirectory
 OUTPUT_cells_barcode_file = "synthetic_cell_barcode.txt"
@@ -156,7 +162,7 @@ scATAC_GenerateBAM.scATAC_GenerateBAMCoord(
 	count_mat_filename=count_mat_comple_filename, samtools_directory=samtools_directory, INPUT_bamfile=INPUT_bamfile, ref_peakfile=outdirectory + "/" + ref_comple_peakfile, directory_cellnumber=directory_cellnumber, outdirectory=outdirectory, BED_filename=BED_COMPLE_filename_pre, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file)
 
 # Combine foreground and background bed file
-scATAC_GenerateBAM.scATAC_CombineBED(outdirectory, BED_filename_pre, BED_COMPLE_filename_pre, BED_filename_combined_pre)
+scATAC_GenerateBAM.scATAC_CombineBED(outdirectory=outdirectory, BED_filename_pre=BED_filename_pre, BED_COMPLE_filename_pre=BED_COMPLE_filename_pre, BED_filename_combined_pre=BED_filename_combined_pre)
 ```
 
 ### Convert BED files to FASTQ files
@@ -172,7 +178,7 @@ This function will output paired-end reads in FASTQ files named as *`synthetic_f
 
 ```{code-block} python3
 referenceGenome_name = "chr1"
-referenceGenome_dir = "example/refgenome_dir" 
+referenceGenome_dir = "/home/users/example/refgenome_dir" 
 referenceGenome_file = "%s/%s.fa" % (referenceGenome_dir, referenceGenome_name)
 synthetic_fastq_prename = BED_filename_combined_pre
 output_BAM_pre = "%s.syntheticBAM.CBincluded" % filename

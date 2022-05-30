@@ -38,7 +38,7 @@ For scRNA-seq, scReadSim autamatically uses gene transcript regions as the featu
 Specify the absolute path of output directory. Create output directory if it does not exist.
 
 ```{code-block} python3
-outdirectory = "example/outputs" # use absolute path
+outdirectory = "/home/users/example/outputs" # use absolute path
 os.mkdir(outdirectory)
 
 INPUT_genome_annotation = "example/refgenome_dir/gencode.vM10.annotation.gtf" # Change the path
@@ -92,7 +92,8 @@ The current version of scReadSim implement scDesign2 (reference) to generate syn
 - `outdirectory`: Output directory of coordinate files.
 - `n_cell_new`: (Optional, default: 'None') Number of synthetic cells. If not specified, scReadSim uses the number of real cells.
 - `total_count_new`: (Optional, default: 'None') Number of (expected) sequencing depth. If not specified, scReadSim uses the real sequencing depth.
-- `celllabel_file`: (Optional, default: 'None') Specify the file containing the predefined cell labels. If no cell labels are specified, scReadSim performs a Louvain clustering before implementing scDesign2.
+- `celllabel_file`: (Optional, default: 'None') Specify the one-column text file containing the predefined cell labels. Make sure that the order of cell labels correspond to the cell barcode file. If no cell labels are specified, scReadSim performs a Louvain clustering before implementing scDesign2.
+
 
 Given the input count matrix *`count_mat_filename`.txt*, scReadSim generates two files to `outdirectory` for following analysis:
 
@@ -122,6 +123,12 @@ Based on the synthetic count matrix, scReadSim generates synthetic reads by rand
 - `jitter_size`: (Optional, default: '5') Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.
 
 This function will output a bed file *`BED_filename`.bed* storing the coordinates information of synthetic reads and its cell barcode file `OUTPUT_cells_barcode_file` in directory `outdirectory`.
+
+After generation of synthetic reads for both foreground and background features, combine the two bed files using function `scRNA_GenerateBAM.scRNA_CombineBED`, which takes following input arguments:
+- `outdirectory`: Directory of `BED_filename_pre`.txt and `BED_COMPLE_filename_pre`.txt.
+- `BED_filename_pre`: File prename of foreground synthetic reads bed file.
+- `BED_COMPLE_filename_pre`: File prename of background synthetic reads bed file.
+- `BED_filename_combined_pre`: Specify the combined syntehtic reads bed file prename. The combined bed file will be output to `outdirectory`.
 
 ```{code-block} python3
 directory_cellnumber = outdirectory
@@ -154,7 +161,7 @@ This function will output paired-end reads in FASTQ files named as *`BED_filenam
 
 ```{code-block} python3
 referenceGenome_name = "chr1"
-referenceGenome_dir = "example/refgenome_dir" 
+referenceGenome_dir = "/home/users/example/refgenome_dir" 
 referenceGenome_file = "%s/%s.fa" % (referenceGenome_dir, referenceGenome_name)
 synthetic_fastq_prename = BED_filename_combined_pre
 output_BAM_pre = "%s.syntheticBAM.CBincluded" % filename

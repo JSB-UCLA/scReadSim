@@ -20,7 +20,7 @@ def scATAC_GenerateSyntheticCount(count_mat_filename, directory, outdirectory, n
 	total_count_new: `int` (default: 'None')
 		Number of (expected) sequencing depth. If not specified, scReadSim uses the real sequencing depth.
 	celllabel_file: `str` (default: 'None')
-		Specify the file containing the predefined cell labels. If no cell labels are specified, scReadSim performs a Louvain clustering before implementing scDesign2.
+		Specify the one-column text file containing the predefined cell labels. Make sure that the order of cell labels correspond to the cell barcode file. If no cell labels are specified, scReadSim performs a Louvain clustering before implementing scDesign2.
 	"""
 	r = robjects.r
 	rscript_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Rscript/SyntheticCountFunctions.R')
@@ -56,7 +56,7 @@ def scRNA_GenerateSyntheticCount(count_mat_filename, directory, outdirectory, n_
 	total_count_new: `int` (default: 'None')
 		Number of (expected) sequencing depth. If not specified, scReadSim uses the real sequencing depth.
 	celllabel_file: `str` (default: 'None')
-		Specify the file containing the predefined cell labels. If no cell labels are specified, scReadSim performs a Louvain clustering before implementing scDesign2.
+		Specify the one-column text file containing the predefined cell labels. Make sure that the order of cell labels correspond to the cell barcode file. If no cell labels are specified, scReadSim performs a Louvain clustering before implementing scDesign2.
 	"""
 	r = robjects.r
 	rscript_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Rscript/SyntheticCountFunctions.R')
