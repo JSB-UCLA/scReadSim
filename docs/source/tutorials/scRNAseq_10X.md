@@ -25,9 +25,10 @@ Use the folloqing chunk to download other required files for this example, inlcu
 
 ```{code-block} console
 $ mkdir example/refgenome_dir
-$ wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/reference.genome.tar.gz -P example/refgenome_dir # 292 MB
-$ wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/gencode.vM10.annotation.gtf -P example/refgenome_dir # 765 MB
-$ tar -xf example/refgenome_dir/reference.genome.tar.gz
+$ cd example/refgenome_dir
+$ wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/reference.genome.tar.gz # 292 MB
+$ wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/gencode.vM10.annotation.gtf # 765 MB
+$ tar -xf reference.genome.tar.gz
 ```
 
 ## Step 2: Feature space construction
@@ -137,7 +138,6 @@ scRNA_GenerateBAM.scRNA_GenerateBAMCoord(
 
 # Combine foreground and background bed file
 scRNA_GenerateBAM.scRNA_CombineBED(outdirectory, BED_filename_pre, BED_COMPLE_filename_pre, BED_filename_combined_pre)
-
 ```
 
 ### Convert BED files to FASTQ files
