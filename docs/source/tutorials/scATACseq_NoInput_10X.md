@@ -21,7 +21,7 @@ INPUT_bamfile = pkg_resources.resource_filename("scReadSim", 'data/%s.bam' % fil
 INPUT_genome_size_file = pkg_resources.resource_filename("scReadSim", 'data/mm10.chrom.sizes')
 ```
 
-Use the folloqing chunk to download other required files for this example, inlcuding the reference genome FASTA file (indexed by bowtie2) and annotation gtf file.
+Use the following chunk to download other required files for this example, inlcuding the reference genome FASTA file (indexed by bowtie2) and annotation gtf file.
 
 ```{code-block} console
 $ mkdir example/refgenome_dir
@@ -41,10 +41,6 @@ Specify the absolute path of output directory. Create output directory if it doe
 ```{code-block} python3
 outdirectory = "/home/users/example/outputs" # use absolute path
 os.mkdir(outdirectory)
-
-MACS3_peakname_pre = filename + ".MACS3"
-ref_peakfile = "%s_peaks.bed" % MACS3_peakname_pre
-ref_comple_peakfile = "%s_peaks.COMPLE.bed" % MACS3_peakname_pre
 ```
 
 ### Peak calling
@@ -57,6 +53,9 @@ To identify chromatin open regions for scATAC-seq, scReadSim utilizes MACS3 thro
 The peak calling results by MACS3 would be output into directory `outdirectory`. 
 
 ```{code-block} python3
+MACS3_peakname_pre = filename + ".MACS3"
+
+# Peak calling
 Utility.CallPeak(macs3_directory, INPUT_bamfile, outdirectory, MACS3_peakname_pre)
 ```
 
@@ -73,6 +72,9 @@ Use function `scATAC_CreateFeatureSets` to generate features. This function need
 - `MACS3_peakname_pre`: Base name of peak calling results for MACS3.
 
 ```{code-block} python3
+ref_peakfile = "%s_peaks.bed" % MACS3_peakname_pre
+ref_comple_peakfile = "%s_peaks.COMPLE.bed" % MACS3_peakname_pre
+
 # Generate features
 Utility.scATAC_CreateFeatureSets(INPUT_bamfile=INPUT_bamfile, samtools_directory=samtools_directory, bedtools_directory=bedtools_directory, outdirectory=outdirectory, genome_size_file=INPUT_genome_size_file, ref_peakfile=ref_peakfile, ref_comple_peakfile=ref_comple_peakfile, MACS3_peakname_pre=MACS3_peakname_pre)
 ```
@@ -183,7 +185,7 @@ referenceGenome_dir = "/home/users/example/refgenome_dir"
 referenceGenome_file = "%s/%s.fa" % (referenceGenome_dir, referenceGenome_name)
 synthetic_fastq_prename = BED_filename_combined_pre
 
-# Convert bed files into FASTQ files
+#Convert combined bed file into FASTQ files
 scATAC_GenerateBAM.scATAC_BED2FASTQ(bedtools_directory=bedtools_directory, seqtk_directory=seqtk_directory, referenceGenome_file=referenceGenome_file, outdirectory=outdirectory, BED_filename_combined=BED_filename_combined_pre, synthetic_fastq_prename=synthetic_fastq_prename, sort_FASTQ = True)
 ```
 

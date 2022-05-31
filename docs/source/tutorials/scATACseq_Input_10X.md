@@ -22,7 +22,7 @@ INPUT_genome_size_file = pkg_resources.resource_filename("scReadSim", 'data/mm10
 INPUT_peakfile = pkg_resources.resource_filename("scReadSim", 'data/%s.INPUT.peaks.bed' % filename) 
 ```
 
-Use the folloqing chunk to download other required files for this example, inlcuding the reference genome FASTA file (indexed by bowtie2) and annotation gtf file. 
+Use the following chunk to download other required files for this example, inlcuding the reference genome FASTA file (indexed by bowtie2) and annotation gtf file. 
 
 ```{code-block} console
 $ mkdir example/refgenome_dir 
@@ -73,6 +73,8 @@ The peak calling results by MACS3 would be output into directory `outdirectory`.
 
 ```{code-block} python3
 MACS3_peakname_pre = filename + ".MACS3"
+
+# Peak calling
 Utility.CallPeak(macs3_directory=macs3_directory, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, MACS3_peakname_pre=MACS3_peakname_pre)
 ```
 
@@ -222,7 +224,7 @@ referenceGenome_name = "chr1"
 referenceGenome_dir = "/home/users/example/refgenome_dir" # Use absolut path
 referenceGenome_file = "%s/%s.fa" % (referenceGenome_dir, referenceGenome_name)
 
-# Convert bed files into FASTQ files
+# Convert combined bed file into FASTQ files
 scATAC_GenerateBAM.scATAC_BED2FASTQ(bedtools_directory=bedtools_directory, seqtk_directory=seqtk_directory, referenceGenome_file=referenceGenome_file, outdirectory=outdirectory, BED_filename_combined=BED_filename_combined_pre, synthetic_fastq_prename=synthetic_fastq_prename, sort_FASTQ = True)
 ```
 

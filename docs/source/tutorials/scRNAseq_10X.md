@@ -21,7 +21,7 @@ INPUT_bamfile = pkg_resources.resource_filename("scReadSim", 'data/%s.bam' % fil
 INPUT_genome_size_file = pkg_resources.resource_filename("scReadSim", 'data/mm10.chrom.sizes')
 ```
 
-Use the folloqing chunk to download other required files for this example, inlcuding the reference genome FASTA file (indexed by bowtie2) and annotation gtf file.
+Use the following chunk to download other required files for this example, inlcuding the reference genome FASTA file (indexed by bowtie2) and annotation gtf file.
 
 ```{code-block} console
 $ mkdir example/refgenome_dir
@@ -40,10 +40,6 @@ Specify the absolute path of output directory. Create output directory if it doe
 ```{code-block} python3
 outdirectory = "/home/users/example/outputs" # use absolute path
 os.mkdir(outdirectory)
-
-INPUT_genome_annotation = "example/refgenome_dir/gencode.vM10.annotation.gtf" # Change the path
-ref_peakfile = "%s_peaks.bed" % filename
-ref_comple_peakfile = "%s_peaks.COMPLE.bed" % filename
 ```
 ### Generate feature sets 
 Use function `scRNA_CreateFeatureSets` to generate features. This function needs user to specify
@@ -58,6 +54,10 @@ Use function `scRNA_CreateFeatureSets` to generate features. This function needs
 - `ref_comple_peakfile`: Specify the name of output background feature bed file.    
 
 ```{code-block} python3
+INPUT_genome_annotation = "example/refgenome_dir/gencode.vM10.annotation.gtf" # Change the path
+ref_peakfile = "%s_peaks.bed" % filename
+ref_comple_peakfile = "%s_peaks.COMPLE.bed" % filename
+
 # Generate features
 Utility.scRNA_CreateFeatureSets(INPUT_bamfile=INPUT_bamfile, samtools_directory=samtools_directory, bedtools_directory=bedtools_directory, outdirectory=outdirectory, genome_annotation=INPUT_genome_annotation, genome_size_file=INPUT_genome_size_file, ref_peakfile=ref_peakfile, ref_comple_peakfile=ref_comple_peakfile)
 ```
@@ -166,7 +166,7 @@ referenceGenome_dir = "/home/users/example/refgenome_dir"
 referenceGenome_file = "%s/%s.fa" % (referenceGenome_dir, referenceGenome_name)
 synthetic_fastq_prename = BED_filename_combined_pre
 
-# Convert bed files into FASTQ files
+# Convert combined bed file into FASTQ files
 scRNA_GenerateBAM.scRNA_BED2FASTQ(bedtools_directory=bedtools_directory, seqtk_directory=seqtk_directory, referenceGenome_file=referenceGenome_file, outdirectory=outdirectory, BED_filename_combined=BED_filename_combined_pre, synthetic_fastq_prename=synthetic_fastq_prename, sort_FASTQ = True)
 ```
 
