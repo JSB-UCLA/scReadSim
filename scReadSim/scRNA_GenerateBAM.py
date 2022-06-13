@@ -10,6 +10,7 @@ import string
 import random
 import subprocess
 from tqdm import tqdm
+from pathlib import Path
 
 def flatten(x):
     """Flatten a nested list.
@@ -74,8 +75,8 @@ def scRNA_SampleSyntheticReads(count_mat_filename, samtools_directory, INPUT_bam
 
 
 
-def scRNA_PerTruePeakEdition(peak_record, count_vec, read_lines, random_cellbarcode_list, read_len=90, jitter_size=5):
-	"""Formulate Synthetic reads.
+def scRNA_PerTruePeakEdition_UMI(peak_record, count_vec, UMI_count_vec, read_lines, random_cellbarcode_list, read_len, jitter_size, UB_len):
+	"""Formulate Synthetic reads for scRNA-seq with modeling UMI count.
 
 	Parameters
 	----------
@@ -83,14 +84,18 @@ def scRNA_PerTruePeakEdition(peak_record, count_vec, read_lines, random_cellbarc
 		Coordinates of a query peak.
 	count_vec: `numpy.array`
     	Count vector of the query peak.
+	UMI_count_vec: `numpy.array`
+    	UMI count vector of the query peak.
 	read_lines: `pandas.dataframe`
 		Coordinates of synthetic reads sampled from the input BAM file.
 	random_cellbarcode_list: `list`
     	List of cell barcodes randomly generated using [cellbarcode_generator().
-	read_len: `int` (default: '50')
+	read_len: `int` (default: 50)
 		Specify the length of synthetic reads. Default value is 50 bp.
-	jitter_size: `int` (default: '5')
+	jitter_size: `int` (default: 5)
 		Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.
+	UB_len: 'int' (default: 10)
+		Speicify UMI barcode length.
 
 	Return
 	------
@@ -105,7 +110,8 @@ def scRNA_PerTruePeakEdition(peak_record, count_vec, read_lines, random_cellbarc
 	nread_cur= np.sum(count_vec).astype(int)
 	# Add cell information
 	nonempty_cell_ind = np.where(count_vec != 0)[0]
-	random_umi_list = cellbarcode_generator(nread_cur, size=10)
+	random_umi_list = [random.sample(cellbarcode_generator(UMI_count_vec[nonempty_cell_ind_cur], size=UB_len)*count_vec[nonempty_cell_ind_cur], count_vec[nonempty_cell_ind_cur]) if UMI_count_vec[nonempty_cell_ind_cur] > 0 else cellbarcode_generator(1, size=UB_len)*count_vec[nonempty_cell_ind_cur] for nonempty_cell_ind_cur in nonempty_cell_ind]
+	random_umi_list = [x for xs in random_umi_list for x in xs]
 	read_code_simu_cur = [random_cellbarcode_list[nonempty_cell_ind[ind]] + ":" + "CellNo" + str(nonempty_cell_ind[ind] + 1) + ":" + str(true_peak_concat) + "#" + str(count).zfill(4) for ind in range(len(nonempty_cell_ind)) for count in range(count_vec[nonempty_cell_ind[ind]])]
 	read_code_simu_cur_withUMI = [read_code_simu_cur[read_id].split(":",1)[0] + random_umi_list[read_id] + ":" + read_code_simu_cur[read_id].split(":",1)[1] for read_id in range(len(read_code_simu_cur))]
 	# read_code_simu_cur = ["CellType1" + "CellNo" + str(nonempty_cell_ind[ind] + 1) + ":" + str(true_peak_concat) + "#" + str(count).zfill(4) for ind in range(len(nonempty_cell_ind)) for count in range(count_vec[nonempty_cell_ind[ind]])]
@@ -120,95 +126,55 @@ def scRNA_PerTruePeakEdition(peak_record, count_vec, read_lines, random_cellbarc
 	return read_1_df
 
 
-# def scRNA_SampleSyntheticReads(coordinate_file, samtools_directory, INPUT_bamfile, outdirectory, ref_peakfile, cellnumberfile):
-# 	"""Sample Synthetic reads. The sampled reads coordinates are stored as `coordinate_file` in `outdirectory`.
+def scRNA_PerTruePeakEdition_read(peak_record, count_vec, read_lines, random_cellbarcode_list, read_len, jitter_size, UB_len):
+	"""Formulate Synthetic reads for scRNA-seq without modeling UMI count.
 
-# 	Parameters
-# 	----------
-# 	coordinate_file: `str`
-# 		Specify name of the coordinates file storing synthetic reads. This is not a final output of scReadSim.
-# 	samtools_directory: `str`
-# 		Path to software samtools.
-# 	INPUT_bamfile: `str`
-# 		Path to input BAM file.
-# 	outdirectory: `str`
-# 		Output directory of coordinate files.
-# 	ref_peakfile: `str`
-# 		Directory of the features bed file.
-# 	cellnumberfile: `str`
-# 		Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.
-# 	"""
-# 	rm_coor_command = "rm %s/%s" % (outdirectory, coordinate_file)
-# 	os.system(rm_coor_command)
-# 	create_coor_command = "touch %s/%s" % (outdirectory, coordinate_file)
-# 	os.system(create_coor_command)
-# 	cmd = "while true; do read -r region <&3 || break;  read -r ncell <&4 || break; region=$(echo ${region} | cut -f 1,2,3 | perl -lane 'print \"$F[0]:$F[1]-$F[2]\"');  paste -d\"\t\" <(awk -v nsample=${ncell} -v region=${region} 'BEGIN{for(c=0;c<nsample;c++) print region}') <(%s/samtools view %s ${region} | shuf -r -n ${ncell} | cut -f3,4) >> %s/%s;  done 3<%s/%s 4<%s" % (samtools_directory, INPUT_bamfile, outdirectory, coordinate_file, outdirectory, ref_peakfile, cellnumberfile)
-# 	# Testing using copied directory
-# 	output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-# 	if error:
-# 	     print('[ERROR] Fail to generate synthetic reads:\n', error.decode())
+	Parameters
+	----------
+	peak_record: `numpy.array`
+		Coordinates of a query peak.
+	count_vec: `numpy.array`
+    	Count vector of the query peak.
+	read_lines: `pandas.dataframe`
+		Coordinates of synthetic reads sampled from the input BAM file.
+	random_cellbarcode_list: `list`
+    	List of cell barcodes randomly generated using [cellbarcode_generator().
+	read_len: `int` (default: 50)
+		Specify the length of synthetic reads. Default value is 50 bp.
+	jitter_size: `int` (default: 5)
+		Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.
+	UB_len: 'int' (default: 10)
+		Speicify UMI barcode length.
+
+	Return
+	------
+	read_1_df: `pandas.dataframe`
+		Coordinates of synthetic read 1 generated for the query peak.
+	read_2_df: `pandas.dataframe`
+		Coordinates of synthetic read 2 generated for the query peak.
+	"""
+	# peak_record = peaks_assignments.loc[1,] # Input
+	true_peak_concat = peak_record[0] + ":" + str(peak_record[1]) + "-" + str(peak_record[2])
+	reads_cur = read_lines[read_lines['peak_name'] == true_peak_concat] # Input
+	nread_cur= np.sum(count_vec).astype(int)
+	# Add cell information
+	nonempty_cell_ind = np.where(count_vec != 0)[0]
+	random_umi_list = cellbarcode_generator(nread_cur, size=UB_len)
+	read_code_simu_cur = [random_cellbarcode_list[nonempty_cell_ind[ind]] + ":" + "CellNo" + str(nonempty_cell_ind[ind] + 1) + ":" + str(true_peak_concat) + "#" + str(count).zfill(4) for ind in range(len(nonempty_cell_ind)) for count in range(count_vec[nonempty_cell_ind[ind]])]
+	read_code_simu_cur_withUMI = [read_code_simu_cur[read_id].split(":",1)[0] + random_umi_list[read_id] + ":" + read_code_simu_cur[read_id].split(":",1)[1] for read_id in range(len(read_code_simu_cur))]
+	# read_code_simu_cur = ["CellType1" + "CellNo" + str(nonempty_cell_ind[ind] + 1) + ":" + str(true_peak_concat) + "#" + str(count).zfill(4) for ind in range(len(nonempty_cell_ind)) for count in range(count_vec[nonempty_cell_ind[ind]])]
+	# start = time.time()
+	jitter_value_vec = np.random.random_integers(-jitter_size,jitter_size,size=np.shape(reads_cur)[0])  # nrow(reads_cur) should equal to nfrag_cur
+	reads_cur['r1_start_shifted'] = reads_cur['r1_start'] + jitter_value_vec
+	reads_cur['r1_end_shifted'] = reads_cur['r1_start'] + read_len + jitter_value_vec
+	read_1_df = reads_cur[['chr','r1_start_shifted', 'r1_end_shifted']]
+	read_1_df['read_name'] = read_code_simu_cur_withUMI
+	read_1_df['read_length'] = read_len
+	read_1_df['strand'] = '+'
+	return read_1_df
 
 
-# def scRNA_GenerateBAMCoord(outdirectory, coordinate_file, assignment_file, count_mat_file, cellnumberfile, BED_filename, OUTPUT_cells_barcode_file):
-# 	"""Generate Synthetic reads in BED format. 
-
-# 	Parameters
-# 	----------
-# 	outdirectory: `str`
-# 		Output directory of the synthteic bed file and its corresponding cell barcodes file.
-# 	coordinate_file: `str`
-# 		Directory of the coordinates file storing synthetic reads output by scATAC_SampleSyntheticReads.
-# 	ref_peakfile: `str`
-# 		Directory of the features bed file.
-# 	count_mat_file: `str`
-# 		Directory of synthetic count matrix.
-# 	cellnumberfile: `str`
-# 		Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.
-# 	BED_filename: `str`
-# 		Specify the base name of output bed file.
-# 	OUTPUT_cells_barcode_file: `str`
-# 		Specify the file name storing the synthetic cell barcodes.
-# 	read_len: `int` (default: '50')
-# 		Specify the length of synthetic reads. Default value is 50 bp.
-# 	jitter_size: `int` (default: '5')
-# 		Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.
-# 	"""
-# 	random.seed(2022)
-# 	read_lines = pd.read_csv("%s/%s" % (outdirectory, coordinate_file), delimiter="\t",  names=['peak_name', 'chr', 'r1_start'])
-# 	peaks = pd.read_csv("%s/%s" % (outdirectory, assignment_file), delimiter="\t",  names=['chr', 'start', 'end']).to_numpy()
-# 	count_mat = pd.read_csv("%s/%s" % (outdirectory, count_mat_file), header=0, delimiter="\t").to_numpy()
-# 	marginal_cell_number = pd.read_csv("%s" %  cellnumberfile, header=None, delimiter="\t").to_numpy()
-# 	n_cell = np.shape(count_mat)[1]
-# 	random_cellbarcode_list = cellbarcode_generator(n_cell, size=16)
-# 	read_len = 90
-# 	jitter_size = 5
-# 	read1_bedfile="%s.read.bed" % BED_filename
-# 	start = time.time()
-# 	with open(OUTPUT_cells_barcode_file, 'w') as f:
-# 		for item in random_cellbarcode_list:
-# 		    f.write("%s\n" % item)
-# 	with open("%s/%s" % (outdirectory, read1_bedfile), 'w') as fp:
-# 		pass
-# 	peak_nonzero_id = np.nonzero(marginal_cell_number)[0]
-# 	for relative_peak_ind in tqdm(range(len(peak_nonzero_id))):
-# 		peak_ind = peak_nonzero_id[relative_peak_ind]
-# 		# peak_ind = 192
-# 		peak_record = peaks[peak_ind]
-# 		count_vec = count_mat[peak_ind,:] # Input
-# 		print(peak_ind)
-# 		read_1_df = scRNA_PerTruePeakEdition(peak_record, count_vec, read_lines, read_len, jitter_size, random_cellbarcode_list)
-# 		read_1_df.to_csv("%s/%s" % (outdirectory, read1_bedfile), header=None, index=None, sep='\t', mode='a')
-# 	# for peak_ind in tqdm(range(len(peaks))):
-# 	# 	# peak_ind = 192
-# 	# 	peak_record = peaks[peak_ind]
-# 	# 	count_vec = count_mat[peak_ind,:] # Input
-# 	# 	print(peak_ind)
-# 	# 	read_1_df = scRNA_PerTruePeakEdition(peak_record, count_vec, read_lines, read_len, jitter_size, random_cellbarcode_list)
-# 	# 	read_1_df.to_csv("%s/%s" % (outdirectory, read1_bedfile), header=None, index=None, sep='\t', mode='a')
-# 	end = time.time()
-# 	print(end - start)
-
-def scRNA_GenerateBAMCoord(count_mat_filename, samtools_directory, INPUT_bamfile, ref_peakfile, directory_cellnumber, outdirectory, BED_filename, OUTPUT_cells_barcode_file, read_len=90, jitter_size=5):
+def scRNA_GenerateBAMCoord(count_mat_filename, samtools_directory, INPUT_bamfile, ref_peakfile, directory_cellnumber, outdirectory, BED_filename, OUTPUT_cells_barcode_file, read_len=90, jitter_size=5, CB_len=16, UMI_modeling=False, UMI_count_mat_file="UMI_countmat", UB_len=10):
 	"""Generate Synthetic reads in BED format. 
 
 	Parameters
@@ -229,18 +195,27 @@ def scRNA_GenerateBAMCoord(count_mat_filename, samtools_directory, INPUT_bamfile
 		Specify the base name of output bed file.
 	OUTPUT_cells_barcode_file: `str`
 		Specify the file name storing the synthetic cell barcodes.
-	read_len: `int` (default: '90')
+	read_len: `int` (default: 90)
 		Specify the length of synthetic reads. Default value is 90 bp.
-	jitter_size: `int` (default: '5')
+	jitter_size: `int` (default: 5)
 		Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.
+ 	CB_len: 'int' (default: 16)
+		Speicify cell barcode length.
+	UMI_modeling: `bool` (default: False)
+        Specify whether scReadSim should model UMI count of the input BAM file.
+	UMI_count_mat_filename: `str` (default: 'UMI_countmat')
+		Base name of the UMI count matrix output by function scRNA_bam2countmat() with option UMI_modeling setting to Ture.
+	UB_len: 'int' (default: 10)
+		Speicify UMI barcode length.
 	"""
 	# Generating BAMfile_coordinates file
 	print('scReadSim scRNA_GenerateBAMCoord Running...')
 	print('\t- Sampling synthetic reads...')
 	coordinate_file = count_mat_filename + ".BAMfile_coordinates.txt"
 	cellnumberfile = "%s/%s.scDesign2Simulated.nReadRegionmargional.txt" % (directory_cellnumber, count_mat_filename)
-	rm_coor_command = "rm %s/%s" % (outdirectory, coordinate_file)
-	os.system(rm_coor_command)
+	if Path("%s/%s" % (outdirectory, coordinate_file)).exists():
+		rm_coor_command = "rm %s/%s" % (outdirectory, coordinate_file)
+		os.system(rm_coor_command)
 	create_coor_command = "touch %s/%s" % (outdirectory, coordinate_file)
 	os.system(create_coor_command)
 	cmd = "while true; do read -r region <&3 || break;  read -r ncell <&4 || break; region=$(echo ${region} | cut -f 1,2,3 | perl -lane 'print \"$F[0]:$F[1]-$F[2]\"');  paste -d\"\t\" <(awk -v nsample=${ncell} -v region=${region} 'BEGIN{for(c=0;c<nsample;c++) print region}') <(%s/samtools view %s ${region} | shuf -r -n ${ncell} | cut -f3,4) >> %s/%s;  done 3<%s 4<%s" % (samtools_directory, INPUT_bamfile, outdirectory, coordinate_file, ref_peakfile, cellnumberfile)
@@ -256,30 +231,37 @@ def scRNA_GenerateBAMCoord(count_mat_filename, samtools_directory, INPUT_bamfile
 	peaks = pd.read_csv(ref_peakfile, delimiter="\t",  names=['chr', 'start', 'end']).to_numpy()
 	count_mat = pd.read_csv("%s/%s" % (directory_cellnumber, count_mat_file), header=0, delimiter="\t").to_numpy()
 	marginal_cell_number = pd.read_csv(cellnumberfile, header=None, delimiter="\t").to_numpy()
+	peak_nonzero_id = np.nonzero(marginal_cell_number)[0]
 	n_cell = np.shape(count_mat)[1]
-	random_cellbarcode_list = cellbarcode_generator(n_cell, size=16)
+	random_cellbarcode_list = cellbarcode_generator(n_cell, size=CB_len)
 	read1_bedfile="%s.read.bed" % BED_filename
 	with open(outdirectory + "/" + OUTPUT_cells_barcode_file, 'w') as f:
 		for item in random_cellbarcode_list:
 		    f.write("%s\n" % item)
 	with open("%s/%s" % (outdirectory, read1_bedfile), 'w') as fp:
 		pass
-	peak_nonzero_id = np.nonzero(marginal_cell_number)[0]
-	for relative_peak_ind in tqdm(range(len(peak_nonzero_id))):
-		peak_ind = peak_nonzero_id[relative_peak_ind]
-		# peak_ind = 192
-		peak_record = peaks[peak_ind]
-		count_vec = count_mat[peak_ind,:] # Input
-		print(peak_ind)
-		read_1_df = scRNA_PerTruePeakEdition(peak_record, count_vec, read_lines, random_cellbarcode_list, read_len, jitter_size)
-		read_1_df.to_csv("%s/%s" % (outdirectory, read1_bedfile), header=None, index=None, sep='\t', mode='a')
-	# for peak_ind in tqdm(range(len(peaks))):
-	# 	# peak_ind = 192
-	# 	peak_record = peaks[peak_ind]
-	# 	count_vec = count_mat[peak_ind,:] # Input
-	# 	print(peak_ind)
-	# 	read_1_df = scRNA_PerTruePeakEdition(peak_record, count_vec, read_lines, read_len, jitter_size, random_cellbarcode_list)
-	# 	read_1_df.to_csv("%s/%s" % (outdirectory, read1_bedfile), header=None, index=None, sep='\t', mode='a')
+	if UMI_modeling == True:
+		UMI_count_mat_df = pd.read_csv("%s/%s.scDesign2Simulated.txt" % (directory_cellnumber, UMI_count_mat_file), header=0, delimiter="\t")
+		UMI_count_mat = UMI_count_mat_df.to_numpy()
+		UMI_count_mat_cluster = UMI_count_mat_df.columns.to_numpy()		
+		for relative_peak_ind in tqdm(range(len(peak_nonzero_id))):
+			peak_ind = peak_nonzero_id[relative_peak_ind]
+			# peak_ind = 192
+			peak_record = peaks[peak_ind]
+			count_vec = count_mat[peak_ind,:] # Input
+			UMI_count_vec = UMI_count_mat[peak_ind,:]
+			print(peak_ind)
+			read_1_df = scRNA_PerTruePeakEdition_UMI(peak_record, count_vec, UMI_count_vec, read_lines, random_cellbarcode_list, read_len, jitter_size, UB_len)
+			read_1_df.to_csv("%s/%s" % (outdirectory, read1_bedfile), header=None, index=None, sep='\t', mode='a')
+	else:
+		for relative_peak_ind in tqdm(range(len(peak_nonzero_id))):
+			peak_ind = peak_nonzero_id[relative_peak_ind]
+			# peak_ind = 192
+			peak_record = peaks[peak_ind]
+			count_vec = count_mat[peak_ind,:] # Input
+			print(peak_ind)
+			read_1_df = scRNA_PerTruePeakEdition_read(peak_record, count_vec, read_lines, random_cellbarcode_list, read_len, jitter_size, UB_len)
+			read_1_df.to_csv("%s/%s" % (outdirectory, read1_bedfile), header=None, index=None, sep='\t', mode='a')
 	print('\t- Writing synthetic reads done.')
 	print('Done!\n')
 
@@ -302,6 +284,7 @@ def scRNA_CombineBED(outdirectory, BED_filename_pre, BED_COMPLE_filename_pre, BE
 	output, error = subprocess.Popen(combine_read_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
  		print('[ERROR] Fail to create combine synthetic read bed files:\n', error.decode())
+
 
 def scRNA_BED2FASTQ(bedtools_directory, seqtk_directory, referenceGenome_file, outdirectory, BED_filename_combined, synthetic_fastq_prename, sort_FASTQ = True):
 	"""Convert Synthetic reads from BED to FASTQ. 
@@ -397,10 +380,10 @@ def AlignSyntheticBam_Pair(bowtie2_directory, samtools_directory, outdirectory, 
 	print('\t- Generating cell barcode tag...')
 	addBC2BAM_header_cmd = "%s/samtools view %s/%s.synthetic.noCB.bam -H > %s/%s.synthetic.noCB.header.sam" % (samtools_directory, outdirectory, output_BAM_pre, outdirectory, output_BAM_pre)
 	output, error = subprocess.Popen(addBC2BAM_header_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-	addBC2BAM_cmd = "cat <( cat %s/%s.synthetic.noCB.header.sam ) <( paste <(%s/samtools view %s/%s.synthetic.noCB.bam ) <(%s/samtools view %s/%s.synthetic.noCB.bam | cut -f1 | cut -d':' -f1 | sed -e 's/^/CB:Z:/')) | %s/samtools view -bS - > %s/%s.synthetic.bam" % (outdirectory, output_BAM_pre, samtools_directory, outdirectory, output_BAM_pre, samtools_directory, outdirectory, output_BAM_pre, samtools_directory, outdirectory, output_BAM_pre)
+	addBC2BAM_cmd = "cat <( cat %s/%s.synthetic.noCB.header.sam ) <( paste <(%s/samtools view %s/%s.synthetic.noCB.bam ) <(%s/samtools view %s/%s.synthetic.noCB.bam | cut -f1 | cut -d':' -f1 | awk '{s=substr($1,1,16)}{g=substr($1,17,length($1))}{printf \"CB:Z:%%s\tUB:Z:%%s\\n\",s,g;}')) | %s/samtools view -bS - > %s/%s.synthetic.bam" % (outdirectory, output_BAM_pre, samtools_directory, outdirectory, output_BAM_pre, samtools_directory, outdirectory, output_BAM_pre, samtools_directory, outdirectory, output_BAM_pre)
 	output, error = subprocess.Popen(addBC2BAM_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
-		print('[ERROR] Fail to add BC tag to synthetic BAM file:', error.decode())
+		print('[ERROR] Fail to add CB and UB tags to synthetic BAM file:', error.decode())
 	print('\t- Generating cell barcode tag done.')
 	print('\t- Sorting synthetic BAM file...')
 	sortBAMcmd = "%s/samtools sort %s/%s.synthetic.bam > %s/%s.synthetic.sorted.bam" % (samtools_directory, outdirectory, output_BAM_pre, outdirectory, output_BAM_pre)

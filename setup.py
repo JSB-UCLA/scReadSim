@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="scReadSim",
-    version="1.0.0",
+    version="1.1.0",
     author="Guanao Yan",
     author_email="gayan@g.ucla.com",
     description="A single-cell multi-omics read simulator.",

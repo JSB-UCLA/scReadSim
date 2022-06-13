@@ -139,8 +139,8 @@ def scRNA_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_director
     print('Done!\n')   
 
 
-def bam2countmat(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, count_mat_filename):
-    """Construct count matrix.
+def scATAC_bam2countmat(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, count_mat_filename):
+    """Construct count matrix for scATAC-seq BAM file.
 
     Parameters
     ----------
@@ -177,7 +177,7 @@ def bam2countmat(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, coun
         cells_n = len(cells_barcode)
         peaks_n = len(open_peak)
         # marginal_count_vec = [0] * len(open_peak)
-        print("Converting count matrix...\n")
+        print("Generating read count matrix %s.txt...\n" % count_mat_filename)
         # for rec in open_peak:
         for rec_id in tqdm(range(len(open_peak))):
             rec = open_peak[rec_id]
@@ -194,6 +194,81 @@ def bam2countmat(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, coun
             # marginal_count_vec[rec_id] = sum(currcounts)
             # if sum(currcounts) > 0:
             print(rec_name + "\t" + "\t".join([str(x) for x in currcounts]),file = outsfile)
+        print("Done.\n")
+
+def scRNA_bam2countmat(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, count_mat_filename, UMI_modeling=False, UMI_count_mat_filename="UMI_countmat"):
+    """Construct count matrix for scRNA-seq BAM file.
+    Parameters
+    ----------
+    cells_barcode_file: `str`
+        Cell barcode file corresponding to the input BAM file.
+    bed_file: `str`
+        Features bed file to generate the count matrix.
+    INPUT_bamfile: `str`
+        Input BAM file for anlaysis.
+    outdirectory: `str`
+        Specify the output directory of the count matrix file.
+    count_mat_filename: `str`
+        Specify the base name of output count matrix.
+    UMI_modeling: `bool` (default: False)
+        Specify whether scReadSim should model UMI count of the input BAM file.
+    UMI_count_mat_filename: `str` (default: 'UMI_countmat')
+        If UMI_modeling is set to True, specify the base name of output UMI count matrix.
+    """
+    cells = pd.read_csv(cells_barcode_file, sep="\t")
+    cells = cells.values.tolist()
+    cells_barcode = [item[0] for item in cells]
+    samfile = pysam.AlignmentFile(INPUT_bamfile, "rb")
+    with open(bed_file) as open_peak:
+        reader = csv.reader(open_peak, delimiter="\t")
+        open_peak = np.asarray(list(reader))
+    k = 0
+    cellsdic = defaultdict(lambda: [None])
+    for cell in cells_barcode:
+        cellsdic[cell] = k
+        k += 1
+    k = 0
+    peaksdic = defaultdict(lambda: [None])
+    for rec in open_peak:
+        rec_name = '_'.join(rec)
+        peaksdic[rec_name] = k
+        k += 1
+    cells_n = len(cells_barcode)
+    peaks_n = len(open_peak)
+    UMI_count_mat = np.zeros((peaks_n,cells_n), dtype="int")
+    # marginal_count_vec = [0] * len(open_peak)
+    print("Generating read count matrix %s.txt...\n" % count_mat_filename)
+    # for rec in open_peak:
+    with open("%s/%s.txt" % (outdirectory, count_mat_filename), 'w') as outsfile:
+        for rec_id in tqdm(range(len(open_peak))):
+            rec = open_peak[rec_id]
+            rec_name = '_'.join(rec)
+            read_currcounts = [0]*cells_n
+            UMI_currlist  = [["empty UMI"] for _ in range(cells_n)]  # Create netsed list to store UMI for each cell within one peak. Remeber to minus 1 for "empty UMI" when count unique UMIs.
+            reads = samfile.fetch(rec[0], int(rec[1]), int(rec[2]))
+            for read in reads:
+                cell = read.qname.split(":")[0].upper()
+                if cell in cells_barcode:
+                    try:
+                        read_currcounts[cellsdic[cell]] += 1
+                        if read.has_tag('UB:Z'):
+                            UMI = read.get_tag('UB:Z')
+                            UMI_currlist[cellsdic[cell]].append(UMI)
+                    except KeyError:
+                        pass
+            # marginal_count_vec[rec_id] = sum(currcounts)
+            # if sum(currcounts) > 0:
+            UMI_count_mat[rec_id,:] = [len(set(UMIs_percell))-1 for UMIs_percell in UMI_currlist]
+            print(rec_name + "\t" + "\t".join([str(x) for x in read_currcounts]),file = outsfile)
+    print("Done.\n")
+    if UMI_modeling == True:
+        print("Generating UMI count matrix %s.txt...\n" % UMI_count_mat_filename)
+        with open("%s/%s.txt" % (outdirectory, UMI_count_mat_filename), 'w') as outsfile:
+            for rec_id in tqdm(range(len(open_peak))):
+                rec = open_peak[rec_id]
+                rec_name = '_'.join(rec)
+                print(rec_name + "\t" + "\t".join([str(x) for x in UMI_count_mat[rec_id,:]]),file = outsfile)
+        print("Done.")
 
 
 def bam2countmat_INPUT(cells_barcode_file, assignment_file, INPUT_bamfile, outdirectory, count_mat_filename):
