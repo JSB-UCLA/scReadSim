@@ -198,6 +198,7 @@ def scATAC_bam2countmat(cells_barcode_file, bed_file, INPUT_bamfile, outdirector
 
 def scRNA_bam2countmat(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, count_mat_filename, UMI_modeling=False, UMI_count_mat_filename="UMI_countmat"):
     """Construct count matrix for scRNA-seq BAM file.
+    
     Parameters
     ----------
     cells_barcode_file: `str`
