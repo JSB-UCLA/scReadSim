@@ -40,6 +40,7 @@ def scATAC_GenerateSyntheticCount(count_mat_filename, directory, outdirectory, n
 	# else:
 	# 	scATAC_runSyntheticCount(count_mat_filename, directory, outdirectory, cluster_prestep = 0)
 
+
 def scRNA_GenerateSyntheticCount(count_mat_filename, directory, outdirectory, UMI_modeling=False, UMI_count_mat_filename="UMI_countmat", n_cell_new=None, total_count_new=None, celllabel_file=None):
 	"""Simulate synthetic count matrix.
 
@@ -53,8 +54,8 @@ def scRNA_GenerateSyntheticCount(count_mat_filename, directory, outdirectory, UM
 		Output directory of coordinate files.
 	UMI_modeling: `bool` (default: False)
 		Specify whether scReadSim should model UMI count of the input BAM file.
-    UMI_count_mat_filename: `str` (default: 'UMI_countmat')
-    	Base name of the UMI count matrix output by function `scRNA_bam2countmat` with option UMI_modeling setting to Ture.
+	UMI_count_mat_filename: `str` (default: 'UMI_countmat')
+		Base name of the UMI count matrix output by function `scRNA_bam2countmat` with option UMI_modeling setting to Ture.
 	n_cell_new: `int` (default: None)
 		Number of synthetic cells. If not specified, scReadSim uses the number of real cells.
 	total_count_new: `int` (default: None)
