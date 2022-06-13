@@ -15,11 +15,11 @@ def scATAC_GenerateSyntheticCount(count_mat_filename, directory, outdirectory, n
 		Path to the count matrix.
 	outdirectory: `str`
 		Output directory of coordinate files.
-	n_cell_new: `int` (default: 'None')
+	n_cell_new: `int` (default: None)
 		Number of synthetic cells. If not specified, scReadSim uses the number of real cells.
-	total_count_new: `int` (default: 'None')
+	total_count_new: `int` (default: None)
 		Number of (expected) sequencing depth. If not specified, scReadSim uses the real sequencing depth.
-	celllabel_file: `str` (default: 'None')
+	celllabel_file: `str` (default: None)
 		Specify the one-column text file containing the predefined cell labels. Make sure that the order of cell labels correspond to the cell barcode file. If no cell labels are specified, scReadSim performs a Louvain clustering before implementing scDesign2.
 	"""
 	r = robjects.r
