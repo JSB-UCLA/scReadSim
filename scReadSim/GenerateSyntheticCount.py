@@ -51,10 +51,10 @@ def scRNA_GenerateSyntheticCount(count_mat_filename, directory, outdirectory, UM
 		Path to the count matrix.
 	outdirectory: `str`
 		Output directory of coordinate files.
-    UMI_modeling: `bool` (default: False)
-        Specify whether scReadSim should model UMI count of the input BAM file.
-	UMI_count_mat_filename: `str` (default: 'UMI_countmat')
-		Base name of the UMI count matrix output by function `scRNA_bam2countmat` with option UMI_modeling setting to Ture.
+	UMI_modeling: `bool` (default: False)
+		Specify whether scReadSim should model UMI count of the input BAM file.
+    UMI_count_mat_filename: `str` (default: 'UMI_countmat')
+    	Base name of the UMI count matrix output by function `scRNA_bam2countmat` with option UMI_modeling setting to Ture.
 	n_cell_new: `int` (default: None)
 		Number of synthetic cells. If not specified, scReadSim uses the number of real cells.
 	total_count_new: `int` (default: None)
