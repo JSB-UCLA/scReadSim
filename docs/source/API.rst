@@ -15,7 +15,8 @@ Utility
    scReadSim.Utility.ExtractBAMCoverage
    scReadSim.Utility.scATAC_CreateFeatureSets
    scReadSim.Utility.scRNA_CreateFeatureSets
-   scReadSim.Utility.bam2countmat
+   scReadSim.Utility.scATAC_bam2countmat
+   scReadSim.Utility.scRNA_bam2countmat
    scReadSim.Utility.bam2countmat_INPUT
    scReadSim.Utility.find_nearest
    scReadSim.Utility.match_peak
