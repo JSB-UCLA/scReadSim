@@ -44,7 +44,7 @@ os.mkdir(outdirectory)
 ```
 
 ### Peak calling
-To identify chromatin open regions for scATAC-seq, scReadSim utilizes MACS3 through function `CallPeak` with following arguments
+To identify chromatin open regions for scATAC-seq, scReadSim utilizes MACS3 through function `Utility.CallPeak` with following arguments
 - `macs3_directory`: Path to software MACS3.
 - `INPUT_bamfile`: Input BAM file for anlaysis.
 - `outdirectory`: Output directory of peak calling.
@@ -60,7 +60,7 @@ Utility.CallPeak(macs3_directory, INPUT_bamfile, outdirectory, MACS3_peakname_pr
 ```
 
 ### Generate feature sets 
-Use function `scATAC_CreateFeatureSets` to generate features. This function needs user to specify
+Use function `Utility.scATAC_CreateFeatureSets` to generate features. This function needs user to specify
 
 - `INPUT_bamfile`: Input BAM file for anlaysis.
 - `samtools_directory`: Path to software *samtools*.
@@ -81,7 +81,7 @@ Utility.scATAC_CreateFeatureSets(INPUT_bamfile=INPUT_bamfile, samtools_directory
 
 
 ## Step 3: Count matrix construction
-Based on the feature sets output in **Step 2**, scReasSim constructs the count matrices for both foreground feautures and background features through function `bam2countmat`. This function needs user to specify
+Based on the feature sets output in **Step 2**, scReasSim constructs the count matrices for both foreground feautures and background features through function `Utility.scATAC_bam2countmat`. This function needs user to specify
 
 - `cells_barcode_file`: Cell barcode file corresponding to the input BAM file.
 - `bed_file`: Features bed file to generate the count matrix.

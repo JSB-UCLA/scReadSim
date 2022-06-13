@@ -64,24 +64,27 @@ Utility.scRNA_CreateFeatureSets(INPUT_bamfile=INPUT_bamfile, samtools_directory=
 
 
 ## Step 3: Count matrix construction
-Based on the feature sets output in **Step 2**, scReasSim constructs the count matrices for both foreground feautures and background features through function `bam2countmat`. This function needs user to specify
+Based on the feature sets output in **Step 2**, scReasSim constructs the count matrices for both foreground feautures and background features through function `Utility.scRNA_bam2countmat`. This function needs user to specify
 
 - `cells_barcode_file`: Cell barcode file corresponding to the input BAM file.
 - `bed_file`: Features bed file to generate the count matrix.
 - `INPUT_bamfile`: Input BAM file for anlaysis.
 - `outdirectory`: Specify the output directory of the count matrix file.
 - `count_mat_filename`: Specify the base name of output count matrix.
+- `UMI_modeling`: (Optional, default: False) Specify whether scReadSim should also model UMI count of the input BAM file.
+- `UMI_count_mat_filename`: (Optional, default: 'UMI_countmat') If UMI_modeling is set to True, specify the base name of output UMI count matrix.
 
-For the user specified `count_mat_filename`, scReadSim will generate a count matrix named *`count_mat_filename`.txt* to directory `outdirectory`.
+For the user specified `count_mat_filename`, scReadSim will generate a count matrix named *`count_mat_filename`.txt* to directory `outdirectory`. In case modeling both UMI and read count of the input BAM file (set `UMI_modeling` to be True), scReadSim generate two count matrices named *`count_mat_filename`.txt* and *`UMI_count_mat_filename`.txt*to directory `outdirectory`.
 
 ```{code-block} python3
 count_mat_filename = "%s.countmatrix" % filename
 count_mat_comple_filename = "%s.COMPLE.countmatrix" % filename
+UMI_count_mat_filename = "%s.UMI.countmatrix" % filename
 
 # Construct count matrix for foregroud features
-Utility.bam2countmat(cells_barcode_file=INPUT_cells_barcode_file, bed_file=outdirectory + "/" + ref_peakfile, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, count_mat_filename=count_mat_filename)
+Utility.scRNA_bam2countmat(cells_barcode_file=INPUT_cells_barcode_file, bed_file=outdirectory + "/" + ref_peakfile, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, count_mat_filename=count_mat_filename, UMI_modeling=True, UMI_count_mat_filename = UMI_count_mat_filename)
 # Construct count matrix for background features
-Utility.bam2countmat(cells_barcode_file=INPUT_cells_barcode_file, bed_file=outdirectory + "/" + ref_comple_peakfile, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, count_mat_filename=count_mat_comple_filename)
+Utility.scRNA_bam2countmat(cells_barcode_file=INPUT_cells_barcode_file, bed_file=outdirectory + "/" + ref_comple_peakfile, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, count_mat_filename=count_mat_comple_filename)
 ```
 
 ## Step 4: Synthetic count matrix simulation
@@ -90,9 +93,11 @@ The current version of scReadSim implement scDesign2 (reference) to generate syn
 - `count_mat_filename`: Base name of the count matrix output by function bam2countmat().
 - `directory`: Path to the count matrix.
 - `outdirectory`: Output directory of coordinate files.
-- `n_cell_new`: (Optional, default: 'None') Number of synthetic cells. If not specified, scReadSim uses the number of real cells.
-- `total_count_new`: (Optional, default: 'None') Number of (expected) sequencing depth. If not specified, scReadSim uses the real sequencing depth.
-- `celllabel_file`: (Optional, default: 'None') Specify the one-column text file containing the predefined cell labels. Make sure that the order of cell labels correspond to the cell barcode file. If no cell labels are specified, scReadSim performs a Louvain clustering before implementing scDesign2.
+- `UMI_modeling`: (Optional, default: False) Specify whether scReadSim should also model UMI count of the input BAM file.
+- `UMI_count_mat_filename`: (Optional, default: 'UMI_countmat') Base name of the UMI count matrix output by function `scRNA_bam2countmat()` with option UMI_modeling setting to Ture.
+- `n_cell_new`: (Optional, default: None) Number of synthetic cells. If not specified, scReadSim uses the number of real cells.
+- `total_count_new`: (Optional, default: None) Number of (expected) sequencing depth. If not specified, scReadSim uses the real sequencing depth.
+- `celllabel_file`: (Optional, default: None) Specify the one-column text file containing the predefined cell labels. Make sure that the order of cell labels correspond to the cell barcode file. If no cell labels are specified, scReadSim performs a Louvain clustering before implementing scDesign2.
 
 
 Given the input count matrix *`count_mat_filename`.txt*, scReadSim generates two files to `outdirectory` for following analysis:
@@ -102,7 +107,7 @@ Given the input count matrix *`count_mat_filename`.txt*, scReadSim generates two
 
 ```{code-block} python3
 # Generate synthetic count matrix for foregroud features
-GenerateSyntheticCount.scRNA_GenerateSyntheticCount(count_mat_filename=count_mat_filename, directory=outdirectory, outdirectory=outdirectory)
+GenerateSyntheticCount.scRNA_GenerateSyntheticCount(count_mat_filename=count_mat_filename, directory=outdirectory, outdirectory=outdirectory, UMI_modeling=True, UMI_count_mat_filename = UMI_count_mat_filename)
 # Generate synthetic count matrix for backgroud features
 GenerateSyntheticCount.scRNA_GenerateSyntheticCount(count_mat_filename=count_mat_comple_filename, directory=outdirectory, outdirectory=outdirectory)
 ```
@@ -121,6 +126,10 @@ Based on the synthetic count matrix, scReadSim generates synthetic reads by rand
 - `OUTPUT_cells_barcode_file`: Specify the file name storing the synthetic cell barcodes.
 - `read_len`: (Optional, default: '90') Specify the length of synthetic reads. Default value is 90 bp.
 - `jitter_size`: (Optional, default: '5') Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.
+- `CB_len`: (Optional, default: '16') Specify the length of cell barcode. Default value is 16 bp.
+- `UMI_modeling`: (Optional, default: False) Specify whether scReadSim should also model UMI count of the input BAM file.
+- `UMI_count_mat_filename`: (Optional, default: 'UMI_countmat') Base name of the UMI count matrix output by function `scRNA_bam2countmat()` with option UMI_modeling setting to Ture.
+- `UB_len`: (Optional, default: '10') Specify the length of UMI barcode. Default value is 10 bp.
 
 This function will output a bed file *`BED_filename`.bed* storing the coordinates information of synthetic reads and its cell barcode file `OUTPUT_cells_barcode_file` in directory `outdirectory`.
 
@@ -139,7 +148,7 @@ BED_filename_combined_pre = "%s.syntheticBAM.combined.CBincluded" % filename
 
 # Create synthetic read coordinates for foregroud features
 scRNA_GenerateBAM.scRNA_GenerateBAMCoord(
-	count_mat_filename=count_mat_filename, samtools_directory=samtools_directory, INPUT_bamfile=INPUT_bamfile, ref_peakfile=outdirectory + "/" + ref_peakfile, directory_cellnumber=directory_cellnumber, outdirectory=outdirectory, BED_filename=BED_filename_pre, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file)
+	count_mat_filename=count_mat_filename, samtools_directory=samtools_directory, INPUT_bamfile=INPUT_bamfile, ref_peakfile=outdirectory + "/" + ref_peakfile, directory_cellnumber=directory_cellnumber, outdirectory=outdirectory, BED_filename=BED_filename_pre, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file, UMI_modeling=True, UMI_count_mat_file=UMI_count_mat_filename)
 # Create synthetic read coordinates for backgroud features
 scRNA_GenerateBAM.scRNA_GenerateBAMCoord(
 	count_mat_filename=count_mat_comple_filename, samtools_directory=samtools_directory, INPUT_bamfile=INPUT_bamfile, ref_peakfile=outdirectory + "/" + ref_comple_peakfile, directory_cellnumber=directory_cellnumber, outdirectory=outdirectory, BED_filename=BED_COMPLE_filename_pre, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file)
