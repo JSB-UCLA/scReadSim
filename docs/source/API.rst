@@ -52,7 +52,8 @@ scRNA_GenerateBAM
    scReadSim.scRNA_GenerateBAM.flatten
    scReadSim.scRNA_GenerateBAM.cellbarcode_generator
    scReadSim.scRNA_GenerateBAM.scRNA_SampleSyntheticReads
-   scReadSim.scRNA_GenerateBAM.scRNA_PerTruePeakEdition
+   scReadSim.scRNA_GenerateBAM.scRNA_PerTruePeakEdition_read
+   scReadSim.scRNA_GenerateBAM.scRNA_PerTruePeakEdition_UMI
    scReadSim.scRNA_GenerateBAM.scRNA_GenerateBAMCoord
    scReadSim.scRNA_GenerateBAM.scRNA_CombineBED
    scReadSim.scRNA_GenerateBAM.scRNA_BED2FASTQ
