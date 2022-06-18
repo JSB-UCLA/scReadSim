@@ -23,8 +23,8 @@ setuptools.setup(
         x.strip() for x in
         Path('requirements.txt').read_text('utf-8').splitlines()
     ],
-    include_package_data=True,
-    # packages=['scReadSim'],
+    # include_package_data=True,
+    # # packages=['scReadSim'],
     packages=setuptools.find_packages(),
     # package_dir={'scReadSim': 'scReadSim'},
     package_data={'scReadSim': ['Rscript/*.R'],

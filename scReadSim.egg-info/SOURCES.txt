@@ -1,11 +1,13 @@
 LICENSE
 README.md
+pyproject.toml
 setup.py
 scReadSim/GenerateSyntheticCount.py
 scReadSim/Utility.py
 scReadSim/__init__.py
 scReadSim/scATAC_GenerateBAM.py
 scReadSim/scRNA_GenerateBAM.py
+scReadSim/setup.py
 scReadSim.egg-info/PKG-INFO
 scReadSim.egg-info/SOURCES.txt
 scReadSim.egg-info/dependency_links.txt
