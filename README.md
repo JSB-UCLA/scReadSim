@@ -5,6 +5,9 @@
 A single cell multi-omics read simulator.
 
 <!-- ## Update Log
+**June 18th**
+- Update UMI module and upload to PyPI.
+
 **May 4th**
 - Update random error module.
 
@@ -43,9 +46,12 @@ A single cell multi-omics read simulator.
 - Upload scATAC-seq module. -->
 
 ## Quick Install
-Currently, scReadSim doesn't support installation from PyPI.
+Install from PyPI
+```bash
+pip install scReadSim
+```
 
-Install scReadSim from Github
+Or install scReadSim from Github
 ```bash
 pip install git+https://github.com/JSB-UCLA/scReadSim.git
 ```
