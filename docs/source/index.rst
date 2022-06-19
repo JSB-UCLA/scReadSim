@@ -20,7 +20,12 @@ scReadSim is a single-cell synthetic reads simulator for multiple omics data. It
 Installation
 ------------
 
-To install the latest version on `GitHub <https://github.com/JSB-UCLA/scReadSim>`_, 
+Quick install from PyPI::
+
+   pip install scReadSim
+
+
+Or install the latest version from `GitHub <https://github.com/JSB-UCLA/scReadSim>`_, 
 
 run::
 
