@@ -1,5 +1,0 @@
-numpy
-pandas
-pysam
-tqdm
-rp2
