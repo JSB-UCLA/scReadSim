@@ -2,7 +2,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Documentation Status](https://readthedocs.org/projects/screadsim/badge/?version=latest)](https://screadsim.readthedocs.io/en/latest/?badge=latest)
 
-A single cell multi-omics read simulator.
+A single-cell RNA-seq and ATAC-seq read simulator.
 
 <!-- ## Update Log
 **June 18th**
