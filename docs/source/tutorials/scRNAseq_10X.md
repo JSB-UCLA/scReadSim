@@ -31,6 +31,31 @@ $ wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/ge
 $ tar -xf reference.genome.chr1.tar.gz
 ```
 
+### Pre-process input BAM file
+Note: Input BAM file for scReadSim needs pre-processing to add the cell barcode in front of the read name. For example, in 10x sequencing data, cell barcode `AACTTAGTCACAAGCT-1` is stored in the field `CB:Z:AACTTAGTCACAAGCT-1`. 
+
+```{code-block} console
+$ samtools view 10X_RNA_chr1_3073253_4526737_unprocess.bam | head -n 1
+A00984:207:HGWCKDSXY:2:2306:14253:36886      16      chr1    3013015 255     17M186701N73M   *       0       0       TTTTTTTTTTTTTTGTTTTAAAATGACCACAGTGTACTTTATTTAATGATTTTTGTACTTTGTGTTGCAATAAAATAAAAAAAAAATCTA   ::F::FFFF,F:,FFF:FFFFFFFFFFFFF:F:FFFFFFFFFFFFFFFF:::FFF:FFFF:F:FFFFFFFFFFFFFFFFFFFFFFFFFFF      NH:i:1  HI:i:1  AS:i:78      nM:i:0  RG:Z:e18_mouse_brain_fresh_5k:0:1:HGWCKDSXY:2   RE:A:I  xf:i:0  CR:Z:AACTTAGTCACAAGCT   CY:Z:FFFFFFFFFFFFFFFF   CB:Z:AACTTAGTCACAAGCT-1 UR:Z:TAAGGTTCGACA   UY:Z:FFFFFFFFFFFF        UB:Z:TAAGGTTCGACA
+```
+
+The following code chunk adds the cell barcodes in front of the read names.
+
+```{code-block} console
+$ # extract the header file
+$ mkdir tmp
+$ samtools view 10X_RNA_chr1_3073253_4526737_unprocess.bam -H > tmp/10X_RNA_chr1_3073253_4526737.header.sam
+
+$ # create a bam file with the barcode embedded into the read name
+$ time(cat <( cat tmp/10X_RNA_chr1_3073253_4526737.header.sam ) \
+ <( samtools view 10X_RNA_chr1_3073253_4526737_unprocess.bam | awk '{for (i=12; i<=NF; ++i) { if ($i ~ "^CB:Z:"){ td[substr($i,1,2)] = substr($i,6,length($i)-5); } }; printf "%s:%s\n", td["CB"], $0 }' ) \
+ | samtools view -bS - > 10X_RNA_chr1_3073253_4526737.bam) 
+$ rm -d tmp
+
+$ samtools view 10X_RNA_chr1_3073253_4526737.bam | head -n 1
+AACTTAGTCACAAGCT-1:A00984:207:HGWCKDSXY:2:2306:14253:36886      16      chr1    3013015 255     17M186701N73M   *       0       0       TTTTTTTTTTTTTTGTTTTAAAATGACCACAGTGTACTTTATTTAATGATTTTTGTACTTTGTGTTGCAATAAAATAAAAAAAAAATCTA   ::F::FFFF,F:,FFF:FFFFFFFFFFFFF:F:FFFFFFFFFFFFFFFF:::FFF:FFFF:F:FFFFFFFFFFFFFFFFFFFFFFFFFFF      NH:i:1  HI:i:1  AS:i:78      nM:i:0  RG:Z:e18_mouse_brain_fresh_5k:0:1:HGWCKDSXY:2   RE:A:I  xf:i:0  CR:Z:AACTTAGTCACAAGCT   CY:Z:FFFFFFFFFFFFFFFF   CB:Z:AACTTAGTCACAAGCT-1 UR:Z:TAAGGTTCGACA   UY:Z:FFFFFFFFFFFF        UB:Z:TAAGGTTCGACA
+```
+
 ## Step 2: Feature space construction
 For scRNA-seq, scReadSim autamatically uses gene transcript regions as the feature space. Specifically, scReasSim takes gene regions as foreground features and the copmlementary regions along the reference genome as the background features. 
 
@@ -64,7 +89,7 @@ Utility.scRNA_CreateFeatureSets(INPUT_bamfile=INPUT_bamfile, samtools_directory=
 
 
 ## Step 3: Count matrix construction
-Based on the feature sets output in **Step 2**, scReasSim constructs the count matrices for both foreground feautures and background features through function `Utility.scRNA_bam2countmat`. This function needs user to specify
+Based on the feature sets output in **Step 2**, scReasSim constructs the count matrices for both foreground feautures and background features through function `Utility.scRNA_bam2countmat_paral`. This function needs user to specify
 
 - `cells_barcode_file`: Cell barcode file corresponding to the input BAM file.
 - `bed_file`: Features bed file to generate the count matrix.
@@ -73,6 +98,7 @@ Based on the feature sets output in **Step 2**, scReasSim constructs the count m
 - `count_mat_filename`: Specify the base name of output count matrix.
 - `UMI_modeling`: (Optional, default: False) Specify whether scReadSim should also model UMI count of the input BAM file.
 - `UMI_count_mat_filename`: (Optional, default: 'UMI_countmat') If UMI_modeling is set to True, specify the base name of output UMI count matrix.
+- `n_cores`: (Optional, default: '1') Specify the number of cores for parallel computing when generating count matrix.
 
 For the user specified `count_mat_filename`, scReadSim will generate a count matrix named *`count_mat_filename`.txt* to directory `outdirectory`. In case modeling both UMI and read count of the input BAM file (set `UMI_modeling` to be True), scReadSim generate two count matrices named *`count_mat_filename`.txt* and *`UMI_count_mat_filename`.txt*to directory `outdirectory`.
 
@@ -82,9 +108,9 @@ count_mat_comple_filename = "%s.COMPLE.countmatrix" % filename
 UMI_count_mat_filename = "%s.UMI.countmatrix" % filename
 
 # Construct count matrix for foregroud features
-Utility.scRNA_bam2countmat(cells_barcode_file=INPUT_cells_barcode_file, bed_file=outdirectory + "/" + ref_peakfile, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, count_mat_filename=count_mat_filename, UMI_modeling=True, UMI_count_mat_filename = UMI_count_mat_filename)
+Utility.scRNA_bam2countmat_paral(cells_barcode_file=INPUT_cells_barcode_file, bed_file=outdirectory + "/" + ref_peakfile, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, count_mat_filename=count_mat_filename, UMI_modeling=True, UMI_count_mat_filename = UMI_count_mat_filename, n_cores=1)
 # Construct count matrix for background features
-Utility.scRNA_bam2countmat(cells_barcode_file=INPUT_cells_barcode_file, bed_file=outdirectory + "/" + ref_comple_peakfile, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, count_mat_filename=count_mat_comple_filename)
+Utility.scRNA_bam2countmat_paral(cells_barcode_file=INPUT_cells_barcode_file, bed_file=outdirectory + "/" + ref_comple_peakfile, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, count_mat_filename=count_mat_comple_filename, n_cores=1))
 ```
 
 ## Step 4: Synthetic count matrix simulation
@@ -115,7 +141,7 @@ GenerateSyntheticCount.scRNA_GenerateSyntheticCount(count_mat_filename=count_mat
 ## Step 5: Synthetic BAM file generation
 
 ### Generate synthetic reads in BED format
-Based on the synthetic count matrix, scReadSim generates synthetic reads by randomly sampling from the real BAM file input by users. First use function `scRNA_GenerateBAMCoord` to create the synthetic reads and output in BED file storing the coordinates information. Function `scRNA_GenerateBAMCoord` takes following input arguments:
+Based on the synthetic count matrix, scReadSim generates synthetic reads by randomly sampling from the real BAM file input by users. First use function `scRNA_GenerateBAMCoord_paral` to create the synthetic reads and output in BED file storing the coordinates information. Function `scRNA_GenerateBAMCoord_paral` takes following input arguments:
 - `count_mat_filename`: The base name of output count matrix in bam2countmat.
 - `samtools_directory`: Path to software samtools.
 - `INPUT_bamfile`: Input BAM file for anlaysis.
@@ -130,6 +156,7 @@ Based on the synthetic count matrix, scReadSim generates synthetic reads by rand
 - `UMI_modeling`: (Optional, default: False) Specify whether scReadSim should also model UMI count of the input BAM file.
 - `UMI_count_mat_filename`: (Optional, default: 'UMI_countmat') Base name of the UMI count matrix output by function `scRNA_bam2countmat()` with option UMI_modeling setting to Ture.
 - `UB_len`: (Optional, default: '10') Specify the length of UMI barcode. Default value is 10 bp.
+- `n_cores`: (Optional, default: '1') Specify the number of cores for parallel computing.
 
 This function will output a bed file *`BED_filename`.bed* storing the coordinates information of synthetic reads and its cell barcode file `OUTPUT_cells_barcode_file` in directory `outdirectory`.
 
@@ -147,11 +174,11 @@ BED_COMPLE_filename_pre = "%s.syntheticBAM.COMPLE.CBincluded" % filename
 BED_filename_combined_pre = "%s.syntheticBAM.combined.CBincluded" % filename
 
 # Create synthetic read coordinates for foregroud features
-scRNA_GenerateBAM.scRNA_GenerateBAMCoord(
-	count_mat_filename=count_mat_filename, samtools_directory=samtools_directory, INPUT_bamfile=INPUT_bamfile, ref_peakfile=outdirectory + "/" + ref_peakfile, directory_cellnumber=directory_cellnumber, outdirectory=outdirectory, BED_filename=BED_filename_pre, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file, UMI_modeling=True, UMI_count_mat_file=UMI_count_mat_filename)
+scRNA_GenerateBAM.scRNA_GenerateBAMCoord_paral(
+	count_mat_filename=count_mat_filename, samtools_directory=samtools_directory, INPUT_bamfile=INPUT_bamfile, ref_peakfile=outdirectory + "/" + ref_peakfile, directory_cellnumber=directory_cellnumber, outdirectory=outdirectory, BED_filename=BED_filename_pre, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file, read_len=90, jitter_size=5, CB_len=16, UMI_modeling=True, UMI_count_mat_file=UMI_count_mat_filename, UB_len=10, n_cores=1)
 # Create synthetic read coordinates for backgroud features
-scRNA_GenerateBAM.scRNA_GenerateBAMCoord(
-	count_mat_filename=count_mat_comple_filename, samtools_directory=samtools_directory, INPUT_bamfile=INPUT_bamfile, ref_peakfile=outdirectory + "/" + ref_comple_peakfile, directory_cellnumber=directory_cellnumber, outdirectory=outdirectory, BED_filename=BED_COMPLE_filename_pre, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file)
+scRNA_GenerateBAM.scRNA_GenerateBAMCoord_paral(
+	count_mat_filename=count_mat_comple_filename, samtools_directory=samtools_directory, INPUT_bamfile=INPUT_bamfile, ref_peakfile=outdirectory + "/" + ref_comple_peakfile, directory_cellnumber=directory_cellnumber, outdirectory=outdirectory, BED_filename=BED_COMPLE_filename_pre, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file, read_len=90, jitter_size=5, CB_len=16, UMI_modeling=True, UMI_count_mat_file=UMI_count_mat_filename, UB_len=10, n_cores=1)
 
 # Combine foreground and background bed file
 scRNA_GenerateBAM.scRNA_CombineBED(outdirectory=outdirectory, BED_filename_pre=BED_filename_pre, BED_COMPLE_filename_pre=BED_COMPLE_filename_pre, BED_filename_combined_pre=BED_filename_combined_pre)
@@ -202,7 +229,7 @@ In the demo data, We have indexed chr1.fa stored in reference.genome.chr1.tar.gz
 output_BAM_pre = "%s.syntheticBAM.CBincluded" % filename
 
 # Convert FASTQ files to BAM file
-scRNA_GenerateBAM.AlignSyntheticBam_Pair(bowtie2_directory=bowtie2_directory, samtools_directory=samtools_directory, outdirectory=outdirectory, referenceGenome_name=referenceGenome_name, referenceGenome_dir=referenceGenome_dir, synthetic_fastq_prename=synthetic_fastq_prename, output_BAM_pre=output_BAM_pre)
+scRNA_GenerateBAM.AlignSyntheticBam_Single(bowtie2_directory=bowtie2_directory, samtools_directory=samtools_directory, outdirectory=outdirectory, referenceGenome_name=referenceGenome_name, referenceGenome_dir=referenceGenome_dir, synthetic_fastq_prename=synthetic_fastq_prename, output_BAM_pre=output_BAM_pre)
 ```
 
 ### Introduce Error to synthetic data

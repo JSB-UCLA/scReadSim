@@ -11,6 +11,7 @@ import string
 import random
 import subprocess
 from tqdm import tqdm
+from joblib import Parallel, delayed
 
 
 def flatten(x):
@@ -156,245 +157,90 @@ def scATAC_PerTruePeakEdition(peak_record, count_vec, read_lines, random_cellbar
 	read_2_df_order = read_2_df[['chr','r2_start_shifted', 'r2_end_shifted', 'read_name', 'read_length', 'strand']]
 	return read_1_df_order, read_2_df_order
 
-# def scATAC_SampleSyntheticReads(coordinate_file, samtools_directory, INPUT_bamfile, outdirectory, ref_peakfile, cellnumberfile):
-# 	"""Sample Synthetic reads. The sampled reads coordinates are stored as `coordinate_file` in `outdirectory`.
+def generateBAMcoord_mainloop(relative_peak_ind):
+    peak_ind = peak_nonzero_id[relative_peak_ind]
+    peak_record = peaks_assignments[peak_ind]
+    count_vec = count_mat[peak_ind, :]  # Input
+    read_1_df, read_2_df = scATAC_PerTruePeakEdition(peak_record, count_vec, read_lines, random_cellbarcode_list, read_len_glb, jitter_size_glb)
+    read_1_df.to_csv("%s/%s" % (outdirectory, read1_bedfile), header=None, index=None, sep='\t', mode='a')
+    read_2_df.to_csv("%s/%s" % (outdirectory, read2_bedfile), header=None, index=None, sep='\t', mode='a')
+    # return read_1_df, read_2_df
 
-#     Parameters
-#     ----------
-# 	coordinate_file: `str`
-# 		Specify name of the coordinates file storing synthetic reads. This is not a final output of scReadSim.
-# 	samtools_directory: `str`
-# 		Directory of software samtools.
-# 	INPUT_bamfile: `str`
-# 		Directory of input BAM file.
-# 	outdirectory: `str`
-# 		Output directory of coordinate files.
-# 	ref_peakfile: `str`
-# 		Directory of the features bed file.
-# 	cellnumberfile: `str`
-# 		Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.
-# 	"""
-# 	rm_coor_command = "rm %s/%s" % (outdirectory, coordinate_file)
-# 	os.system(rm_coor_command)
-# 	create_coor_command = "touch %s/%s" % (outdirectory, coordinate_file)
-# 	os.system(create_coor_command)
-# 	cmd = "while true; do read -r region <&3 || break;  read -r ncell <&4 || break; region=$(echo ${region} | cut -f 1,2,3 | perl -lane 'print \"$F[0]:$F[1]-$F[2]\"');  paste -d\"\t\" <(awk -v nsample=${ncell} -v region=${region} 'BEGIN{for(c=0;c<nsample;c++) print region}') <(%s/samtools view %s ${region} | shuf -r -n ${ncell} | cut -f3,4,8,9) >> %s/%s;  done 3<%s 4<%s" % (samtools_directory, INPUT_bamfile, outdirectory, coordinate_file, ref_peakfile, cellnumberfile)
-# 	# Testing using copied directory
-# 	output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-# 	if error:
-# 	     print('[ERROR] Fail to generate synthetic reads:\n', error.decode())
+def scATAC_GenerateBAMCoord_paral(count_mat_filename, samtools_directory, INPUT_bamfile, ref_peakfile, directory_cellnumber,
+                            outdirectory, BED_filename, OUTPUT_cells_barcode_file, read_len=50, jitter_size=5, n_cores=1):
+    """Generate Synthetic reads in BED format. 
 
+    Parameters
+    ----------
+    count_mat_filename: `str`
+      The base name of output count matrix in bam2countmat.
+    samtools_directory: `str`
+      Path to software samtools.
+    INPUT_bamfile: `str`
+      Input BAM file for anlaysis.
+    ref_peakfile: `str`
+      Features bed file.
+    directory_cellnumber: `str`
+      Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.
+    outdirectory: `str`
+      Specify the output directory for synthetic reads bed file.
+    BED_filename: `str`
+      Specify the base name of output bed file.
+    OUTPUT_cells_barcode_file: `str`
+      Specify the file name storing the synthetic cell barcodes.
+    read_len: `int` (default: '50')
+      Specify the length of synthetic reads. Default value is 50 bp.
+    jitter_size: `int` (default: '5')
+      Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.
+    n_cores: 'int= (default: 1)
+        Specify the number of cores for parallel computing.
+    """
+    print('scReadSim scRNA_GenerateBAMCoord Running...')
+    print('\t- Sampling synthetic reads...')
+    coordinate_file = count_mat_filename + ".BAMfile_halfsampled_coordinates.txt"
+    cellnumberfile = "%s/%s.scDesign2Simulated.nPairsRegionmargional.txt" % (directory_cellnumber, count_mat_filename)
+    rm_coor_command = "rm %s/%s" % (outdirectory, coordinate_file)
+    os.system(rm_coor_command)
+    create_coor_command = "touch %s/%s" % (outdirectory, coordinate_file)
+    os.system(create_coor_command)
+    # TODO: Some bugs here?
+    cmd = "while true; do read -r region <&3 || break;  read -r ncell <&4 || break; region=$(echo ${region} | cut -f 1,2,3 | perl -lane 'print \"$F[0]:$F[1]-$F[2]\"');  paste -d\"\t\" <(awk -v nsample=${ncell} -v region=${region} 'BEGIN{for(c=0;c<nsample;c++) print region}') <(%s/samtools view %s ${region} | shuf -r -n ${ncell} | cut -f3,4,8,9) >> %s/%s;  done 3<%s 4<%s" % (samtools_directory, INPUT_bamfile, outdirectory, coordinate_file, ref_peakfile, cellnumberfile)
+    output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    if error:
+        print('[ERROR] Fail to generate synthetic reads:\n', error.decode())
+    print('\t- Sampling synthetic reads done!')
+    count_mat_file = "%s.scDesign2Simulated.txt" % count_mat_filename
+    random.seed(2022)
+    global read_lines
+    read_lines = pd.read_csv("%s/%s" % (outdirectory, coordinate_file), delimiter="\t",
+                             names=['peak_name', 'chr', 'r1_start', 'r2_start', 'length'])
+    global peaks_assignments
+    peaks_assignments = pd.read_csv(ref_peakfile, delimiter="\t", names=['chr', 'start', 'end']).to_numpy()
+    global count_mat
+    # count_mat = pd.read_csv("%s/%s" % (directory_cellnumber, count_mat_file), header=None, delimiter="\t", index_col=0).to_numpy()
+    count_mat = pd.read_csv("%s/%s" % (directory_cellnumber, count_mat_file), header=0, delimiter="\t").to_numpy()
+    marginal_cell_number = pd.read_csv(cellnumberfile, header=None, delimiter="\t").to_numpy()
+    n_cell = np.shape(count_mat)[1]
+    global random_cellbarcode_list
+    random_cellbarcode_list = cellbarcode_generator(n_cell, size=16)
+    global read1_bedfile, read2_bedfile
+    read1_bedfile = "%s.read1.bed" % BED_filename
+    read2_bedfile = "%s.read2.bed" % BED_filename
+    with open(outdirectory + "/" + OUTPUT_cells_barcode_file, 'w') as f:
+        for item in random_cellbarcode_list:
+            f.write("%s\n" % item)
+    with open("%s/%s" % (outdirectory, read1_bedfile), 'w') as fp:
+        pass
+    with open("%s/%s" % (outdirectory, read2_bedfile), 'w') as fp:
+        pass
+    global peak_nonzero_id
+    peak_nonzero_id = np.nonzero(marginal_cell_number)[0]
+    global read_len_glb, jitter_size_glb
+    read_len_glb, jitter_size_glb = read_len, jitter_size
+    Parallel(n_jobs=n_cores, backend='multiprocessing')(
+        delayed(generateBAMcoord_mainloop)(relative_peak_ind) for relative_peak_ind in (range(len(peak_nonzero_id))))
 
-# def scATAC_GenerateBAMCoord(outdirectory, coordinate_file, ref_peakfile, count_mat_file, cellnumberfile, BED_filename, OUTPUT_cells_barcode_file, read_len = 50, jitter_size = 5):
-# 	"""Generate Synthetic reads in BED format. 
-
-# 	Parameters
-# 	----------
-# 	outdirectory: `str`
-# 		Output directory of the synthteic bed file and its corresponding cell barcodes file.
-# 	coordinate_file: `str`
-# 		Directory of the coordinates file storing synthetic reads output by scATAC_SampleSyntheticReads.
-# 	ref_peakfile: `str`
-# 		Directory of the features bed file.
-# 	count_mat_file: `str`
-# 		Directory of synthetic count matrix.
-# 	cellnumberfile: `str`
-# 		Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.
-# 	BED_filename: `str`
-# 		Specify the base name of output bed file.
-# 	OUTPUT_cells_barcode_file: `str`
-# 		Specify the file name storing the synthetic cell barcodes.
-# 	read_len: `int` (default: '50')
-# 		Specify the length of synthetic reads. Default value is 50 bp.
-# 	jitter_size: `int` (default: '5')
-# 		Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.
-# 	"""
-# 	random.seed(2022)
-# 	read_lines = pd.read_csv(coordinate_file, delimiter="\t",  names=['peak_name', 'chr', 'r1_start', 'r2_start', 'length'])
-# 	peaks_assignments = pd.read_csv(ref_peakfile, delimiter="\t",  names=['chr', 'start', 'end']).to_numpy()
-# 	count_mat = pd.read_csv(count_mat_file, header=0, delimiter="\t").to_numpy()
-# 	marginal_cell_number = pd.read_csv(cellnumberfile, header=None, delimiter="\t").to_numpy()
-# 	n_cell = np.shape(count_mat)[1]
-# 	random_cellbarcode_list = cellbarcode_generator(n_cell, size=16)
-# 	read1_bedfile="%s.read1.bed" % BED_filename
-# 	read2_bedfile="%s.read2.bed" % BED_filename
-# 	start = time.time()
-# 	with open(outdirectory + "/" + OUTPUT_cells_barcode_file, 'w') as f:
-# 		for item in random_cellbarcode_list:
-# 		    f.write("%s\n" % item)
-# 	with open("%s/%s" % (outdirectory, read1_bedfile), 'w') as fp:
-# 		pass
-# 	with open("%s/%s" % (outdirectory, read2_bedfile), 'w') as fp:
-# 		pass
-# 	peak_nonzero_id = np.nonzero(marginal_cell_number)[0]
-# 	for relative_peak_ind in tqdm(range(len(peak_nonzero_id))):
-# 		peak_ind = peak_nonzero_id[relative_peak_ind]
-# 		# peak_ind = 192
-# 		peak_record = peaks_assignments[peak_ind]
-# 		count_vec = count_mat[peak_ind,:] # Input
-# 		print(peak_ind)
-# 		read_1_df, read_2_df = scATAC_PerTruePeakEdition(peak_record, count_vec, read_lines, random_cellbarcode_list, read_len, jitter_size)
-# 		read_1_df.to_csv("%s/%s" % (outdirectory, read1_bedfile), header=None, index=None, sep='\t', mode='a')
-# 		read_2_df.to_csv("%s/%s" % (outdirectory, read2_bedfile), header=None, index=None, sep='\t', mode='a')
-# 	end = time.time()
-# 	print(end - start)
-
-def scATAC_GenerateBAMCoord(count_mat_filename, samtools_directory, INPUT_bamfile, ref_peakfile, directory_cellnumber, outdirectory, BED_filename, OUTPUT_cells_barcode_file, read_len = 50, jitter_size = 5):
-	"""Generate Synthetic reads in BED format. 
-
-	Parameters
-	----------
-	count_mat_filename: `str`
-		The base name of output count matrix in bam2countmat.
-	samtools_directory: `str`
-		Path to software samtools.
-	INPUT_bamfile: `str`
-		Input BAM file for anlaysis.
-	ref_peakfile: `str`
-		Features bed file.
-	directory_cellnumber: `str`
-		Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.
-	outdirectory: `str`
-		Specify the output directory for synthetic reads bed file.
-	BED_filename: `str`
-		Specify the base name of output bed file.
-	OUTPUT_cells_barcode_file: `str`
-		Specify the file name storing the synthetic cell barcodes.
-	read_len: `int` (default: '50')
-		Specify the length of synthetic reads. Default value is 50 bp.
-	jitter_size: `int` (default: '5')
-		Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.
-	"""
-	print('scReadSim scRNA_GenerateBAMCoord Running...')
-	print('\t- Sampling synthetic reads...')
-	coordinate_file = count_mat_filename + ".BAMfile_halfsampled_coordinates.txt"
-	cellnumberfile = "%s/%s.scDesign2Simulated.nPairsRegionmargional.txt" % (directory_cellnumber, count_mat_filename)
-	rm_coor_command = "rm %s/%s" % (outdirectory, coordinate_file)
-	os.system(rm_coor_command)
-	create_coor_command = "touch %s/%s" % (outdirectory, coordinate_file)
-	os.system(create_coor_command)
-	cmd = "while true; do read -r region <&3 || break;  read -r ncell <&4 || break; region=$(echo ${region} | cut -f 1,2,3 | perl -lane 'print \"$F[0]:$F[1]-$F[2]\"');  paste -d\"\t\" <(awk -v nsample=${ncell} -v region=${region} 'BEGIN{for(c=0;c<nsample;c++) print region}') <(%s/samtools view %s ${region} | shuf -r -n ${ncell} | cut -f3,4,8,9) >> %s/%s;  done 3<%s 4<%s" % (samtools_directory, INPUT_bamfile, outdirectory, coordinate_file, ref_peakfile, cellnumberfile)
-	# Testing using copied directory
-	output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-	if error:
-	     print('[ERROR] Fail to generate synthetic reads:\n', error.decode())
-	print('\t- Sampling synthetic reads done!')
-	count_mat_file = "%s.scDesign2Simulated.txt" % count_mat_filename
-	random.seed(2022)
-	read_lines = pd.read_csv("%s/%s" % (outdirectory, coordinate_file), delimiter="\t",  names=['peak_name', 'chr', 'r1_start', 'r2_start', 'length'])
-	peaks_assignments = pd.read_csv(ref_peakfile, delimiter="\t",  names=['chr', 'start', 'end']).to_numpy()
-	count_mat = pd.read_csv("%s/%s" % (directory_cellnumber, count_mat_file), header=0, delimiter="\t").to_numpy()
-	marginal_cell_number = pd.read_csv(cellnumberfile, header=None, delimiter="\t").to_numpy()
-	n_cell = np.shape(count_mat)[1]
-	random_cellbarcode_list = cellbarcode_generator(n_cell, size=16)
-	read1_bedfile="%s.read1.bed" % BED_filename
-	read2_bedfile="%s.read2.bed" % BED_filename
-	start = time.time()
-	with open(outdirectory + "/" + OUTPUT_cells_barcode_file, 'w') as f:
-		for item in random_cellbarcode_list:
-		    f.write("%s\n" % item)
-	with open("%s/%s" % (outdirectory, read1_bedfile), 'w') as fp:
-		pass
-	with open("%s/%s" % (outdirectory, read2_bedfile), 'w') as fp:
-		pass
-	peak_nonzero_id = np.nonzero(marginal_cell_number)[0]
-	for relative_peak_ind in tqdm(range(len(peak_nonzero_id))):
-		peak_ind = peak_nonzero_id[relative_peak_ind]
-		# peak_ind = 192
-		peak_record = peaks_assignments[peak_ind]
-		count_vec = count_mat[peak_ind,:] # Input
-		print(peak_ind)
-		read_1_df, read_2_df = scATAC_PerTruePeakEdition(peak_record, count_vec, read_lines, random_cellbarcode_list, read_len, jitter_size)
-		read_1_df.to_csv("%s/%s" % (outdirectory, read1_bedfile), header=None, index=None, sep='\t', mode='a')
-		read_2_df.to_csv("%s/%s" % (outdirectory, read2_bedfile), header=None, index=None, sep='\t', mode='a')
-	end = time.time()
-	print(end - start)
  
-
-# def scATAC_SampleSyntheticReads_INPUT(coordinate_file, samtools_directory, INPUT_bamfile, outdirectory, assignment_file, cellnumberfile):
-# 	"""Sample Synthetic reads. The sampled reads coordinates are stored as `coordinate_file` in `outdirectory`.
-
-# 	Parameters
-# 	----------
-# 	coordinate_file: `str`
-# 		Specify name of the coordinates file storing synthetic reads. This is not a final output of scReadSim.
-# 	samtools_directory: `str`
-# 		Directory of software samtools.
-# 	INPUT_bamfile: `str`
-# 		Directory of input BAM file.
-# 	outdirectory: `str`
-# 		Output directory of coordinate files.
-# 	assignment_file: `str`
-# 		Directory of the peak assignment file generated in match_peak.
-# 	cellnumberfile: `str`
-# 		Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.
-# 	"""
-# 	rm_coor_command = "rm %s/%s" % (outdirectory, coordinate_file)
-# 	os.system(rm_coor_command)
-# 	create_coor_command = "touch %s/%s" % (outdirectory, coordinate_file)
-# 	os.system(create_coor_command)
-# 	cmd = "while true; do read -r region <&3 || break;  read -r ncell <&4 || break; true_region=$(echo ${region} | cut -f 1,2,3 | perl -lane 'print \"$F[0]:$F[1]-$F[2]\"'); ref_region=$(echo ${region} | cut -f 4,5,6 | perl -lane 'print \"$F[0]:$F[1]-$F[2]\"'); paste -d\"\t\" <(awk -v nsample=${ncell} -v region=${true_region} 'BEGIN{for(c=0;c<nsample;c++) print region}') <(%s/samtools view %s ${ref_region} | shuf -r -n ${ncell} | cut -f3,4,8,9) >> %s/%s;  done 3<%s 4<%s" % (samtools_directory, INPUT_bamfile, outdirectory, coordinate_file, assignment_file, cellnumberfile)
-# 	# Testing using copied directory
-# 	output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-# 	if error:
-# 	     print('[ERROR] Fail to generate synthetic reads:\n', error.decode())
-# 	print('Done!')
-
-
-# def scATAC_GenerateBAMCoord_INPUT(outdirectory, coordinate_file, assignment_file, count_mat_file, cellnumberfile, BED_filename, OUTPUT_cells_barcode_file, read_len=50, jitter_size=5):
-# 	"""Generate Synthetic reads in BED format. 
-
-# 	Parameters
-# 	----------
-# 	outdirectory: `str`
-# 		Output directory of the synthteic bed file and its corresponding cell barcodes file.
-# 	coordinate_file: `str`
-# 		Directory of the coordinates file storing synthetic reads output by scATAC_SampleSyntheticReads.
-# 	assignment_file: `str`
-# 		Directory of the peak assignment file generated in match_peak.
-# 	count_mat_file: `str`
-# 		Directory of synthetic count matrix.
-# 	cellnumberfile: `str`
-# 		Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.
-# 	BED_filename: `str`
-# 		Specify the base name of output bed file.
-# 	OUTPUT_cells_barcode_file: `str`
-# 		Specify the file name storing the synthetic cell barcodes.
-# 	read_len: `int` (default: '50')
-# 		Specify the length of synthetic reads. Default value is 50 bp.
-# 	jitter_size: `int` (default: '50')
-# 		Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.
-# 	"""
-# 	random.seed(2022)
-# 	read_lines = pd.read_csv(coordinate_file, delimiter="\t",  names=['true_peak_name', 'chr', 'r1_start', 'r2_start', 'length'])
-# 	peaks_assignments = pd.read_csv(assignment_file, delimiter="\t",  names=['true_chr', 'true_start', 'true_end', 'ref_chr', 'ref_start', 'ref_end']).to_numpy()
-# 	count_mat = pd.read_csv(count_mat_file, header=0, delimiter="\t").to_numpy()
-# 	marginal_cell_number = pd.read_csv(cellnumberfile, header=None, delimiter="\t").to_numpy()
-# 	n_cell = np.shape(count_mat)[1]
-# 	random_cellbarcode_list = cellbarcode_generator(n_cell, size=16)
-# 	read1_bedfile="%s.read1.bed" % BED_filename
-# 	read2_bedfile="%s.read2.bed" % BED_filename
-# 	start = time.time()
-# 	with open(outdirectory + "/" + OUTPUT_cells_barcode_file, 'w') as f:
-# 		for item in random_cellbarcode_list:
-# 		    f.write("%s\n" % item)
-# 	with open("%s/%s" % (outdirectory, read1_bedfile), 'w') as fp:
-# 		pass
-# 	with open("%s/%s" % (outdirectory, read2_bedfile), 'w') as fp:
-# 		pass
-# 	peak_nonzero_id = np.nonzero(marginal_cell_number)[0]
-# 	for relative_peak_ind in tqdm(range(len(peak_nonzero_id))):
-# 		peak_ind = peak_nonzero_id[relative_peak_ind]
-# 		# peak_ind = 192
-# 		peak_record = peaks_assignments[peak_ind]
-# 		count_vec = count_mat[peak_ind,:] # Input
-# 		print(peak_ind)
-# 		read_1_df, read_2_df = scATAC_INPUT_PerTruePeakEdition(peak_record, count_vec, read_lines, random_cellbarcode_list, read_len, jitter_size)
-# 		read_1_df.to_csv("%s/%s" % (outdirectory, read1_bedfile), header=None, index=None, sep='\t', mode='a')
-# 		read_2_df.to_csv("%s/%s" % (outdirectory, read2_bedfile), header=None, index=None, sep='\t', mode='a')
-# 	end = time.time()
-# 	print(end - start)
-
 def scATAC_GenerateBAMCoord_INPUT(count_mat_filename, samtools_directory, INPUT_bamfile, assignment_file, directory_cellnumber, outdirectory, BED_filename, OUTPUT_cells_barcode_file, read_len = 50, jitter_size = 5):
 	"""Generate Synthetic reads in BED format. 
 
@@ -581,13 +427,6 @@ def AlignSyntheticBam_Pair(bowtie2_directory, samtools_directory, outdirectory, 
 		Specify the base name of the output BAM file.
 	"""
 	print('scReadSim AlignSyntheticBam_Pair Running...')
-	# if doIndex == True:
-	# 	print('\t- Indexing reference genome file...')
-	# 	index_ref_cmd = "%s/bowtie2-build %s/%s.fa %s" % (bowtie2_directory, referenceGenome_dir, referenceGenome_name, referenceGenome_name)
-	# 	output, error = subprocess.Popen(index_ref_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-	# 	if error:
-	# 	     print('[ERROR] Fail to index the reference genome:\nPlease index the reference genome by setting \'doIndex=True\'\n', error.decode())
-	# Align using bwa
 	print('\t- Aligning FASTQ files onto reference genome files...')
 	alignment_cmd = "%s/bowtie2 --minins 0 --maxins 1200 -x %s/%s -1 %s/%s.read1.bed2fa.sorted.fq -2 %s/%s.read2.bed2fa.sorted.fq | %s/samtools view -bS - > %s/%s.synthetic.noCB.bam" % (bowtie2_directory, referenceGenome_dir, referenceGenome_name,  outdirectory, synthetic_fastq_prename, outdirectory, synthetic_fastq_prename, samtools_directory, outdirectory, output_BAM_pre)
 	output, error = subprocess.Popen(alignment_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()

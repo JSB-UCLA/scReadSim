@@ -8,6 +8,8 @@ import sys
 import subprocess
 from tqdm import tqdm
 import os
+from joblib import Parallel, delayed
+from collections import Counter
 
 def CallPeak(macs3_directory, INPUT_bamfile, outdirectory, MACS3_peakname_pre):
     """Perform peak calling using MACS3 
@@ -138,8 +140,30 @@ def scRNA_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_director
         print('[ERROR] Fail to create complementary feature set:\n', error.decode())
     print('Done!\n')   
 
+def countmat_mainloop(rec_id):
+    """Construct count vector for each scATAC-seq feature.
 
-def scATAC_bam2countmat(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, count_mat_filename):
+    """
+    count_array = np.zeros(cells_n, dtype=int) # initialize
+    rec = open_peak[rec_id]
+    rec_name = '_'.join((rec[0], str(rec[1]), str(rec[2])))
+    samfile = pysam.AlignmentFile(INPUT_bamfile_glb, "rb")
+    reads = samfile.fetch(rec[0], int(rec[1]), int(rec[2]))  # question: what about feature intersection or half overlap?
+    cell_iter = []
+    cell_idx_ls = []
+    for read in reads:
+        cell_iter.append(read.qname.split(":")[0].upper())
+    for cell in cell_iter:
+        if cell in cells_barcode:
+            cell_idx_ls.append(cells_barcode.index(cell))
+    counter = Counter(cell_idx_ls)
+    keys = list(counter.keys())
+    values = list(counter.values())
+    count_array[keys] = values
+    count_array_withPeak = np.insert(count_array.astype(str), 0, rec_name)
+    return count_array_withPeak
+
+def scATAC_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, count_mat_filename, n_cores=1):
     """Construct count matrix for scATAC-seq BAM file.
 
     Parameters
@@ -154,49 +178,132 @@ def scATAC_bam2countmat(cells_barcode_file, bed_file, INPUT_bamfile, outdirector
         Specify the output directory of the count matrix file.
     count_mat_filename: `str`
         Specify the base name of output count matrix.
+    n_cores: `int` (default: 1)
+        Specify the number of cores for parallel computing when generating count matrix.
     """
     cells = pd.read_csv(cells_barcode_file, sep="\t")
     cells = cells.values.tolist()
+    # Specify global vars
+    global open_peak, cells_n, cells_barcode, INPUT_bamfile_glb
+    INPUT_bamfile_glb = INPUT_bamfile
     cells_barcode = [item[0] for item in cells]
+    with open(bed_file) as open_peak:
+        reader = csv.reader(open_peak, delimiter="\t")
+        open_peak = np.asarray(list(reader))
+    k = 0
+    cellsdic = defaultdict(lambda: [None])
+    for cell in cells_barcode:
+        cellsdic[cell] = k
+        k += 1
+    k = 0
+    peaksdic = defaultdict(lambda: [None])
+    for rec in open_peak:
+        rec_name = '_'.join(rec)
+        peaksdic[rec_name] = k
+        k += 1
+    cells_n = len(cells_barcode)
+    peaks_n = len(open_peak)
+    print("Generating read count matrix...\n")
+    mat_array = Parallel(n_jobs=n_cores, backend='multiprocessing')(delayed(countmat_mainloop)(rec_id) for rec_id in (range(len(open_peak))))
+    para_countmat = np.array(mat_array)
+    print("Outputing read count matrix %s.txt...\n" % count_mat_filename)
     with open("%s/%s.txt" % (outdirectory, count_mat_filename), 'w') as outsfile:
-        samfile = pysam.AlignmentFile(INPUT_bamfile, "rb")
-        with open(bed_file) as open_peak:
-            reader = csv.reader(open_peak, delimiter="\t")
-            open_peak = np.asarray(list(reader))
-        k = 0
-        cellsdic = defaultdict(lambda: [None])
-        for cell in cells_barcode:
-            cellsdic[cell] = k
-            k += 1
-        k = 0
-        peaksdic = defaultdict(lambda: [None])
-        for rec in open_peak:
-            rec_name = '_'.join(rec)
-            peaksdic[rec_name] = k
-            k += 1
-        cells_n = len(cells_barcode)
-        peaks_n = len(open_peak)
-        # marginal_count_vec = [0] * len(open_peak)
-        print("Generating read count matrix %s.txt...\n" % count_mat_filename)
-        # for rec in open_peak:
         for rec_id in tqdm(range(len(open_peak))):
-            rec = open_peak[rec_id]
-            rec_name = '_'.join(rec)
-            currcounts = [0]*cells_n
-            reads = samfile.fetch(rec[0], int(rec[1]), int(rec[2]))
-            for read in reads:
-                cell = read.qname.split(":")[0].upper()
-                if cell in cells_barcode:
-                    try:
-                        currcounts[cellsdic[cell]] += 1
-                    except KeyError:
-                        pass
-            # marginal_count_vec[rec_id] = sum(currcounts)
-            # if sum(currcounts) > 0:
-            print(rec_name + "\t" + "\t".join([str(x) for x in currcounts]),file = outsfile)
-        print("Done.\n")
+            print("\t".join([str(x) for x in para_countmat[rec_id,:]]),file = outsfile)
+    print("Done.\n")
 
-def scRNA_bam2countmat(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, count_mat_filename, UMI_modeling=False, UMI_count_mat_filename="UMI_countmat"):
+
+
+def scRNA_UMIcountmat_mainloop(rec_id):
+    """Construct count vector for each scRNA-seq feature.
+
+    """
+    UMI_currlist  = [["empty UMI"] for _ in range(cells_n)] 
+    rec = open_peak[rec_id]
+    rec_name = '_'.join((rec[0], str(rec[1]), str(rec[2])))
+    samfile = pysam.AlignmentFile(INPUT_bamfile_glb, "rb")
+    reads = samfile.fetch(rec[0], int(rec[1]), int(rec[2]))  # question: what about feature intersection or half overlap?
+    UMI_iter = []
+    cell_idx_ls = []
+    for read in reads:
+        cell = read.qname.split(":")[0].upper()
+        if cell in cells_barcode:
+            try:
+                if read.has_tag(UMI_tag_glb):
+                    UMI = read.get_tag(UMI_tag_glb)
+                    UMI_currlist[cellsdic[cell]].append(UMI)
+            except KeyError:
+                pass
+    UMI_count_array = [len(set(UMIs_percell))-1 for UMIs_percell in UMI_currlist]
+    UMI_count_array.insert(0,rec_name)
+    return UMI_count_array
+
+
+def scRNA_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, count_mat_filename, UMI_modeling=False, UMI_tag = "UB:Z", UMI_count_mat_filename="UMI_countmat", n_cores=1):
+    """Construct count matrix for scRNA-seq BAM file.
+
+    Parameters
+    ----------
+    cells_barcode_file: `str`
+        Cell barcode file corresponding to the input BAM file.
+    bed_file: `str`
+        Features bed file to generate the count matrix.
+    INPUT_bamfile: `str`
+        Input BAM file for anlaysis.
+    outdirectory: `str`
+        Specify the output directory of the count matrix file.
+    count_mat_filename: `str`
+        Specify the base name of output count matrix.
+    UMI_modeling: `bool` (default: False)
+        Specify whether scReadSim should model UMI count of the input BAM file.
+    UMI_tag: `str` (default: 'UB:Z')
+        If UMI_modeling is set to True, specify the UMI tag of input BAM file, default value 'UB:Z' is the UMI tag for 10x scRNA-seq.
+    UMI_count_mat_filename: `str` (default: 'UMI_countmat')
+        If UMI_modeling is set to True, specify the base name of output UMI count matrix.
+    n_cores: `int` (default: 1)
+        Specify the number of cores for parallel computing when generating count matrix.
+    """
+    cells = pd.read_csv(cells_barcode_file, sep="\t")
+    cells = cells.values.tolist()
+    # Specify global vars
+    global open_peak, cells_n, cells_barcode, INPUT_bamfile_glb, UMI_tag_glb
+    UMI_tag_glb = UMI_tag
+    INPUT_bamfile_glb = INPUT_bamfile
+    cells_barcode = [item[0] for item in cells]
+    with open(bed_file) as open_peak:
+        reader = csv.reader(open_peak, delimiter="\t")
+        open_peak = np.asarray(list(reader))
+    k = 0
+    cellsdic = defaultdict(lambda: [None])
+    for cell in cells_barcode:
+        cellsdic[cell] = k
+        k += 1
+    k = 0
+    peaksdic = defaultdict(lambda: [None])
+    for rec in open_peak:
+        rec_name = '_'.join(rec)
+        peaksdic[rec_name] = k
+        k += 1
+    cells_n = len(cells_barcode)
+    peaks_n = len(open_peak)
+    print("Generating read count matrix...\n")
+    read_countmat_array = Parallel(n_jobs=n_cores, backend='multiprocessing')(delayed(countmat_mainloop)(rec_id) for rec_id in (range(len(open_peak))))
+    read_countmat = np.array(read_countmat_array)
+    print("Outputing read count matrix %s.txt...\n" % count_mat_filename)
+    with open("%s/%s.txt" % (outdirectory, count_mat_filename), 'w') as outsfile:
+        for rec_id in tqdm(range(len(open_peak))):
+            print("\t".join([str(x) for x in read_countmat[rec_id,:]]),file = outsfile)
+    if UMI_modeling == True:
+        print("Generating UMI count matrix %s.txt...\n" % UMI_count_mat_filename)
+        UMI_countmat_array = Parallel(n_jobs=n_cores, backend='multiprocessing')(delayed(scRNA_UMIcountmat_mainloop)(rec_id) for rec_id in (range(len(open_peak))))
+        UMI_countmat = np.array(UMI_countmat_array)
+        with open("%s/%s.txt" % (outdirectory, UMI_count_mat_filename), 'w') as outsfile:
+            for rec_id in tqdm(range(len(open_peak))):
+                print("\t".join([str(x) for x in UMI_countmat[rec_id,:]]),file = outsfile)
+    print("Done.\n")
+
+
+def scRNA_bam2countmat(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, count_mat_filename, UMI_modeling=False, UMI_tag = "UB:Z", UMI_count_mat_filename="UMI_countmat"):
     """Construct count matrix for scRNA-seq BAM file.
     
     Parameters
@@ -213,6 +320,8 @@ def scRNA_bam2countmat(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory
         Specify the base name of output count matrix.
     UMI_modeling: `bool` (default: False)
         Specify whether scReadSim should model UMI count of the input BAM file.
+    UMI_tag: `str` (default: 'UB:Z')
+        If UMI_modeling is set to True, specify the UMI tag of input BAM file, default value 'UB:Z' is the UMI tag for 10x scRNA-seq.
     UMI_count_mat_filename: `str` (default: 'UMI_countmat')
         If UMI_modeling is set to True, specify the base name of output UMI count matrix.
     """
@@ -252,8 +361,8 @@ def scRNA_bam2countmat(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory
                 if cell in cells_barcode:
                     try:
                         read_currcounts[cellsdic[cell]] += 1
-                        if read.has_tag('UB:Z'):
-                            UMI = read.get_tag('UB:Z')
+                        if read.has_tag(UMI_tag):
+                            UMI = read.get_tag(UMI_tag)
                             UMI_currlist[cellsdic[cell]].append(UMI)
                     except KeyError:
                         pass
@@ -261,7 +370,6 @@ def scRNA_bam2countmat(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory
             # if sum(currcounts) > 0:
             UMI_count_mat[rec_id,:] = [len(set(UMIs_percell))-1 for UMIs_percell in UMI_currlist]
             print(rec_name + "\t" + "\t".join([str(x) for x in read_currcounts]),file = outsfile)
-    print("Done.\n")
     if UMI_modeling == True:
         print("Generating UMI count matrix %s.txt...\n" % UMI_count_mat_filename)
         with open("%s/%s.txt" % (outdirectory, UMI_count_mat_filename), 'w') as outsfile:
@@ -269,7 +377,7 @@ def scRNA_bam2countmat(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory
                 rec = open_peak[rec_id]
                 rec_name = '_'.join(rec)
                 print(rec_name + "\t" + "\t".join([str(x) for x in UMI_count_mat[rec_id,:]]),file = outsfile)
-        print("Done.")
+    print("Done.")
 
 
 def bam2countmat_INPUT(cells_barcode_file, assignment_file, INPUT_bamfile, outdirectory, count_mat_filename):
