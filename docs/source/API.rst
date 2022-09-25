@@ -62,7 +62,7 @@ scRNA_GenerateBAM
    scReadSim.scRNA_GenerateBAM.scRNA_GenerateBAMCoord_paral
    scReadSim.scRNA_GenerateBAM.scRNA_CombineBED
    scReadSim.scRNA_GenerateBAM.scRNA_BED2FASTQ
-   scReadSim.scRNA_GenerateBAM.AlignSyntheticBam_Pair
+   scReadSim.scRNA_GenerateBAM.AlignSyntheticBam_Single
    scReadSim.scRNA_GenerateBAM.ErrorBase
    scReadSim.scRNA_GenerateBAM.ErroneousRead
    scReadSim.scRNA_GenerateBAM.SubstiError
