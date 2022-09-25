@@ -48,7 +48,6 @@ scATAC_GenerateBAM
 
 scRNA_GenerateBAM
 ~~~~~~~~~~~~~~~~~
-
 .. autosummary::
    :toctree: _autosummary
 
@@ -71,7 +70,6 @@ scRNA_GenerateBAM
 
 GenerateSyntheticCount
 ~~~~~~~~~~~~~~~~~~~~~~
-
 .. autosummary::
    :toctree: _autosummary
 
