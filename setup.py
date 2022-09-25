@@ -6,10 +6,10 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="scReadSim",
-    version="1.1.0",
+    version="1.2.0",
     author="Guanao Yan",
     author_email="gayan@g.ucla.com",
-    description="A single-cell multi-omics read simulator.",
+    description="A single-cell RNA-seq and ATAC-seq read simulator.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/JSB-UCLA/scReadSim",
@@ -25,6 +25,8 @@ setuptools.setup(
     "pysam",
     "tqdm",
     "rp2",
+    "joblib", 
+    "pathlib"
     ],
     # install_requires=[
     #     x.strip() for x in
@@ -35,6 +37,5 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     # package_dir={'': 'scReadSim'},
     package_data={
-    # 'scReadSim': ['Rscript/*'],
     'scReadSim': ['data/*', 'Rscript/*']}
 )

@@ -14,34 +14,33 @@ from pathlib import Path
 from joblib import Parallel, delayed
 
 def flatten(x):
-    """Flatten a nested list.
+	"""Flatten a nested list.
 
-    """
-    if isinstance(x, collections.Iterable):
-        return [a for i in x for a in flatten(i)]
-    else:
-        return [x]
+	"""
+	if isinstance(x, collections.Iterable):
+		return [a for i in x for a in flatten(i)]
+	else:
+		return [x]
 
 
 def cellbarcode_generator(length, size=10):
 	"""Generate random cellbarcode.
 
-    Parameters
-    ----------
-    length: `int`
-        Number of cells.
-    size: `int` (default: '10')
-        Size of cell barcode. Default value is 10 bp.
+	Parameters
+	----------
+	length: `int`
+		Number of cells.
+	size: `int` (default: '10')
+		Size of cell barcode. Default value is 10 bp.
 
-    Return
-    ------
-    cb_list: `list`
-        List of randomly generated cell barcodes.
-    """
+	Return
+	------
+	cb_list: `list`
+		List of randomly generated cell barcodes.
+	"""
 	chars = 'ACGT'
 	cb_list = [''.join(random.choice(chars) for _ in range(size)) for cell in range(length)]
 	return cb_list
-
 
 
 def scRNA_SampleSyntheticReads(count_mat_filename, samtools_directory, INPUT_bamfile, outdirectory, ref_peakfile, directory_cellnumber):
@@ -72,7 +71,7 @@ def scRNA_SampleSyntheticReads(count_mat_filename, samtools_directory, INPUT_bam
 	# Testing using copied directory
 	output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
-	     print('[ERROR] Fail to generate synthetic reads:\n', error.decode())
+		 print('[ERROR] Fail to generate synthetic reads:\n', error.decode())
 
 
 
@@ -84,13 +83,13 @@ def scRNA_PerTruePeakEdition_UMI(peak_record, count_vec, UMI_count_vec, read_lin
 	peak_record: `numpy.array`
 		Coordinates of a query peak.
 	count_vec: `numpy.array`
-    	Count vector of the query peak.
+		Count vector of the query peak.
 	UMI_count_vec: `numpy.array`
-    	UMI count vector of the query peak.
+		UMI count vector of the query peak.
 	read_lines: `pandas.dataframe`
 		Coordinates of synthetic reads sampled from the input BAM file.
 	random_cellbarcode_list: `list`
-    	List of cell barcodes randomly generated using [cellbarcode_generator().
+		List of cell barcodes randomly generated using [cellbarcode_generator().
 	read_len: `int` (default: 50)
 		Specify the length of synthetic reads. Default value is 50 bp.
 	jitter_size: `int` (default: 5)
@@ -135,11 +134,11 @@ def scRNA_PerTruePeakEdition_read(peak_record, count_vec, read_lines, random_cel
 	peak_record: `numpy.array`
 		Coordinates of a query peak.
 	count_vec: `numpy.array`
-    	Count vector of the query peak.
+		Count vector of the query peak.
 	read_lines: `pandas.dataframe`
 		Coordinates of synthetic reads sampled from the input BAM file.
 	random_cellbarcode_list: `list`
-    	List of cell barcodes randomly generated using [cellbarcode_generator().
+		List of cell barcodes randomly generated using [cellbarcode_generator().
 	read_len: `int` (default: 50)
 		Specify the length of synthetic reads. Default value is 50 bp.
 	jitter_size: `int` (default: 5)
@@ -179,111 +178,111 @@ def generateBAMcoord_read_mainloop(relative_peak_ind):
 	"""Generate synthetic scRNA-seq reads for each feature. 
 
 	"""
-    peak_ind = peak_nonzero_id[relative_peak_ind]
-    peak_record = peaks[peak_ind]
-    count_vec = count_mat[peak_ind, :]  # Input
-    read_1_df = scRNA_PerTruePeakEdition_read(peak_record, count_vec, read_lines, random_cellbarcode_list, read_len_glb, jitter_size_glb)
-    read_1_df.to_csv("%s/%s" % (outdirectory, read1_bedfile), header=None, index=None, sep='\t', mode='a')
+	peak_ind = peak_nonzero_id[relative_peak_ind]
+	peak_record = peaks[peak_ind]
+	count_vec = count_mat[peak_ind, :]  # Input
+	read_1_df = scRNA_PerTruePeakEdition_read(peak_record, count_vec, read_lines, random_cellbarcode_list, read_len_glb, jitter_size_glb)
+	read_1_df.to_csv("%s/%s" % (outdirectory, read1_bedfile), header=None, index=None, sep='\t', mode='a')
 
 def generateBAMcoord_UMI_mainloop(relative_peak_ind):
 	"""Generate synthetic scRNA-seq UMIs for each feature. 
 
 	"""
-    peak_ind = peak_nonzero_id[relative_peak_ind]
-    peak_record = peaks[peak_ind]
-    count_vec = count_mat[peak_ind, :]  # Input
-    UMI_count_vec = UMI_count_mat[peak_ind,:]
-    read_1_df = scRNA_PerTruePeakEdition_UMI(peak_record, count_vec, UMI_count_vec, read_lines, random_cellbarcode_list, read_len_glb, jitter_size_glb, UB_len_glb)
-    read_1_df.to_csv("%s/%s" % (outdirectory, read1_bedfile), header=None, index=None, sep='\t', mode='a')
+	peak_ind = peak_nonzero_id[relative_peak_ind]
+	peak_record = peaks[peak_ind]
+	count_vec = count_mat[peak_ind, :]  # Input
+	UMI_count_vec = UMI_count_mat[peak_ind,:]
+	read_1_df = scRNA_PerTruePeakEdition_UMI(peak_record, count_vec, UMI_count_vec, read_lines, random_cellbarcode_list, read_len_glb, jitter_size_glb, UB_len_glb)
+	read_1_df.to_csv("%s/%s" % (outdirectory, read1_bedfile), header=None, index=None, sep='\t', mode='a')
 
 
 def scRNA_GenerateBAMCoord_paral(count_mat_filename, samtools_directory, INPUT_bamfile, ref_peakfile, directory_cellnumber, outdirectory, BED_filename, OUTPUT_cells_barcode_file, read_len=90, jitter_size=5, CB_len=16, UMI_modeling=False, UMI_count_mat_file="UMI_countmat", UB_len=10, n_cores=1):
-    """Generate synthetic scRNA-seq reads in BED format. 
+	"""Generate synthetic scRNA-seq reads in BED format. 
 
-    Parameters
-    ----------
-    count_mat_filename: `str`
-        The base name of output count matrix in bam2countmat.
-    samtools_directory: `str`
-        Path to software samtools.
-    INPUT_bamfile: `str`
-        Input BAM file for anlaysis.
-    ref_peakfile: `str`
-        Features bed file.
-    directory_cellnumber: `str`
-        Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.
-    outdirectory: `str`
-        Specify the output directory for synthetic reads bed file.
-    BED_filename: `str`
-        Specify the base name of output bed file.
-    OUTPUT_cells_barcode_file: `str`
-        Specify the file name storing the synthetic cell barcodes.
-    read_len: `int` (default: 90)
-        Specify the length of synthetic reads. Default value is 90 bp.
-    jitter_size: `int` (default: 5)
-        Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.
-    CB_len: 'int' (default: 16)
-        Specify cell barcode length.
-    UMI_modeling: `bool` (default: False)
-        Specify whether scReadSim should model UMI count of the input BAM file.
-    UMI_count_mat_filename: `str` (default: 'UMI_countmat')
-        Base name of the UMI count matrix output by function scRNA_bam2countmat() with option UMI_modeling setting to Ture.
-    UB_len: 'int' (default: 10)
-        Specify UMI barcode length.
-    n_cores: 'int= (default: 1)
-    	Specify the number of cores for parallel computing.
-    """
-    print('scReadSim scRNA_GenerateBAMCoord Running...')
-    print('\t- Sampling synthetic reads...')
-    coordinate_file = count_mat_filename + ".BAMfile_coordinates.txt"
-    cellnumberfile = "%s/%s.scDesign2Simulated.nReadRegionmargional.txt" % (directory_cellnumber, count_mat_filename)
-    if Path("%s/%s" % (outdirectory, coordinate_file)).exists():
-        rm_coor_command = "rm %s/%s" % (outdirectory, coordinate_file)
-        os.system(rm_coor_command)
-    create_coor_command = "touch %s/%s" % (outdirectory, coordinate_file)
-    os.system(create_coor_command)
-    cmd = "while true; do read -r region <&3 || break;  read -r ncell <&4 || break; region=$(echo ${region} | cut -f 1,2,3 | perl -lane 'print \"$F[0]:$F[1]-$F[2]\"');  paste -d\"\t\" <(awk -v nsample=${ncell} -v region=${region} 'BEGIN{for(c=0;c<nsample;c++) print region}') <(%s/samtools view %s ${region} | shuf -r -n ${ncell} | cut -f3,4) >> %s/%s;  done 3<%s 4<%s" % (samtools_directory, INPUT_bamfile, outdirectory, coordinate_file, ref_peakfile, cellnumberfile)
-    output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-    if error:
-        print('[ERROR] Fail to generate synthetic reads:\n', error.decode())
-    print('\t- Sampling synthetic reads done!')
-    # Generating BED file
-    print('\t- Writing synthetic reads...')
-    count_mat_file = "%s.scDesign2Simulated.txt" % count_mat_filename
-    random.seed(2022)
-    global read_lines
-    read_lines = pd.read_csv("%s/%s" % (outdirectory, coordinate_file), delimiter="\t",  names=['peak_name', 'chr', 'r1_start'])
-    global peaks
-    peaks = pd.read_csv(ref_peakfile, delimiter="\t",  names=['chr', 'start', 'end']).to_numpy()
-    global count_mat
-    # count_mat = pd.read_csv("%s/%s" % (directory_cellnumber, count_mat_file), header=None, delimiter="\t", index_col=0).to_numpy()
-    count_mat = pd.read_csv("%s/%s" % (directory_cellnumber, count_mat_file), header=0, delimiter="\t").to_numpy()
-    marginal_cell_number = pd.read_csv(cellnumberfile, header=None, delimiter="\t").to_numpy()
-    global peak_nonzero_id
-    peak_nonzero_id = np.nonzero(marginal_cell_number)[0]
-    n_cell = np.shape(count_mat)[1]
-    global random_cellbarcode_list
-    random_cellbarcode_list = cellbarcode_generator(n_cell, size=CB_len)
-    global read1_bedfile
-    read1_bedfile = "%s.read1.bed" % BED_filename
-    with open(outdirectory + "/" + OUTPUT_cells_barcode_file, 'w') as f:
-        for item in random_cellbarcode_list:
-            f.write("%s\n" % item)
-    with open("%s/%s" % (outdirectory, read1_bedfile), 'w') as fp:
-        pass
-    global read_len_glb, jitter_size_glb, UB_len_glb
-    read_len_glb, jitter_size_glb, UB_len_glb = read_len, jitter_size, UB_len
-    if UMI_modeling == True:
-        UMI_count_mat_df = pd.read_csv("%s/%s.scDesign2Simulated.txt" % (directory_cellnumber, UMI_count_mat_file), header=0, delimiter="\t")
-        global UMI_count_mat
-        UMI_count_mat = UMI_count_mat_df.to_numpy()
-        Parallel(n_jobs=n_cores, backend='multiprocessing')(
-            delayed(generateBAMcoord_UMI_mainloop)(relative_peak_ind) for relative_peak_ind in (range(len(peak_nonzero_id))))
-    else:
-        Parallel(n_jobs=n_cores, backend='multiprocessing')(
-            delayed(generateBAMcoord_read_mainloop)(relative_peak_ind) for relative_peak_ind in (range(len(peak_nonzero_id))))
-    print('\t- Writing synthetic reads done.')
-    print('Done!\n')
+	Parameters
+	----------
+	count_mat_filename: `str`
+		The base name of output count matrix in bam2countmat.
+	samtools_directory: `str`
+		Path to software samtools.
+	INPUT_bamfile: `str`
+		Input BAM file for anlaysis.
+	ref_peakfile: `str`
+		Features bed file.
+	directory_cellnumber: `str`
+		Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.
+	outdirectory: `str`
+		Specify the output directory for synthetic reads bed file.
+	BED_filename: `str`
+		Specify the base name of output bed file.
+	OUTPUT_cells_barcode_file: `str`
+		Specify the file name storing the synthetic cell barcodes.
+	read_len: `int` (default: 90)
+		Specify the length of synthetic reads. Default value is 90 bp.
+	jitter_size: `int` (default: 5)
+		Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.
+	CB_len: 'int' (default: 16)
+		Specify cell barcode length.
+	UMI_modeling: `bool` (default: False)
+		Specify whether scReadSim should model UMI count of the input BAM file.
+	UMI_count_mat_filename: `str` (default: 'UMI_countmat')
+		Base name of the UMI count matrix output by function scRNA_bam2countmat() with option UMI_modeling setting to Ture.
+	UB_len: 'int' (default: 10)
+		Specify UMI barcode length.
+	n_cores: 'int= (default: 1)
+		Specify the number of cores for parallel computing.
+	"""
+	print('scReadSim scRNA_GenerateBAMCoord Running...')
+	print('\t- Sampling synthetic reads...')
+	coordinate_file = count_mat_filename + ".BAMfile_coordinates.txt"
+	cellnumberfile = "%s/%s.scDesign2Simulated.nReadRegionmargional.txt" % (directory_cellnumber, count_mat_filename)
+	if Path("%s/%s" % (outdirectory, coordinate_file)).exists():
+		rm_coor_command = "rm %s/%s" % (outdirectory, coordinate_file)
+		os.system(rm_coor_command)
+	create_coor_command = "touch %s/%s" % (outdirectory, coordinate_file)
+	os.system(create_coor_command)
+	cmd = "while true; do read -r region <&3 || break;  read -r ncell <&4 || break; region=$(echo ${region} | cut -f 1,2,3 | perl -lane 'print \"$F[0]:$F[1]-$F[2]\"');  paste -d\"\t\" <(awk -v nsample=${ncell} -v region=${region} 'BEGIN{for(c=0;c<nsample;c++) print region}') <(%s/samtools view %s ${region} | shuf -r -n ${ncell} | cut -f3,4) >> %s/%s;  done 3<%s 4<%s" % (samtools_directory, INPUT_bamfile, outdirectory, coordinate_file, ref_peakfile, cellnumberfile)
+	output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+	if error:
+		print('[ERROR] Fail to generate synthetic reads:\n', error.decode())
+	print('\t- Sampling synthetic reads done!')
+	# Generating BED file
+	print('\t- Writing synthetic reads...')
+	count_mat_file = "%s.scDesign2Simulated.txt" % count_mat_filename
+	random.seed(2022)
+	global read_lines
+	read_lines = pd.read_csv("%s/%s" % (outdirectory, coordinate_file), delimiter="\t",  names=['peak_name', 'chr', 'r1_start'])
+	global peaks
+	peaks = pd.read_csv(ref_peakfile, delimiter="\t",  names=['chr', 'start', 'end']).to_numpy()
+	global count_mat
+	# count_mat = pd.read_csv("%s/%s" % (directory_cellnumber, count_mat_file), header=None, delimiter="\t", index_col=0).to_numpy()
+	count_mat = pd.read_csv("%s/%s" % (directory_cellnumber, count_mat_file), header=0, delimiter="\t").to_numpy()
+	marginal_cell_number = pd.read_csv(cellnumberfile, header=None, delimiter="\t").to_numpy()
+	global peak_nonzero_id
+	peak_nonzero_id = np.nonzero(marginal_cell_number)[0]
+	n_cell = np.shape(count_mat)[1]
+	global random_cellbarcode_list
+	random_cellbarcode_list = cellbarcode_generator(n_cell, size=CB_len)
+	global read1_bedfile
+	read1_bedfile = "%s.read1.bed" % BED_filename
+	with open(outdirectory + "/" + OUTPUT_cells_barcode_file, 'w') as f:
+		for item in random_cellbarcode_list:
+			f.write("%s\n" % item)
+	with open("%s/%s" % (outdirectory, read1_bedfile), 'w') as fp:
+		pass
+	global read_len_glb, jitter_size_glb, UB_len_glb
+	read_len_glb, jitter_size_glb, UB_len_glb = read_len, jitter_size, UB_len
+	if UMI_modeling == True:
+		UMI_count_mat_df = pd.read_csv("%s/%s.scDesign2Simulated.txt" % (directory_cellnumber, UMI_count_mat_file), header=0, delimiter="\t")
+		global UMI_count_mat
+		UMI_count_mat = UMI_count_mat_df.to_numpy()
+		Parallel(n_jobs=n_cores, backend='multiprocessing')(
+			delayed(generateBAMcoord_UMI_mainloop)(relative_peak_ind) for relative_peak_ind in (range(len(peak_nonzero_id))))
+	else:
+		Parallel(n_jobs=n_cores, backend='multiprocessing')(
+			delayed(generateBAMcoord_read_mainloop)(relative_peak_ind) for relative_peak_ind in (range(len(peak_nonzero_id))))
+	print('\t- Writing synthetic reads done.')
+	print('Done!\n')
 
 
 
@@ -304,7 +303,7 @@ def scRNA_CombineBED(outdirectory, BED_filename_pre, BED_COMPLE_filename_pre, BE
 	combine_read_cmd = "cat %s/%s.read.bed %s/%s.read.bed | sort -k1,1 -k2,2n | cut -f1-5 > %s/%s.read.bed" % (outdirectory, BED_filename_pre, outdirectory, BED_COMPLE_filename_pre, outdirectory, BED_filename_combined_pre)
 	output, error = subprocess.Popen(combine_read_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
- 		print('[ERROR] Fail to create combine synthetic read bed files:\n', error.decode())
+		print('[ERROR] Fail to create combine synthetic read bed files:\n', error.decode())
 
 
 def scRNA_BED2FASTQ(bedtools_directory, seqtk_directory, referenceGenome_file, outdirectory, BED_filename_combined, synthetic_fastq_prename, sort_FASTQ = True):
@@ -333,32 +332,32 @@ def scRNA_BED2FASTQ(bedtools_directory, seqtk_directory, referenceGenome_file, o
 	fasta_read2_cmd = "%s/bedtools getfasta -fi %s -bed %s/%s.read.bed -fo %s/%s.read2.bed2fa.fa -nameOnly" % (bedtools_directory, referenceGenome_file, outdirectory, BED_filename_combined, outdirectory, synthetic_fastq_prename)
 	output, error = subprocess.Popen(fasta_read2_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
-	     print(error.decode())
+		 print(error.decode())
 	fasta_read1_cmd = "awk 'NR%%2==0 {print substr(p,2,26);} NR%%2 {p=$0;print p;}' %s/%s.read2.bed2fa.fa > %s/%s.read1.bed2fa.fa" % (outdirectory, synthetic_fastq_prename, outdirectory, synthetic_fastq_prename)
 	output, error = subprocess.Popen(fasta_read1_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
-	     print(error.decode())
+		 print(error.decode())
 	print('\t- Converting FASTA files to FASTQ files...')
 	# FASTA to FASTQ
 	fastq_read1_cmd = "%s/seqtk seq -F 'F' %s/%s.read1.bed2fa.fa > %s/%s.read1.bed2fa.fq" % (seqtk_directory, outdirectory, synthetic_fastq_prename, outdirectory, synthetic_fastq_prename)
 	output, error = subprocess.Popen(fastq_read1_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
-	     print('[ERROR] Fail to convert read1 synthetic fasta file to fastq file:', error.decode())
+		 print('[ERROR] Fail to convert read1 synthetic fasta file to fastq file:', error.decode())
 	fastq_read2_cmd = "%s/seqtk seq -F 'F' %s/%s.read2.bed2fa.fa > %s/%s.read2.bed2fa.fq" % (seqtk_directory, outdirectory, synthetic_fastq_prename, outdirectory, synthetic_fastq_prename)
 	output, error = subprocess.Popen(fastq_read2_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
-	     print('[ERROR] Fail to convert read2 synthetic fasta file to fastq file:', error.decode())
+		 print('[ERROR] Fail to convert read2 synthetic fasta file to fastq file:', error.decode())
 	print('\t- FASTQ files %s.read1.bed2fa.fq, %s.read2.bed2fa.fq stored in %s.' % (synthetic_fastq_prename, synthetic_fastq_prename, outdirectory))
 	if sort_FASTQ == True:
 		print('\t- Sorting FASTQ files...')
 		sort_fastq_read1_cmd = "cat %s/%s.read1.bed2fa.fq | paste - - - - | sort -k1,1 -S 3G | tr '\t' '\n' > %s/%s.read1.bed2fa.sorted.fq" % (outdirectory, synthetic_fastq_prename, outdirectory, synthetic_fastq_prename)
 		output, error = subprocess.Popen(sort_fastq_read1_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 		if error:
-		     print('[ERROR] Fail to sort read1 synthetic fastq file:', error.decode())
+			 print('[ERROR] Fail to sort read1 synthetic fastq file:', error.decode())
 		sort_fastq_read2_cmd = "cat %s/%s.read2.bed2fa.fq | paste - - - - | sort -k1,1 -S 3G | tr '\t' '\n' > %s/%s.read2.bed2fa.sorted.fq" % (outdirectory, synthetic_fastq_prename, outdirectory, synthetic_fastq_prename)
 		output, error = subprocess.Popen(sort_fastq_read2_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 		if error:
-		     print('[ERROR] Fail to sort read2 synthetic fastq file:', error.decode())
+			 print('[ERROR] Fail to sort read2 synthetic fastq file:', error.decode())
 		print('\t- Sorted FASTQ files %s.read1.bed2fa.sorted.fq, %s.read2.bed2fa.sorted.fq stored in %s.' % (synthetic_fastq_prename, synthetic_fastq_prename, outdirectory))
 	print('Done!')
 
@@ -527,11 +526,11 @@ def scRNA_ErrorBase(fgbio_jarfile, INPUT_bamfile, referenceGenome_file, outdirec
 	sort_fastq_read1_cmd = "cat %s/%s.read1.bed2fa.fq | paste - - - - | sort -k1,1 -S 3G | tr '\t' '\n' > %s/%s.ErrorIncluded.read1.bed2fa.sorted.fq" % (outdirectory, synthetic_fastq_prename, outdirectory, synthetic_fastq_prename)
 	output, error = subprocess.Popen(sort_fastq_read1_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
-	     print('[ERROR] Fail to sort read1 synthetic fastq file:', error.decode())
+		 print('[ERROR] Fail to sort read1 synthetic fastq file:', error.decode())
 	sort_fastq_read2_cmd = "cat %s/%s.ErrorIncluded.read2.bed2fa.fq | paste - - - - | sort -k1,1 -S 3G | tr '\t' '\n' > %s/%s.ErrorIncluded.read2.bed2fa.sorted.fq" % (outdirectory, synthetic_fastq_prename, outdirectory, synthetic_fastq_prename)
 	output, error = subprocess.Popen(sort_fastq_read2_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
-	     print('[ERROR] Fail to sort read2 synthetic fastq file:', error.decode())
+		 print('[ERROR] Fail to sort read2 synthetic fastq file:', error.decode())
 	print('\t- Sorted FASTQ files %s.ErrorIncluded.read1.bed2fa.sorted.fq, %s.ErrorIncluded.read2.bed2fa.sorted.fq stored in %s.' % (synthetic_fastq_prename, synthetic_fastq_prename, outdirectory))
 
 

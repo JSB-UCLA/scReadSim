@@ -1,7 +1,7 @@
 Metadata-Version: 2.1
 Name: scReadSim
-Version: 1.1.0
-Summary: A single-cell multi-omics read simulator.
+Version: 1.2.0
+Summary: A single-cell RNA-seq and ATAC-seq read simulator.
 Home-page: https://github.com/JSB-UCLA/scReadSim
 Author: Guanao Yan
 Author-email: gayan@g.ucla.com
