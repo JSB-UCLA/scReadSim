@@ -146,7 +146,11 @@ fit_Gaussian_copula_new <- function(x, marginal = c('auto_choose', 'zinb', 'nb',
   gene_sel1 <- which(gene_zero_prop < zp_cutoff)
   gene_sel2 <- which(gene_zero_prop < 1.0 - min_nonzero_num/n &
                        gene_zero_prop >= zp_cutoff)
-  gene_sel3 <- (1:p)[-c(gene_sel1, gene_sel2)]
+  gene_sel3 <- if (length(gene_sel1)+length(gene_sel2) == 0){
+    1:p
+  } else {
+    (1:p)[-c(gene_sel1, gene_sel2)]
+  }
 
   if(length(gene_sel1) > 0){
     marginal_result1 <- fit_marginals_new(x[gene_sel1, , drop = FALSE], marginal, jitter = jitter, DT = TRUE)
@@ -180,7 +184,13 @@ fit_wo_copula_new <- function(x, marginal = c('auto_choose', 'zinb', 'nb', 'pois
   })
 
   gene_sel1 <- which(gene_zero_prop < 1.0 - min_nonzero_num/n)
-  gene_sel2 <- (1:p)[-gene_sel1]
+  gene_sel2 <- which(gene_zero_prop < 1.0 - min_nonzero_num/n &
+                       gene_zero_prop >= zp_cutoff)
+  gene_sel3 <- if (length(gene_sel1)+length(gene_sel2) == 0){
+    1:p
+  } else {
+    (1:p)[-c(gene_sel1, gene_sel2)]
+  }
 
   if(length(gene_sel1) > 0){
     marginal_result1 <- fit_marginals_new(x[gene_sel1, ], marginal, jitter = jitter, DT = FALSE)
@@ -276,27 +286,12 @@ get_cluster_seurat <- function(data_mat, platform = c("full-length", "UMI"),
   return(list(clustering_result = cluster_predicted))
 }
 
-# Calculate marginal count for each region
-# args <- commandArgs(trailingOnly = TRUE) # Extract all arguments from Linux input
-# samplename <- args[1]
-# sample.format <- args[2]
-# directory <- args[3]
-# out.directory <- args[4]
-
-# Test
-# samplename <- "e18_mouse_brain_fresh_5k_atac_possorted_bam_chr1.countmatrix"
-# # samplename <- "e18_mouse_brain_fresh_5k_atac_possorted_bam_chr1.COMPLE.countmatrix"
-# sample.format <- "txt"
-# directory <- "/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220116_e18_mouse_brain_fresh_5k_atac_possorted_bam_chr1_NONINPUT_withCluster"
-# out.directory <- "/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220116_e18_mouse_brain_fresh_5k_atac_possorted_bam_chr1_NONINPUT_withCluster"
-# dir.create(out.directory)
-
-# samplename <- '10X_ATAC_chr1_4194444_4399104.countmatrix' 
-# sample_format<-'txt'
-# directory <- '/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220310_10X_scATACseq_NONINPUT'
-# out_directory <- '/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220310_10X_scATACseq_NONINPUT'
-
-
+######################## Main Function for scATAC-seq ########################
+## Test
+# samplename <- "10X_ATAC_chr1_4194444_4399104.assigned.countmatrix"
+# directory <- "/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20230105_10X_scATACseq_INPUT"
+# out_directory <- directory
+# scATAC_runSyntheticCount(samplename, directory, out_directory)
 ## Read in count matrix
 scATAC_runSyntheticCount <- function(samplename, directory, out_directory, n_cell_new="default", total_count_new="default", celllabel_file="default"){
   cat(sprintf("Reading count matrix %s.txt...\n", samplename))
@@ -321,148 +316,45 @@ scATAC_runSyntheticCount <- function(samplename, directory, out_directory, n_cel
       stop("Number of cell labels differs from the cell number contained in the count matrix!\n ")
     }
   }
-
-## Use scDesign2 for training countmatrix
-cat("Model fitting...\n")
-n_cell_old <- ncol(matrix_num)
-total_count_old <- sum(matrix_num)
-if (n_cell_new == "default"){
-  n_cell_new <- n_cell_old
-}
-if (total_count_new == "default"){
-  total_count_new <- total_count_old
-}
-cell_type_sel <- unique(colnames(matrix_num))
-cell_type_prop <- table(colnames(matrix_num))[cell_type_sel]
-copula_result <- fit_model_scDesign2_new(matrix_num, cell_type_sel, sim_method = 'copula',
-                                       ncores = length(cell_type_sel))
-cat("Generating synthetic count matrix...\n")
-cat(sprintf("Amount of synthetic cell: %s\n", n_cell_new))
-cat(sprintf("Amount of (expected) sequencing depth: %s\n", total_count_new))
-
-# simu_matrix <- scDesign2::simulate_count_scDesign2(copula_result, n_cell_new, sim_method = 'copula',
-#                                                cell_type_prop = cell_type_prop)
-simu_matrix <- scDesign2::simulate_count_scDesign2(copula_result, 
-                           total_count_old = total_count_old,
-                           n_cell_old = n_cell_old,
-                           total_count_new = total_count_new,
-                           n_cell_new = n_cell_new,
-                           cell_type_prop = cell_type_prop,
-                           reseq_method = 'mean_scale', cell_sample = TRUE)
-
-write.table(colnames(simu_matrix), sprintf("%s/%s.scDesign2Simulated.CellTypeLabel.txt", out_directory, samplename), row.names = FALSE,col.names = FALSE)
-rownames(simu_matrix) <- count_matrix[,1]
-cat(sprintf("Writing out synthetic count matrix %s to %s...\n", out_directory, out_directory))
-write.table(simu_matrix, sprintf("%s/%s.scDesign2Simulated.txt", out_directory, samplename), sep="\t", row.names = TRUE,col.names = TRUE)
-simu_count_pergene_vec <- rowSums(ceiling(simu_matrix/2))
-write.table(simu_count_pergene_vec, sprintf("%s/%s.scDesign2Simulated.nPairsRegionmargional.txt", out_directory, samplename), row.names = FALSE,col.names = FALSE)
-cat("Done.\n")
-}
-
-
-# samplename <- '10X_RNA_chr1_3073253_4526737.countmatrix' 
-# sample_format<-'txt'
-# directory <- '/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220310_10X_scRNAseq_NONINPUT'
-# out_directory <- '/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20220310_10X_scRNAseq_NONINPUT'
-
-scRNA_runSyntheticCount <- function(samplename, directory, out_directory, UMI_modeling=FALSE, UMIsamplename="UMI_countmat", n_cell_new="default", total_count_new="default", celllabel_file="default"){
-  if (UMI_modeling == FALSE){
-    scRNA_runSyntheticCount_Read (samplename, directory, out_directory, n_cell_new, total_count_new, celllabel_file)
-  } else{
-    scRNA_runSyntheticCount_UMIandRead(samplename, UMIsamplename, directory, out_directory, n_cell_new, total_count_new, celllabel_file)
+  ## Use scDesign2 for training countmatrix
+  cat("Model fitting...\n")
+  n_cell_old <- ncol(matrix_num)
+  total_count_old <- sum(matrix_num)
+  if (n_cell_new == "default"){
+    n_cell_new <- n_cell_old
   }
+  if (total_count_new == "default"){
+    total_count_new <- total_count_old
+  }
+  cell_type_sel <- unique(colnames(matrix_num))
+  cell_type_prop <- table(colnames(matrix_num))[cell_type_sel]
+  copula_result <- fit_model_scDesign2_new(matrix_num, cell_type_sel, sim_method = 'copula',
+                                        ncores = length(cell_type_sel))
+  cat("Generating synthetic count matrix...\n")
+  cat(sprintf("Amount of synthetic cell: %s\n", n_cell_new))
+  cat(sprintf("Amount of (expected) sequencing depth: %s\n", total_count_new))
+  simu_matrix <- scDesign2::simulate_count_scDesign2(copula_result, 
+                            total_count_old = total_count_old,
+                            n_cell_old = n_cell_old,
+                            total_count_new = total_count_new,
+                            n_cell_new = n_cell_new,
+                            cell_type_prop = cell_type_prop,
+                            reseq_method = 'mean_scale', cell_sample = TRUE)
+
+  write.table(colnames(simu_matrix), sprintf("%s/%s.scDesign2Simulated.CellTypeLabel.txt", out_directory, samplename), row.names = FALSE,col.names = FALSE)
+  rownames(simu_matrix) <- count_matrix[,1]
+  cat(sprintf("Writing out synthetic count matrix %s to %s...\n", out_directory, out_directory))
+  write.table(simu_matrix, sprintf("%s/%s.scDesign2Simulated.txt", out_directory, samplename), sep="\t", row.names = TRUE,col.names = TRUE)
+  cat("Done.\n")
 }
 
 
-scRNA_runSyntheticCount_UMIandRead <- function(samplename, UMIsamplename, directory, out_directory, n_cell_new="default", total_count_new="default", celllabel_file="default"){
+######################## Main Function for scRNA-seq ########################
+scRNA_runSyntheticCount <- function(samplename, directory, out_directory, n_cell_new="default", total_count_new="default", celllabel_file="default"){
   cat(sprintf("Reading count matrix %s.txt...\n", samplename))
   count_matrix <- read.table(sprintf("%s/%s.txt", directory, samplename), sep="\t",header = FALSE)
-  UMI_count_matrix <- read.table(sprintf("%s/%s.txt", directory, UMIsamplename), sep="\t",header = FALSE)
-  matrix_num_UMI <- data.matrix(UMI_count_matrix[,-1])
-  # Louvain clustering on read count matrix
   matrix_num <- data.matrix(count_matrix[,2:ncol(count_matrix)])
   count_pergene_vec <- rowSums(matrix_num)
-  write.table(count_pergene_vec, sprintf("%s/%s.real.nReadRegionmargional.txt",out_directory, samplename), row.names = FALSE,col.names = FALSE)
-  matrix_num_nonzero <- matrix_num[count_pergene_vec>0,]
-  ## Clustering
-  if (celllabel_file == "default"){
-    cat("No cell label file detected. Louvain clustering before simulation...\n")
-    set.seed(2022)
-    clustering_result <- get_cluster_seurat(matrix_num_nonzero, 'UMI')
-    colnames(matrix_num) <- clustering_result$clustering_result
-    colnames(matrix_num_UMI) <- clustering_result$clustering_result
-
-    write.table(clustering_result$clustering_result, sprintf("%s/%s.LouvainClusterResults.txt", out_directory, samplename), sep="\n", row.names = FALSE,col.names = FALSE)
-  } else {
-    cat(sprintf("Loading cell label file %s...\n", celllabel_file))
-    clustering_result <- unlist(read.table(celllabel_file, header=FALSE))
-    if (length(clustering_result) == ncol(count_matrix)){
-    colnames(matrix_num) <- rep("Cluster1", ncol(matrix_num))
-    colnames(matrix_num_UMI) <- rep("Cluster1", ncol(matrix_num_UMI))
-    } else {
-      stop("Number of cell labels differs from the cell number contained in the count matrix! \n")
-    }
-  }
-
-## Use scDesign2 for training countmatrix
-cat("Model fitting...\n")
-n_cell_old <- ncol(matrix_num)
-total_count_old <- sum(matrix_num)
-total_count_UMI_old <- sum(matrix_num_UMI)
-if (n_cell_new == "default"){
-  n_cell_new <- n_cell_old
-}
-if (total_count_new == "default"){
-  total_count_new <- total_count_old
-  total_count_UMI_new <- total_count_UMI_old
-} else {
-  total_count_UMI_new <- round(total_count_new/total_count_old * total_count_UMI_old)
-}
-cell_type_sel <- unique(colnames(matrix_num))
-cell_type_prop <- table(colnames(matrix_num))[cell_type_sel]
-copula_result <- fit_model_scDesign2_new(matrix_num, cell_type_sel, sim_method = 'copula',
-                                       ncores = length(cell_type_sel))
-copula_result_UMI <- fit_model_scDesign2_new(matrix_num_UMI, cell_type_sel, sim_method = 'copula',
-                                       ncores = length(cell_type_sel))
-cat("Generating synthetic count matrix...\n")
-cat(sprintf("Amount of synthetic cell: %s\n", n_cell_new))
-cat(sprintf("Amount of (expected) sequencing depth: %s\n", total_count_new))
-# simu_matrix <- scDesign2::simulate_count_scDesign2(copula_result, n_cell_new, sim_method = 'copula',
-#                                                cell_type_prop = cell_type_prop)
-simu_matrix <- scDesign2::simulate_count_scDesign2(copula_result, 
-                           total_count_old = total_count_old,
-                           n_cell_old = n_cell_old,
-                           total_count_new = total_count_new,
-                           n_cell_new = n_cell_new,
-                           cell_type_prop = cell_type_prop,
-                           reseq_method = 'mean_scale', cell_sample = TRUE)
-simu_matrix_UMI <- scDesign2::simulate_count_scDesign2(copula_result_UMI, 
-                           total_count_old = total_count_UMI_old,
-                           n_cell_old = n_cell_old,
-                           total_count_new = total_count_UMI_new,
-                           n_cell_new = n_cell_new,
-                           cell_type_prop = cell_type_prop,
-                           reseq_method = 'mean_scale', cell_sample = TRUE)
-
-rownames(simu_matrix) <- count_matrix[,1]
-rownames(simu_matrix_UMI) <- count_matrix[,1]
-
-write.table(colnames(simu_matrix), sprintf("%s/%s.scDesign2Simulated.CellTypeLabel.txt", out_directory, samplename), row.names = FALSE,col.names = FALSE)
-cat(sprintf("Writing out synthetic count matrix %s to %s...\n", out_directory, out_directory))
-write.table(simu_matrix, sprintf("%s/%s.scDesign2Simulated.txt", out_directory, samplename), sep="\t", row.names = TRUE,col.names = TRUE)
-write.table(simu_matrix_UMI, sprintf("%s/%s.scDesign2Simulated.txt", out_directory, UMIsamplename), sep="\t", row.names = TRUE,col.names = TRUE)
-simu_count_pergene_vec <- rowSums(simu_matrix)
-write.table(simu_count_pergene_vec, sprintf("%s/%s.scDesign2Simulated.nReadRegionmargional.txt", out_directory, samplename), row.names = FALSE,col.names = FALSE)
-cat("Done.\n")
-}
-
-
-scRNA_runSyntheticCount_Read <- function(samplename, directory, out_directory, n_cell_new="default", total_count_new="default", celllabel_file="default"){
-  cat(sprintf("Reading count matrix %s.txt...\n", samplename))
-  count_matrix <- read.table(sprintf("%s/%s.txt", directory, samplename), sep="\t",header = FALSE)
-  matrix_num <- data.matrix(count_matrix[,2:ncol(count_matrix)])
-count_pergene_vec <- rowSums(matrix_num)
-  write.table(count_pergene_vec, sprintf("%s/%s.real.nReadRegionmargional.txt",out_directory, samplename), row.names = FALSE,col.names = FALSE)
   matrix_num_nonzero <- matrix_num[count_pergene_vec>0,]
   ## Clustering
   if (celllabel_file == "default"){
@@ -480,46 +372,38 @@ count_pergene_vec <- rowSums(matrix_num)
       stop("Number of cell labels differs from the cell number contained in the count matrix! \n")
     }
   }
-
-## Use scDesign2 for training countmatrix
-cat("Model fitting...\n")
-n_cell_old <- ncol(matrix_num)
-total_count_old <- sum(matrix_num)
-if (n_cell_new == "default"){
-  n_cell_new <- n_cell_old
+  ## Use scDesign2 for training countmatrix
+  cat("Model fitting...\n")
+  n_cell_old <- ncol(matrix_num)
+  total_count_old <- sum(matrix_num)
+  if (n_cell_new == "default"){
+    n_cell_new <- n_cell_old
+  }
+  if (total_count_new == "default"){
+    total_count_new <- total_count_old
+  }
+  cell_type_sel <- unique(colnames(matrix_num))
+  cell_type_prop <- table(colnames(matrix_num))[cell_type_sel]
+  copula_result <- fit_model_scDesign2_new(matrix_num, cell_type_sel, sim_method = 'copula',
+                                        ncores = length(cell_type_sel))
+  cat("Generating synthetic count matrix...\n")
+  cat(sprintf("Amount of synthetic cell: %s\n", n_cell_new))
+  cat(sprintf("Amount of (expected) sequencing depth: %s\n", total_count_new))
+  # simu_matrix <- scDesign2::simulate_count_scDesign2(copula_result, n_cell_new, sim_method = 'copula',
+  #                                                cell_type_prop = cell_type_prop)
+  simu_matrix <- scDesign2::simulate_count_scDesign2(copula_result, 
+                            total_count_old = total_count_old,
+                            n_cell_old = n_cell_old,
+                            total_count_new = total_count_new,
+                            n_cell_new = n_cell_new,
+                            cell_type_prop = cell_type_prop,
+                            reseq_method = 'mean_scale', cell_sample = TRUE)
+  rownames(simu_matrix) <- count_matrix[,1]
+  write.table(colnames(simu_matrix), sprintf("%s/%s.scDesign2Simulated.CellTypeLabel.txt", out_directory, samplename), row.names = FALSE,col.names = FALSE)
+  cat(sprintf("Writing out synthetic count matrix %s to %s...\n", out_directory, out_directory))
+  write.table(simu_matrix, sprintf("%s/%s.scDesign2Simulated.txt", out_directory, samplename), sep="\t", row.names = TRUE,col.names = TRUE)
+  cat("Done.\n")
 }
-if (total_count_new == "default"){
-  total_count_new <- total_count_old
-}
-cell_type_sel <- unique(colnames(matrix_num))
-cell_type_prop <- table(colnames(matrix_num))[cell_type_sel]
-copula_result <- fit_model_scDesign2_new(matrix_num, cell_type_sel, sim_method = 'copula',
-                                       ncores = length(cell_type_sel))
-cat("Generating synthetic count matrix...\n")
-cat(sprintf("Amount of synthetic cell: %s\n", n_cell_new))
-cat(sprintf("Amount of (expected) sequencing depth: %s\n", total_count_new))
-# simu_matrix <- scDesign2::simulate_count_scDesign2(copula_result, n_cell_new, sim_method = 'copula',
-#                                                cell_type_prop = cell_type_prop)
-simu_matrix <- scDesign2::simulate_count_scDesign2(copula_result, 
-                           total_count_old = total_count_old,
-                           n_cell_old = n_cell_old,
-                           total_count_new = total_count_new,
-                           n_cell_new = n_cell_new,
-                           cell_type_prop = cell_type_prop,
-                           reseq_method = 'mean_scale', cell_sample = TRUE)
-rownames(simu_matrix) <- count_matrix[,1]
-write.table(colnames(simu_matrix), sprintf("%s/%s.scDesign2Simulated.CellTypeLabel.txt", out_directory, samplename), row.names = FALSE,col.names = FALSE)
-cat(sprintf("Writing out synthetic count matrix %s to %s...\n", out_directory, out_directory))
-write.table(simu_matrix, sprintf("%s/%s.scDesign2Simulated.txt", out_directory, samplename), sep="\t", row.names = TRUE,col.names = TRUE)
-simu_count_pergene_vec <- rowSums(simu_matrix)
-write.table(simu_count_pergene_vec, sprintf("%s/%s.scDesign2Simulated.nReadRegionmargional.txt", out_directory, samplename), row.names = FALSE,col.names = FALSE)
-cat("Done.\n")
-}
-
-
-
-
-
 
 
 

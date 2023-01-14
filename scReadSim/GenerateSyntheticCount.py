@@ -41,7 +41,7 @@ def scATAC_GenerateSyntheticCount(count_mat_filename, directory, outdirectory, n
 	# 	scATAC_runSyntheticCount(count_mat_filename, directory, outdirectory, cluster_prestep = 0)
 
 
-def scRNA_GenerateSyntheticCount(count_mat_filename, directory, outdirectory, UMI_modeling=False, UMI_count_mat_filename="UMI_countmat", n_cell_new=None, total_count_new=None, celllabel_file=None):
+def scRNA_GenerateSyntheticCount(count_mat_filename, directory, outdirectory, n_cell_new=None, total_count_new=None, celllabel_file=None):
 	"""Simulate synthetic count matrix.
 
 	Parameters
@@ -75,7 +75,7 @@ def scRNA_GenerateSyntheticCount(count_mat_filename, directory, outdirectory, UM
 		total_count_new = "default"
 	if celllabel_file == None:
 		celllabel_file = "default"
-	scRNA_runSyntheticCount(count_mat_filename, directory, outdirectory, UMI_modeling, UMI_count_mat_filename, n_cell_new, total_count_new, celllabel_file)
+	scRNA_runSyntheticCount(count_mat_filename, directory, outdirectory, n_cell_new, total_count_new, celllabel_file)
 	# if cluster_prestep == True:
 	# 	scRNA_runSyntheticCount(count_mat_filename, directory, outdirectory, cluster_prestep = 1)
 	# else:

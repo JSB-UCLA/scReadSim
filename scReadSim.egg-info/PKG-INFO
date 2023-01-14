@@ -1,12 +1,10 @@
 Metadata-Version: 2.1
 Name: scReadSim
-Version: 1.2.0
+Version: 1.3.0
 Summary: A single-cell RNA-seq and ATAC-seq read simulator.
 Home-page: https://github.com/JSB-UCLA/scReadSim
 Author: Guanao Yan
 Author-email: gayan@g.ucla.com
-License: UNKNOWN
-Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: OS Independent
@@ -18,7 +16,7 @@ License-File: LICENSE
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Documentation Status](https://readthedocs.org/projects/screadsim/badge/?version=latest)](https://screadsim.readthedocs.io/en/latest/?badge=latest)
 
-A single cell multi-omics read simulator.
+A single-cell RNA-seq and ATAC-seq read simulator.
 
 <!-- ## Update Log
 **June 18th**
@@ -80,6 +78,4 @@ For tutorials and other details, check [our website](http://screadsim.readthedoc
 ## License
 This pacakge is licensed under the terms
 of the **MIT License**.
-
-
 
