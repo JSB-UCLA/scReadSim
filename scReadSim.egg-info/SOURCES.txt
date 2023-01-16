@@ -14,11 +14,13 @@ scReadSim.egg-info/dependency_links.txt
 scReadSim.egg-info/requires.txt
 scReadSim.egg-info/top_level.txt
 scReadSim/Rscript/SyntheticCountFunctions.R
-scReadSim/data/10X_ATAC_chr1_4194444_4399104.INPUT.peaks.bed
 scReadSim/data/10X_ATAC_chr1_4194444_4399104.bam
 scReadSim/data/10X_ATAC_chr1_4194444_4399104.bam.bai
+scReadSim/data/10X_ATAC_chr1_4194444_4399104.output.peak.bed
 scReadSim/data/10X_RNA_chr1_3073253_4526737.bam
 scReadSim/data/10X_RNA_chr1_3073253_4526737.bam.bai
+scReadSim/data/10x_ATAC_chr1_4194444_4399104.input.nonpeak.bed
+scReadSim/data/10x_ATAC_chr1_4194444_4399104.input.peak.bed
 scReadSim/data/barcodes.tsv
 scReadSim/data/mm10.chrom.sizes
 tests/__init__.py
