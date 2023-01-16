@@ -57,9 +57,9 @@ TGGACCGGTTCACCCA-1:A00836:472:HTNW5DMXX:1:1372:16260:18129      83      chr1    
 ```
 
 ## Step 2: Feature space construction
-For scATAC-seq, scReadSim uses the chromatin open regions (peaks) identified by [MACS3](https://github.com/macs3-project/MACS) as the feature space. Specifically, scReasSim takes peak regions as foreground features and the copmlementary regions along the reference genome as the background features. 
+To pre-process real scATAC-seq data for training, scReadSim requires users’ trustworthy peaks and non-peaks for the input BAM file. Alternatively, if users do not input peaks and non-peaks, scReadSim by default uses [MACS3](https://github.com/macs3-project/MACS) with stringent criteria to call trustworthy peaks (q-value `0.01`) and non-peaks (q-value `0.1`) from the input BAM file. Then scReadSim defines gray areas as the genomic regions complementary to the peaks and non-peaks. Three bed files recording peaks, non-peaks and gray areas will be prepared by scReadSim for following analysis.
 
-### Specify input parameters 
+### Specify output directory
 Specify the absolute path of output directory. Create output directory if it does not exist.
 
 ```{code-block} python3
@@ -67,40 +67,47 @@ outdirectory = "/home/users/example/outputs" # use absolute path
 os.mkdir(outdirectory)
 ```
 
-### Peak calling
-To identify chromatin open regions for scATAC-seq, scReadSim utilizes MACS3 through function `Utility.CallPeak` with following arguments
-- `macs3_directory`: Path to software MACS3.
-- `INPUT_bamfile`: Input BAM file for anlaysis.
-- `outdirectory`: Output directory of peak calling.
-- `MACS3_peakname_pre`: Base name of peak calling results for MACS3.
+### Prepare Features
 
-The peak calling results by MACS3 would be output into directory `outdirectory`. 
+To prepare features for the following analysis, scReadSim utilizes function `Utility.scATAC_CreateFeatureSets` with following arguments
+- `INPUT_bamfile`: Input BAM file for anlaysis.
+- `samtools_directory`: Directory of software samtools.
+- `bedtools_directory`: Directory of software bedtools.
+- `outdirectory`: Output directory of the prepared features.
+- `genome_size_file`: Directory of Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicates the size.  
+- `macs3_directory`: Path to software MACS3.
+- `INPUT_peakfile`: (Optional, default: None) Directory of user-specified input peak file.
+- `INPUT_nonpeakfile`: (Optional, default: None) Directory of user-specified input non-peak file.
+- `OUTPUT_peakfile`: (Optional, default: None) Directory of user-specified output peak file. Synthetic scATAC-seq reads will be generated taking `OUTPUT_peakfile` as ground truth peaks. Note that `OUTPUT_peakfile` does not name the generated feature files by function `scATAC_CreateFeatureSets`.
+
+
+#### **Case 1** without user-specified peaks and non-peaks
+If users do not specify peaks and non-peaks (by setting options `INPUT_peakfile` and `INPUT_nonpeakfile` as the default values None) for the input BAM file, scReadSim by default uses MACS3 to determine the peaks and non-peaks. This function will generate the following three bed files into directory `outdirectory` for following analysis:
+
+- peak bed file: *scReadSim.MACS3.peak.bed*
+- non-peak bed file: *scReadSim.MACS3.nonpeak.bed*
+- gray area bed file: *scReadSim.grayareas.bed*
 
 ```{code-block} python3
-MACS3_peakname_pre = filename + ".MACS3"
-
-# Peak calling
-Utility.CallPeak(macs3_directory, INPUT_bamfile, outdirectory, MACS3_peakname_pre)
+# Prepare features without user-specified peaks and non-peaks
+Utility.scATAC_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directory, outdirectory, INPUT_genome_size_file, macs3_directory, INPUT_peakfile=None, INPUT_nonpeakfile=None)
 ```
 
-### Generate feature sets 
-Use function `Utility.scATAC_CreateFeatureSets` to generate features. This function needs user to specify
 
-- `INPUT_bamfile`: Input BAM file for anlaysis.
-- `samtools_directory`: Path to software *samtools*.
-- `bedtools_directory`: Path to software *bedtools*.
-- `outdirectory`: Specify the output directory of the features files.
-- `genome_size_file`: Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicating the size.
-- `ref_peakfile`: Specify the name of output foreground feature bed file.
-- `ref_comple_peakfile`: Specify the name of output background feature bed file.    
-- `MACS3_peakname_pre`: Base name of peak calling results for MACS3.
+#### **Case 2** with user-specified peaks and non-peaks
+If users specify peaks and non-peaks (by setting options `INPUT_peakfile` and `INPUT_nonpeakfile` as the path to the ground truth peak and non-peak bed files) for the input BAM file, scReadSim further preprocesses the bed files and generate the following three bed files into directory `outdirectory` for following analysis:
+
+- peak bed file: *scReadSim.UserInput.peak.bed*
+- non-peak bed file: *scReadSim.UserInput.nonpeak.bed*
+- gray area bed file: *scReadSim.grayareas.bed*
 
 ```{code-block} python3
-ref_peakfile = "%s_peaks.bed" % MACS3_peakname_pre
-ref_comple_peakfile = "%s_peaks.COMPLE.bed" % MACS3_peakname_pre
+# Specify the path to peak and non-peak bed files
+INPUT_peakfile = pkg_resources.resource_filename("scReadSim", 'data/10x_ATAC_chr1_4194444_4399104.input.peak.bed')
+INPUT_nonpeakfile = pkg_resources.resource_filename("scReadSim", 'data/10x_ATAC_chr1_4194444_4399104.input.nonpeak.bed')
 
-# Generate features
-Utility.scATAC_CreateFeatureSets(INPUT_bamfile=INPUT_bamfile, samtools_directory=samtools_directory, bedtools_directory=bedtools_directory, outdirectory=outdirectory, genome_size_file=INPUT_genome_size_file, ref_peakfile=ref_peakfile, ref_comple_peakfile=ref_comple_peakfile, MACS3_peakname_pre=MACS3_peakname_pre)
+# Prepare features with user-specified peaks and non-peaks
+Utility.scATAC_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directory, outdirectory, INPUT_genome_size_file, macs3_directory, INPUT_peakfile, INPUT_nonpeakfile)
 ```
 
 
@@ -108,7 +115,7 @@ Utility.scATAC_CreateFeatureSets(INPUT_bamfile=INPUT_bamfile, samtools_directory
 Based on the feature sets output in **Step 2**, scReasSim constructs the count matrices for both foreground feautures and background features through function `Utility.scATAC_bam2countmat_paral`. This function needs user to specify
 
 - `cells_barcode_file`: Cell barcode file corresponding to the input BAM file.
-- `bed_file`: Features bed file to generate the count matrix.
+- `bed_file`: Features' bed file to generate the count matrix (Generated by function `Utility.scATAC_CreateFeatureSets`).
 - `INPUT_bamfile`: Input BAM file for anlaysis.
 - `outdirectory`: Specify the output directory of the count matrix file.
 - `count_mat_filename`: Specify the base name of output count matrix.
@@ -117,80 +124,87 @@ Based on the feature sets output in **Step 2**, scReasSim constructs the count m
 For the user specified `count_mat_filename`, scReadSim will generate a count matrix named  *`count_mat_filename`.txt* to directory `outdirectory`.
 
 ```{code-block} python3
-count_mat_filename = "%s.countmatrix" % filename
-count_mat_comple_filename = "%s.COMPLE.countmatrix" % filename
+# Specify the path to bed files generated by Utility.scATAC_CreateFeatureSets
+peak_bedfile = outdirectory + "/" + "scReadSim.MACS3.peak.bed"
+nonpeak_bedfile = outdirectory + "/" + "scReadSim.MACS3.nonpeak.bed"
+# Specify the output count matrices' prenames
+count_mat_peak_filename = "%s.peak.countmatrix" % filename
+count_mat_nonpeak_filename = "%s.nonpeak.countmatrix" % filename
 
-# Construct count matrix for foregroud features
-Utility.scATAC_bam2countmat_paral(cells_barcode_file=INPUT_cells_barcode_file, bed_file=outdirectory + "/" + ref_peakfile, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, count_mat_filename=count_mat_filename, n_cores=1)
-# Construct count matrix for background features
-Utility.scATAC_bam2countmat_paral(cells_barcode_file=INPUT_cells_barcode_file, bed_file=outdirectory + "/" + ref_comple_peakfile, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, count_mat_filename=count_mat_comple_filename, n_cores=1)
+# Construct count matrix for peaks
+Utility.scATAC_bam2countmat_paral(cells_barcode_file=INPUT_cells_barcode_file, bed_file=peak_bedfile, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, count_mat_filename=count_mat_peak_filename, n_cores=1)
+# Construct count matrix for non-peaks
+Utility.scATAC_bam2countmat_paral(cells_barcode_file=INPUT_cells_barcode_file, bed_file=nonpeak_bedfile, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, count_mat_filename=count_mat_nonpeak_filename, n_cores=1)
 ```
 
 
 ## Step 4: Synthetic count matrix simulation
-The current version of scReadSim implement [scDesign2](https://github.com/JSB-UCLA/scDesign2) to generate synthetic count matrix based on the constructed count matrix from the input BAM file. Use function `GenerateSyntheticCount.scATAC_GenerateSyntheticCount` to generate synthetic count matrix with following paramters
+The current version of scReadSim implements [scDesign2](https://github.com/JSB-UCLA/scDesign2) to generate synthetic count matrix based on the constructed count matrix from the input BAM file. Use function `GenerateSyntheticCount.scATAC_GenerateSyntheticCount` to generate synthetic count matrix with following paramters
 
-- `count_mat_filename`: Base name of the count matrix output by function bam2countmat().
+- `bed_file`: Features' bed file to generate the count matrix (Generated by function `Utility.scATAC_CreateFeatureSets`).
+- `count_mat_filename`: Base name of the count matrix output by function `Utility.scATAC_bam2countmat_paral`.
 - `directory`: Path to the count matrix.
-- `outdirectory`: Output directory of coordinate files.
+- `outdirectory`: Specify the output directory of the synthetic count matrix file.
 - `n_cell_new`: (Optional, default: 'None') Number of synthetic cells. If not specified, scReadSim uses the number of real cells.
 - `total_count_new`: (Optional, default: 'None') Number of (expected) sequencing depth. If not specified, scReadSim uses the real sequencing depth.
 - `celllabel_file`: (Optional, default: 'None') Specify the one-column text file containing the predefined cell labels. Make sure that the order of cell labels correspond to the cell barcode file. If no cell labels are specified, scReadSim performs a Louvain clustering before implementing scDesign2.
 
-Given the input count matrix *`count_mat_filename`.txt*, scReadSim generates two files to `outdirectory` for following analysis:
+Given the input count matrix *`count_mat_filename`.txt*, scReadSim generates the syntheitic count matrix file to `outdirectory` for following analysis:
 
 - **`count_mat_filename`.scDesign2Simulated.txt**: Synthetic count matrix.
-- **`count_mat_filename`.scDesign2Simulated.nReadRegionmargional.txt**: The per-feature summation of counts for synthetic count matrix.
+
 
 ```{code-block} python3
-# Generate synthetic count matrix for foregroud features
-GenerateSyntheticCount.scATAC_GenerateSyntheticCount(count_mat_filename=count_mat_filename, directory=outdirectory, outdirectory=outdirectory)
-# Generate synthetic count matrix for backgroud features
-GenerateSyntheticCount.scATAC_GenerateSyntheticCount(count_mat_filename=count_mat_comple_filename, directory=outdirectory, outdirectory=outdirectory)
+# Generate synthetic count matrix for peak-by-cell count matrix
+GenerateSyntheticCount.scATAC_GenerateSyntheticCount(count_mat_filename=count_mat_peak_filename, directory=outdirectory, outdirectory=outdirectory)
+# Generate synthetic count matrix for nonpeak-by-cell count matrix
+GenerateSyntheticCount.scATAC_GenerateSyntheticCount(count_mat_filename=count_mat_nonpeak_filename, directory=outdirectory, outdirectory=outdirectory)
 ```
 
 
 ## Step 5: Synthetic BAM file generation
 
 ### Generate synthetic reads in BED format
-Based on the synthetic count matrix, scReadSim generates synthetic reads by randomly sampling from the real BAM file input by users. First use function `scATAC_GenerateBAMCoord_paral` to create the synthetic reads and output in BED file storing the coordinates information. Function `scATAC_GenerateBAMCoord_paral` takes following input arguments:
-- `count_mat_filename`: The base name of output count matrix in bam2countmat.
-- `samtools_directory`: Path to software samtools.
+Based on the synthetic count matrix, scReadSim generates synthetic reads by randomly sampling from the real BAM file input by users. First use function `scATAC_GenerateBAM.scATAC_GenerateBAMCoord` to create the synthetic reads and output in BED file storing the coordinates information. Function `scATAC_GenerateBAM.scATAC_GenerateBAMCoord` takes following input arguments:
+
+- `bed_file`: Features' bed file to generate the synthetic reads (Generated by function `Utility.scATAC_CreateFeatureSets`).
+- `count_mat_file`: The path to the **synthetic count matrix** generated by `GenerateSyntheticCount.scATAC_GenerateSyntheticCount`.
+- `read_bedfile_prename`: Specify the base name of output bed file.
 - `INPUT_bamfile`: Input BAM file for anlaysis.
-- `ref_peakfile`: Features bed file.
-- `directory_cellnumber`: Directory of the marginal synthetic count vector file output in scATAC_GenerateSyntheticCount step.
 - `outdirectory`: Specify the output directory for synthetic reads bed file.
-- `BED_filename`: Specify the base name of output bed file.
 - `OUTPUT_cells_barcode_file`: Specify the file name storing the synthetic cell barcodes.
-- `read_len`: (Optional, default: '50') Specify the length of synthetic reads. Default value is 50 bp.
 - `jitter_size`: (Optional, default: '5') Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.
-- `n_cores`: (Optional, default: '1') Specify the number of cores for parallel computing.
+- `read_len`: (Optional, default: '50') Specify the length of synthetic reads. Default value is 50 bp.
+- `random_noise_mode`: (Optional, default: 'False') Specify whether to use a uniform distribution of reads.
+- `GrayAreaModeling`: (Optional, default: 'False') Specify whether to generate synthetic reads for Gray Areas when generaing reads for non-peaks. Do not specify 'True' when generating reads for peaks.
 
-This function will output a bed file *`BED_filename`.bed* storing the coordinates information of synthetic reads and its cell barcode file `OUTPUT_cells_barcode_file` in directory `outdirectory`.
+This function will output two bed files *`read_bedfile_prename:`.read1.bed* and *`read_bedfile_prename:`.read2.bed* storing the coordinates information of synthetic reads and its cell barcode file `OUTPUT_cells_barcode_file` in directory `outdirectory`.
 
-After generation of synthetic reads for both foreground and background features, combine the two bed files using function `scATAC_GenerateBAM.scATAC_CombineBED`, which takes following input arguments:
-- `outdirectory`: Directory of `BED_filename_pre`.txt and `BED_COMPLE_filename_pre`.txt.
-- `BED_filename_pre`: File prename of foreground synthetic reads bed file.
-- `BED_COMPLE_filename_pre`: File prename of background synthetic reads bed file.
-- `BED_filename_combined_pre`: Specify the combined syntehtic reads bed file prename. The combined bed file will be output to `outdirectory`.
+After generation of synthetic reads for both peaks and non-peaks, combine the their bed files using function `scATAC_GenerateBAM.scATAC_CombineBED`, which takes following input arguments:
+- `outdirectory`: Directory of `peak_read_bedfile_prename`.txt and `nonpeak_read_bedfile_prename`.txt.
+- `peak_read_bedfile_prename`: Base name of the bed file containig synthetic reads for peaks (generated by function `scATAC_GenerateBAM.scATAC_GenerateBAMCoord`).
+- `nonpeak_read_bedfile_prename`: Base name of the bed file containig synthetic reads for non-peaks (generated by function `scATAC_GenerateBAM.scATAC_GenerateBAMCoord`).
+- `BED_filename_combined_pre`: Specify the base name for the combined syntehtic reads bed file. The combined bed file will be output to `outdirectory`.
 
 
 ```{code-block} python3
-directory_cellnumber = outdirectory
+# Specify the names of synthetic count matrices (generated by GenerateSyntheticCount.scATAC_GenerateSyntheticCount)
+synthetic_countmat_peak_file = count_mat_peak_filename + ".scDesign2Simulated.txt"
+synthetic_countmat_nonpeak_file = count_mat_nonpeak_filename + ".scDesign2Simulated.txt"
+# Specify the base name of bed files containing synthetic reads
 OUTPUT_cells_barcode_file = "synthetic_cell_barcode.txt"
-BED_filename_pre = "%s.syntheticBAM.CBincluded" % filename
-BED_COMPLE_filename_pre = "%s.syntheticBAM.COMPLE.CBincluded" % filename
-BED_filename_combined_pre = "%s.syntheticBAM.combined.CBincluded" % filename
+peak_read_bedfile_prename = "%s.syntheticBAM.peak" % filename
+nonpeak_read_bedfile_prename = "%s.syntheticBAM.nonpeak" % filename
+BED_filename_combined_pre = "%s.syntheticBAM.combined" % filename
 
-# Create synthetic read coordinates for foregroud features
-scATAC_GenerateBAM.scATAC_GenerateBAMCoord_paral(
-	count_mat_filename=count_mat_filename, samtools_directory=samtools_directory, INPUT_bamfile=INPUT_bamfile, ref_peakfile=outdirectory + "/" + ref_peakfile, directory_cellnumber=directory_cellnumber, outdirectory=outdirectory, BED_filename=BED_filename_pre, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file, n_cores=1)
-# Create synthetic read coordinates for backgroud features
-scATAC_GenerateBAM.scATAC_GenerateBAMCoord_paral(
-	count_mat_filename=count_mat_comple_filename, samtools_directory=samtools_directory, INPUT_bamfile=INPUT_bamfile, ref_peakfile=outdirectory + "/" + ref_comple_peakfile, directory_cellnumber=directory_cellnumber, outdirectory=outdirectory, BED_filename=BED_COMPLE_filename_pre, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file, n_cores=1)
+# Create synthetic read bed file for peaks
+scATAC_GenerateBAM.scATAC_GenerateBAMCoord(bed_file=peak_bedfile, count_mat_file=outdirectory + "/" + synthetic_countmat_peak_file, read_bedfile_prename=peak_read_bedfile_prename, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file, jitter_size=5, read_len=50)
 
-# Combine foreground and background bed file
-scATAC_GenerateBAM.scATAC_CombineBED(outdirectory=outdirectory, BED_filename_pre=BED_filename_pre, BED_COMPLE_filename_pre=BED_COMPLE_filename_pre, BED_filename_combined_pre=BED_filename_combined_pre)
+# Create synthetic read bed file for non-peaks
+scATAC_GenerateBAM.scATAC_GenerateBAMCoord(bed_file=nonpeak_bedfile, count_mat_file=outdirectory + "/" + synthetic_countmat_nonpeak_file, read_bedfile_prename=nonpeak_read_bedfile_prename, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file, jitter_size=5, read_len=50,  GrayAreaModeling=True))
+
+# Combine bed files
+scATAC_GenerateBAM.scATAC_CombineBED(outdirectory=outdirectory, peak_read_bedfile_prename=peak_read_bedfile_prename, nonpeak_read_bedfile_prename=nonpeak_read_bedfile_prename, BED_filename_combined_pre=BED_filename_combined_pre)
 ```
 
 ### Convert BED files to FASTQ files
@@ -201,9 +215,8 @@ Use function `scATAC_BED2FASTQ` to convert BED file to FASTQ file. This function
 - `outdirectory`: Output directory of the synthteic bed file and its corresponding cell barcodes file.
 - `BED_filename_combined`: Base name of the combined bed file output by function `scATAC_CombineBED`.
 - `synthetic_fastq_prename`: Specify the base name of the output FASTQ files.
-- `sort_FASTQ`: (Optional, default: True) Set `True` to sort the output FASTQ file.
 
-This function will output paired-end reads in FASTQ files named as *`synthetic_fastq_prename`.read1.bed2fa.fq*, *`synthetic_fastq_prename`.read2.bed2fa.fq* to directory `outdirectory`.
+This function will output paired-end reads in FASTQ files named as *`synthetic_fastq_prename`.read1.bed2fa.sorted.fq*, *`synthetic_fastq_prename`.read2.bed2fa.sorted.fq* to directory `outdirectory`.
 
 ```{code-block} python3
 referenceGenome_name = "chr1"
@@ -211,8 +224,8 @@ referenceGenome_dir = "/home/users/example/refgenome_dir"
 referenceGenome_file = "%s/%s.fa" % (referenceGenome_dir, referenceGenome_name)
 synthetic_fastq_prename = BED_filename_combined_pre
 
-#Convert combined bed file into FASTQ files
-scATAC_GenerateBAM.scATAC_BED2FASTQ(bedtools_directory=bedtools_directory, seqtk_directory=seqtk_directory, referenceGenome_file=referenceGenome_file, outdirectory=outdirectory, BED_filename_combined=BED_filename_combined_pre, synthetic_fastq_prename=synthetic_fastq_prename, sort_FASTQ = True)
+# Convert combined bed file into FASTQ files
+scATAC_GenerateBAM.scATAC_BED2FASTQ(bedtools_directory=bedtools_directory, seqtk_directory=seqtk_directory, referenceGenome_file=referenceGenome_file, outdirectory=outdirectory, BED_filename_combined=BED_filename_combined_pre, synthetic_fastq_prename=synthetic_fastq_prename)
 ```
 
 ### Convert FASTQ files to BAM file (optional)
@@ -251,7 +264,7 @@ Use function `scATAC_ErrorBase` to introduce random error to synthetic reads. It
 
 This function will output synthetic reads with random errors in FASTQ files named as *`synthetic_fastq_prename`.ErrorIncluded.read1.bed2fa.fq*, *`synthetic_fastq_prename`.ErrorIncluded.read2.bed2fa.fq* to directory `outdirectory`.
 
-> **Important** Note that before using function `scATAC_ErrorBase`, please create the reference dictionary with function `CreateSequenceDictionary` using software Picard and make sure the output *.dict* files are within the same directory to *`referenceGenome_name`.fa*.
+> **Important** Note that before using function `scATAC_ErrorBase`, please create the reference dictionary for the reference genome with function `CreateSequenceDictionary` using software Picard and make sure that the output *.dict* files are within the same directory to *`referenceGenome_name`.fa*.
 
 ```{code-block} console
 $ cd example/refgenome_dir # change to directory where your reference genome file is

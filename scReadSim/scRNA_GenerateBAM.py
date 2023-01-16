@@ -54,7 +54,7 @@ def scRNA_GenerateBAMCoord(bed_file,  UMI_count_mat_file, read_bedfile_prename, 
     bed_file: `str`
         Input the bed file of features.
     UMI_count_mat_file: `str`
-        The name of synthetic UMI count matrix.
+        The path to synthetic UMI count matrix.
     read_bedfile_prename: `str`
         Specify the base name of output bed file.
     INPUT_bamfile: `str`
@@ -160,22 +160,22 @@ def scRNA_GenerateBAMCoord(bed_file,  UMI_count_mat_file, read_bedfile_prename, 
 	print("[scReadSim] Read bed file: %s/%s.read.bed" % (outdirectory, read_bedfile_prename))
 
 
-def scRNA_CombineBED(outdirectory, BED_filename_pre, BED_COMPLE_filename_pre, BED_filename_combined_pre):
+def scRNA_CombineBED(outdirectory, gene_read_bedfile_prename, intergene_read_bedfile_prename, BED_filename_combined_pre):
 	"""Combine the bed files of foreground and background feature sets into one bed file.
 
 	Parameters
 	----------
 	outdirectory: `str`
-		Directory of `BED_filename_pre`.txt and `BED_COMPLE_filename_pre`.txt.
-	BED_filename_pre: 'str'
+		Directory of `gene_read_bedfile_prename`.txt and `intergene_read_bedfile_prename`.txt.
+	gene_read_bedfile_prename: 'str'
 		File prename of foreground synthetic reads bed file.
-	BED_COMPLE_filename_pre: 'str'
+	intergene_read_bedfile_prename: 'str'
 		File prename of background synthetic reads bed file.
 	BED_filename_combined_pre: 'str'
 		Specify the combined syntehtic reads bed file prename. The combined bed file will be output to `outdirectory`.
 	"""
 	print("[scReadSim] Combining Synthetic Read Bed Files from Genes and InterGenes.")
-	combine_read_cmd = "cat %s/%s.read.bed %s/%s.read.bed | sort -k1,1 -k2,2n > %s/%s.read.bed" % (outdirectory, BED_filename_pre, outdirectory, BED_COMPLE_filename_pre, outdirectory, BED_filename_combined_pre)
+	combine_read_cmd = "cat %s/%s.read.bed %s/%s.read.bed | sort -k1,1 -k2,2n > %s/%s.read.bed" % (outdirectory, gene_read_bedfile_prename, outdirectory, intergene_read_bedfile_prename, outdirectory, BED_filename_combined_pre)
 	output, error = subprocess.Popen(combine_read_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
 		print('[ERROR] Fail to create combine synthetic read bed files:\n', error.decode())

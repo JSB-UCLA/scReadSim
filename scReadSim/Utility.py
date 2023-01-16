@@ -75,11 +75,11 @@ def scATAC_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directo
     macs3_directory: `str`
         Path to software MACS3.
     INPUT_peakfile: `str` (default: None)
-        Directory of input peak file.
+        Directory of user-specified input peak file.
     INPUT_nonpeakfile: `str` (default: None)
-        Directory of input non-peak file.
-    OUTPUT_peakfile: 'str' (default: None)
-        Directory of output peak file. Synthetic scATAC-seq reads will be generated taking 'OUTPUT_peakfile' as ground truth peaks.
+        Directory of user-specified input non-peak file.
+    OUTPUT_peakfile: `str` (default: None)
+        Directory of user-specified output peak file. Synthetic scATAC-seq reads will be generated taking `OUTPUT_peakfile` as ground truth peaks. Note that `OUTPUT_peakfile` does not name the generated feature files by function `scATAC_CreateFeatureSets`.
     """
     chromosomes_coverd = ExtractBAMCoverage(INPUT_bamfile, samtools_directory, outdirectory)
     search_string_chr = '|'.join(chromosomes_coverd)
@@ -311,7 +311,7 @@ def scRNA_UMIcountmat_mainloop(rec_id):
     return UMI_count_array
 
 
-def scRNA_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, count_mat_filename, UMI_modeling=False, UMI_tag = "UB:Z", n_cores=1):
+def scRNA_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, count_mat_filename, UMI_modeling=True, UMI_tag = "UB:Z", n_cores=1):
     """Construct read (or UMI) count matrix for scRNA-seq BAM file.
 
     Parameters
@@ -326,7 +326,7 @@ def scRNA_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdir
         Specify the output directory of the count matrix file.
     count_mat_filename: `str`
         Specify the base name of output read (or UMI) count matrix.
-    UMI_modeling: `bool` (default: False)
+    UMI_modeling: `bool` (default: True)
         Specify whether scReadSim should model UMI count of the input BAM file.
     UMI_tag: `str` (default: 'UB:Z')
         If UMI_modeling is set to True, specify the UMI tag of input BAM file, default value 'UB:Z' is the UMI tag for 10x scRNA-seq.
@@ -390,7 +390,7 @@ def scATAC_bam2countmat_OutputPeak(cells_barcode_file, assignment_file, INPUT_ba
     cells_barcode_file: `str`
         Cell barcode file corresponding to the input BAM file.
     assignment_file: `str`
-        Features mapping file output by function `FeatureMapping`.
+        Features mapping file output by function `Utility.FeatureMapping`.
     INPUT_bamfile: `str`
         Input BAM file for anlaysis.
     outdirectory: `str`
@@ -566,6 +566,8 @@ def FeatureMapping(INPUT_bamfile, input_peaks, input_nonpeaks, output_peaks, out
         Specify the name of peak mapping file.
     assignment_nonpeak_file: `str`
         Specify the name of nonpeak mapping file.
+    n_top: 'int'(default: 50)
+        Specify the number of input peaks (or non-peaks) with the most similar length as the candidate mapped input peaks (or non-peaks) for each the output peak (or non-peak). From the candidate input peaks (or non-peaks), scReadSim further selects the one with largest read density for peak mapping (smallest read density for non-peak mapping).
     """
     peak_MarginalCountList = bam2MarginalCount(input_peaks, INPUT_bamfile)
     print("[scReadSim] Mapping Input Peaks and Output Peaks...")
