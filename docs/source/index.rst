@@ -15,7 +15,7 @@ scReadSim is a single-cell RNA-seq and ATAC-seq read simulator. It starts from t
 Workflow of scReadSim for generating scATAC-seq reads
 -----------------------------------------------------
 
-.. figure:: _static/Pipeline_scATAC-seq_withoutOutputPeak.pdf
+.. figure:: _static/Pipeline_scATAC-seq_withoutOutputPeak.svg
    :align: center
    :width: 600  
    :alt: scReadSim scATAC-seq
@@ -24,7 +24,7 @@ Workflow of scReadSim for generating scATAC-seq reads
 Workflow of scReadSim for generating scRNA-seq reads
 ----------------------------------------------------
 
-.. figure:: _static/Pipeline_scRNA-seq.pdf
+.. figure:: _static/Pipeline_scRNA-seq.svg
    :align: center
    :width: 600  
    :alt: scReadSim scRNA-seq
