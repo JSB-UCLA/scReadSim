@@ -33,7 +33,7 @@ Workflow of scReadSim for generating scRNA-seq reads
 Installation
 ------------
 
-Quick install from `PyPI <https://pypi.org/project/scReadSim/1.3.0/#description>`::
+Quick install from `PyPI <https://pypi.org/project/scReadSim/1.3.0/#description>`_::
 
    pip install scReadSim
 
