@@ -10,6 +10,15 @@ import scReadSim.scATAC_GenerateBAM as scATAC_GenerateBAM
 import pkg_resources
 ```
 
+## Required softwares for scReadSim
+scReadSim requires users to pre-install the following softwares:
+- MACS3 (https://github.com/macs3-project/MACS)
+- samtools (http://www.htslib.org/)
+- bedtools (https://bedtools.readthedocs.io/en/latest/)
+- seqtk (https://github.com/lh3/seqtk)
+- bowtie2 (http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)
+- fgbio (http://fulcrumgenomics.github.io/fgbio/)
+
 
 ## Step 1: Download test sample
 The example deploys scReadSim on the [10x single cell ATAC-seq](https://www.10xgenomics.com/resources/datasets/fresh-embryonic-e-18-mouse-brain-5-k-1-standard-2-0-0) dataset. The demo BAM file and its corresponding cell barcode file could be accessed through the following chunk. This BAM file uses mm10 as reference genome, the required chromosome size file is also embedded within the package.  

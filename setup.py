@@ -24,7 +24,7 @@ setuptools.setup(
     "pandas",
     "pysam",
     "tqdm",
-    "rp2",
+    "rpy2",
     "joblib", 
     "pathlib"
     ],
