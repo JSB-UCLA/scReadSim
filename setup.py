@@ -1,8 +1,21 @@
 import setuptools
 from pathlib import Path
-
+import os
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
+
+install_require_list = [
+    "numpy",
+    "pandas",
+    "pysam",
+    "tqdm",
+    "joblib", 
+    "pathlib"
+    ]
+# we need to exclude rpy2 when building the docs, and mock it for import in docs/conf.py
+# using the autodoc_mock_imports parameter:
+if not os.getenv('READTHEDOCS'):
+    install_require_list.append('rpy2')
 
 setuptools.setup(
     name="scReadSim",
@@ -19,15 +32,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.6",
-    install_requires=[
-    "numpy",
-    "pandas",
-    "pysam",
-    "tqdm",
-    "rpy2",
-    "joblib", 
-    "pathlib"
-    ],
+    install_requires=install_require_list,
     # install_requires=[
     #     x.strip() for x in
     #     Path('requirements_test.txt').read_text('utf-8').splitlines()
