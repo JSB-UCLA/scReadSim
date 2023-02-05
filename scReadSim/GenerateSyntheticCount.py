@@ -3,6 +3,25 @@ import rpy2.robjects as robjects
 import time
 import pkg_resources
 import os
+from rpy2.robjects.vectors import StrVector
+import rpy2.robjects.packages as rpackages
+
+# import R's utility package
+utils = rpackages.importr('utils')
+
+# select a mirror for R packages
+utils.chooseCRANmirror(ind=1) # select the first mirror in the list
+
+# R package names
+# Packages Rsubread, ROGUE no hosted on CRAN are installed in Rscript
+packnames = ('pscl', 'tidyverse', 'Seurat')
+
+# Selectively install what needs to be install.
+# We are fancy, just because we can.
+names_to_install = [x for x in packnames if not rpackages.isinstalled(x)]
+if len(names_to_install) > 0:
+    utils.install_packages(StrVector(names_to_install))
+
 
 def scATAC_GenerateSyntheticCount(count_mat_filename, directory, outdirectory, n_cell_new=None, total_count_new=None, celllabel_file=None):
 	"""Simulate synthetic count matrix.

@@ -1,3 +1,15 @@
+# Check if packages are installed
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+if (!require("Rsubread", quietly = TRUE))
+    BiocManager::install("Rsubread")
+if (!requireNamespace("ROGUE", quietly = TRUE)) {
+  if (!requireNamespace("devtools", quietly = TRUE)) 
+    install.packages("devtools")
+devtools::install_github("PaulingLiu/ROGUE")
+}
+
+
 library(Matrix)
 library(Rsubread)
 library(pscl)
