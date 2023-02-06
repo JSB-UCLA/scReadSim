@@ -401,11 +401,11 @@ scATAC_runSyntheticCount <- function(samplename, directory, out_directory, n_cel
 
 
 # Test
-samplename <- "NGS_H2228_H1975_A549_H838_HCC827_Mixture_10X.COMPLE.UMIcountmatrix"
-directory <- "/home/guanao/Projects/scIsoSim/results/20230204"
-out_directory <- directory
-celllabel_file <- "/home/guanao/Projects/scIsoSim/results/20230204/NGS_H2228_H1975_A549_H838_HCC827_Mixture_10X.UMIcountmatrix.scDesign2Simulated.CellTypeLabel.txt"
-scRNA_runSyntheticCount(samplename, directory, out_directory, n_cluster=5, celllabel_file=celllabel_file)
+# samplename <- "NGS_H2228_H1975_A549_H838_HCC827_Mixture_10X.COMPLE.UMIcountmatrix"
+# directory <- "/home/guanao/Projects/scIsoSim/results/20230204"
+# out_directory <- directory
+# celllabel_file <- "/home/guanao/Projects/scIsoSim/results/20230204/NGS_H2228_H1975_A549_H838_HCC827_Mixture_10X.UMIcountmatrix.scDesign2Simulated.CellTypeLabel.txt"
+# scRNA_runSyntheticCount(samplename, directory, out_directory, n_cluster=5, celllabel_file=celllabel_file)
 
 ######################## Main Function for scRNA-seq ########################
 scRNA_runSyntheticCount <- function(samplename, directory, out_directory, n_cell_new="default", total_count_new="default", celllabel_file="default", n_cluster="default"){
