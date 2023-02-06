@@ -274,33 +274,64 @@ check_cluster_quality <- function(data_mat, cell_type_sel,
 }
 
 # function of using Seurat to cluster -----------------------------------------------------
-get_cluster_seurat <- function(data_mat, platform = c("full-length", "UMI"),
+get_cluster_seurat <- function(data_mat, n_cluster,
                                res = 0.5){
-  platform <- match.arg(platform)
+#   platform <- match.arg(platform)
   submat <- data_mat
-  
   if(is.null(rownames(submat)))
     rownames(submat) <- 1:nrow(submat)
-  count_seurat <- CreateSeuratObject(counts = submat)
-  ### normalization
-  count_seurat <- NormalizeData(count_seurat)
-  ### select highly variable genes
-  count_seurat <- FindVariableFeatures(count_seurat, selection.method = "vst", nfeatures = 4000)
-  ### scale the data
-  count_seurat <- ScaleData(count_seurat)
-  ### PCA
-  count_seurat <- RunPCA(count_seurat,
-                         features = VariableFeatures(object = count_seurat),
-                         verbose = F)
-  ### clustering
-  dims = 1:min(10, min(ncol(data_mat), nrow(data_mat))-1)
-  count_seurat <- FindNeighbors(count_seurat, dims = dims)
-  count_seurat <- FindClusters(count_seurat, resolution = res)
-  ### results
-  cluster_predicted <- as.integer(Idents(count_seurat))
-  
-  colnames(submat) <- as.character(cluster_predicted)
-  # rogue_scores <- check_cluster_quality(submat, unique(cluster_predicted), platform)
+    count_seurat <- CreateSeuratObject(counts = submat, verbose = FALSE)
+    ### normalization
+    count_seurat <- NormalizeData(count_seurat,verbose = FALSE)
+    ### select highly variable genes
+    count_seurat <- FindVariableFeatures(count_seurat, selection.method = "vst", nfeatures = 4000,verbose = FALSE)
+    ### scale the data
+    count_seurat <- ScaleData(count_seurat,verbose = FALSE)
+    ### PCA
+    count_seurat <- RunPCA(count_seurat,
+                            features = VariableFeatures(object = count_seurat),
+                            verbose = F)
+    ### clustering
+    dims = 1:min(10, min(ncol(data_mat), nrow(data_mat))-1)
+    count_seurat <- FindNeighbors(count_seurat, dims = dims)
+  # If not specify target cluster number
+    if (n_cluster == "default"){
+        cat("No target cell cluster number detected.\n")        
+        cat("Louvain clustering with default resolution 0.5...\n")        
+        count_seurat <- FindClusters(count_seurat, resolution = res, verbose = FALSE)
+        ### results
+        cluster_predicted <- as.integer(Idents(count_seurat))
+        colnames(submat) <- as.character(cluster_predicted)
+        # rogue_scores <- check_cluster_quality(submat, unique(cluster_predicted), platform)
+        cat(sprintf("%s cell clusters generated.\n", length(unique(cluster_predicted))))
+    } else{
+        n_cluster <- as.integer(n_cluster)
+        cat(sprintf("Detected target cell cluster number %s\n", n_cluster))        
+        cat("Generating target clusters with Louvain clustering through binary search...\n")        
+        min_res <- 0
+        max_res <- 3
+        max_steps <- 20
+        this_step <- 0
+        while (this_step < max_steps) {
+            cat('step', this_step,'\n')
+            this_res <- min_res + ((max_res-min_res)/2)
+            data_louvain <- Seurat::FindClusters(count_seurat, resolution = this_res, verbose = FALSE)
+            this_clusters <- length(unique(Seurat::Idents(data_louvain)))
+            if (this_clusters > n_cluster) {
+            max_res <- this_res
+            } else if (this_clusters < n_cluster) {
+            min_res <- this_res
+            } else {
+            break
+            }
+            this_step <- this_step + 1    
+        }
+        Seurat_louvain <- Seurat::Idents(data_louvain)
+        ### results
+        cluster_predicted <- as.integer(Seurat_louvain)
+        colnames(submat) <- as.character(cluster_predicted)
+        cat(sprintf("%s cell clusters generated.\n", this_clusters))
+    }
   return(list(clustering_result = cluster_predicted))
 }
 
@@ -311,7 +342,7 @@ get_cluster_seurat <- function(data_mat, platform = c("full-length", "UMI"),
 # out_directory <- directory
 # scATAC_runSyntheticCount(samplename, directory, out_directory)
 ## Read in count matrix
-scATAC_runSyntheticCount <- function(samplename, directory, out_directory, n_cell_new="default", total_count_new="default", celllabel_file="default"){
+scATAC_runSyntheticCount <- function(samplename, directory, out_directory, n_cell_new="default", total_count_new="default", celllabel_file="default", n_cluster="default"){
   cat(sprintf("Reading count matrix %s.txt...\n", samplename))
   count_matrix <- read.table(sprintf("%s/%s.txt", directory, samplename), sep="\t",header = FALSE)
   matrix_num <- data.matrix(count_matrix[,2:ncol(count_matrix)])
@@ -322,14 +353,14 @@ scATAC_runSyntheticCount <- function(samplename, directory, out_directory, n_cel
   if (celllabel_file == "default"){
     cat("No cell label file detected. Louvain clustering before simulation...\n")
     set.seed(2022)
-    clustering_result <- get_cluster_seurat(matrix_num_nonzero, 'UMI')
+    clustering_result <- get_cluster_seurat(matrix_num_nonzero, n_cluster=n_cluster)
     colnames(matrix_num) <- clustering_result$clustering_result
     write.table(clustering_result$clustering_result, sprintf("%s/%s.LouvainClusterResults.txt", out_directory, samplename), sep="\n", row.names = FALSE,col.names = FALSE)
   } else {
     cat(sprintf("Loading cell label file %s...\n", celllabel_file))
     clustering_result <- unlist(read.table(celllabel_file, header=FALSE))
     if (length(clustering_result) == ncol(count_matrix)){
-    colnames(matrix_num) <- rep("Cluster1", ncol(matrix_num))
+    colnames(matrix_num) <- clustering_result
     } else {
       stop("Number of cell labels differs from the cell number contained in the count matrix!\n ")
     }
@@ -367,32 +398,32 @@ scATAC_runSyntheticCount <- function(samplename, directory, out_directory, n_cel
 }
 
 
-######################## Main Function for scATAC-seq ########################
-## Test
+# Test
 # samplename <- "NGS_H2228_H1975_A549_H838_HCC827_Mixture_10X.UMIcountmatrix"
 # directory <- "/home/guanao/Projects/scIsoSim/results/20230204"
 # out_directory <- directory
-# scATAC_runSyntheticCount(samplename, directory, out_directory)
+# scRNA_runSyntheticCount(samplename, directory, out_directory, n_cluster=5)
 
 ######################## Main Function for scRNA-seq ########################
-scRNA_runSyntheticCount <- function(samplename, directory, out_directory, n_cell_new="default", total_count_new="default", celllabel_file="default"){
+scRNA_runSyntheticCount <- function(samplename, directory, out_directory, n_cell_new="default", total_count_new="default", celllabel_file="default", n_cluster="default"){
   cat(sprintf("Reading count matrix %s.txt...\n", samplename))
   count_matrix <- read.table(sprintf("%s/%s.txt", directory, samplename), sep="\t",header = FALSE)
   matrix_num <- data.matrix(count_matrix[,2:ncol(count_matrix)])
   count_pergene_vec <- rowSums(matrix_num)
   matrix_num_nonzero <- matrix_num[count_pergene_vec>0,]
+
   ## Clustering
   if (celllabel_file == "default"){
     cat("No cell label file detected. Louvain clustering before simulation...\n")
     set.seed(2022)
-    clustering_result <- get_cluster_seurat(matrix_num_nonzero, 'UMI')
+    clustering_result <- get_cluster_seurat(matrix_num_nonzero, n_cluster=n_cluster)
     colnames(matrix_num) <- clustering_result$clustering_result
     write.table(clustering_result$clustering_result, sprintf("%s/%s.LouvainClusterResults.txt", out_directory, samplename), sep="\n", row.names = FALSE,col.names = FALSE)
   } else {
     cat(sprintf("Loading cell label file %s...\n", celllabel_file))
     clustering_result <- unlist(read.table(celllabel_file, header=FALSE))
     if (length(clustering_result) == ncol(count_matrix)){
-    colnames(matrix_num) <- rep("Cluster1", ncol(matrix_num))
+    colnames(matrix_num) <- clustering_result
     } else {
       stop("Number of cell labels differs from the cell number contained in the count matrix! \n")
     }
@@ -429,9 +460,3 @@ scRNA_runSyntheticCount <- function(samplename, directory, out_directory, n_cell
   write.table(simu_matrix, sprintf("%s/%s.scDesign2Simulated.txt", out_directory, samplename), sep="\t", row.names = TRUE,col.names = TRUE)
   cat("Done.\n")
 }
-
-
-
-
-
-

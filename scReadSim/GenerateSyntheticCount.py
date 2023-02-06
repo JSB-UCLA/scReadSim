@@ -54,13 +54,16 @@ def scATAC_GenerateSyntheticCount(count_mat_filename, directory, outdirectory, n
 	if celllabel_file == None:
 		celllabel_file = "default"
 	scATAC_runSyntheticCount(count_mat_filename, directory, outdirectory, n_cell_new, total_count_new, celllabel_file)
+	print("[scReadSim] Created:")
+	print("[scReadSim] Synthetic count matrix: %s.scDesign2Simulated.txt" % count_mat_filename)
+	print("[scReadSim] Cell label file: %s.scDesign2Simulated.CellTypeLabel.txt" % count_mat_filename)
 	# if cluster_prestep == True:
 	# 	scATAC_runSyntheticCount(count_mat_filename, directory, outdirectory, cluster_prestep = 1)
 	# else:
 	# 	scATAC_runSyntheticCount(count_mat_filename, directory, outdirectory, cluster_prestep = 0)
 
 
-def scRNA_GenerateSyntheticCount(count_mat_filename, directory, outdirectory, n_cell_new=None, total_count_new=None, celllabel_file=None):
+def scRNA_GenerateSyntheticCount(count_mat_filename, directory, outdirectory, n_cell_new=None, total_count_new=None, celllabel_file=None, n_cluster=None):
 	"""Simulate synthetic count matrix.
 
 	Parameters
@@ -90,7 +93,13 @@ def scRNA_GenerateSyntheticCount(count_mat_filename, directory, outdirectory, n_
 		total_count_new = "default"
 	if celllabel_file == None:
 		celllabel_file = "default"
-	scRNA_runSyntheticCount(count_mat_filename, directory, outdirectory, n_cell_new, total_count_new, celllabel_file)
+	if n_cluster == None:
+		n_cluster = "default"
+	scRNA_runSyntheticCount(count_mat_filename, directory, outdirectory, n_cell_new, total_count_new, celllabel_file, n_cluster)
+	print("[scReadSim] Created:")
+	print("[scReadSim] Synthetic count matrix: %s.scDesign2Simulated.txt" % count_mat_filename)
+	print("[scReadSim] Cell label file: %s.scDesign2Simulated.CellTypeLabel.txt" % count_mat_filename)
+
 	# if cluster_prestep == True:
 	# 	scRNA_runSyntheticCount(count_mat_filename, directory, outdirectory, cluster_prestep = 1)
 	# else:
