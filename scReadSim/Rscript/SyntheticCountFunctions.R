@@ -359,7 +359,7 @@ scATAC_runSyntheticCount <- function(samplename, directory, out_directory, n_cel
   } else {
     cat(sprintf("Loading cell label file %s...\n", celllabel_file))
     clustering_result <- unlist(read.table(celllabel_file, header=FALSE))
-    if (length(clustering_result) == ncol(count_matrix)){
+    if (length(clustering_result) == ncol(matrix_num)){
     colnames(matrix_num) <- clustering_result
     } else {
       stop("Number of cell labels differs from the cell number contained in the count matrix!\n ")
@@ -398,11 +398,14 @@ scATAC_runSyntheticCount <- function(samplename, directory, out_directory, n_cel
 }
 
 
+
+
 # Test
-# samplename <- "NGS_H2228_H1975_A549_H838_HCC827_Mixture_10X.UMIcountmatrix"
-# directory <- "/home/guanao/Projects/scIsoSim/results/20230204"
-# out_directory <- directory
-# scRNA_runSyntheticCount(samplename, directory, out_directory, n_cluster=5)
+samplename <- "NGS_H2228_H1975_A549_H838_HCC827_Mixture_10X.COMPLE.UMIcountmatrix"
+directory <- "/home/guanao/Projects/scIsoSim/results/20230204"
+out_directory <- directory
+celllabel_file <- "/home/guanao/Projects/scIsoSim/results/20230204/NGS_H2228_H1975_A549_H838_HCC827_Mixture_10X.UMIcountmatrix.scDesign2Simulated.CellTypeLabel.txt"
+scRNA_runSyntheticCount(samplename, directory, out_directory, n_cluster=5, celllabel_file=celllabel_file)
 
 ######################## Main Function for scRNA-seq ########################
 scRNA_runSyntheticCount <- function(samplename, directory, out_directory, n_cell_new="default", total_count_new="default", celllabel_file="default", n_cluster="default"){
@@ -422,7 +425,7 @@ scRNA_runSyntheticCount <- function(samplename, directory, out_directory, n_cell
   } else {
     cat(sprintf("Loading cell label file %s...\n", celllabel_file))
     clustering_result <- unlist(read.table(celllabel_file, header=FALSE))
-    if (length(clustering_result) == ncol(count_matrix)){
+    if (length(clustering_result) == ncol(matrix_num)){
     colnames(matrix_num) <- clustering_result
     } else {
       stop("Number of cell labels differs from the cell number contained in the count matrix! \n")
