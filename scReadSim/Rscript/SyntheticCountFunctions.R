@@ -8,8 +8,13 @@ if (!requireNamespace("ROGUE", quietly = TRUE)) {
     install.packages("devtools")
 devtools::install_github("PaulingLiu/ROGUE")
 }
+if (!requireNamespace("scDesign2", quietly = TRUE)) {
+  if (!requireNamespace("devtools", quietly = TRUE)) 
+    install.packages("devtools")
+devtools::install_github("JSB-UCLA/scDesign2")
+}
 
-
+# Load packages
 library(Matrix)
 library(Rsubread)
 library(pscl)
@@ -267,6 +272,7 @@ check_cluster_quality <- function(data_mat, cell_type_sel,
                      samples = rep(1, ncol(expr)), platform = platform)
   unlist(rogue.res)
 }
+
 # function of using Seurat to cluster -----------------------------------------------------
 get_cluster_seurat <- function(data_mat, platform = c("full-length", "UMI"),
                                res = 0.5){
@@ -309,8 +315,8 @@ scATAC_runSyntheticCount <- function(samplename, directory, out_directory, n_cel
   cat(sprintf("Reading count matrix %s.txt...\n", samplename))
   count_matrix <- read.table(sprintf("%s/%s.txt", directory, samplename), sep="\t",header = FALSE)
   matrix_num <- data.matrix(count_matrix[,2:ncol(count_matrix)])
-  count_pergene_vec <- rowSums(ceiling(matrix_num/2))
-  write.table(count_pergene_vec, sprintf("%s/%s.real.nPairsRegionmargional.txt",out_directory, samplename), row.names = FALSE,col.names = FALSE)
+  count_pergene_vec <- rowSums(matrix_num)
+  # write.table(count_pergene_vec, sprintf("%s/%s.real.nPairsRegionmargional.txt",out_directory, samplename), row.names = FALSE,col.names = FALSE)
   matrix_num_nonzero <- matrix_num[count_pergene_vec>0,]
   ## Clustering
   if (celllabel_file == "default"){
@@ -360,6 +366,13 @@ scATAC_runSyntheticCount <- function(samplename, directory, out_directory, n_cel
   cat("Done.\n")
 }
 
+
+######################## Main Function for scATAC-seq ########################
+## Test
+# samplename <- "NGS_H2228_H1975_A549_H838_HCC827_Mixture_10X.UMIcountmatrix"
+# directory <- "/home/guanao/Projects/scIsoSim/results/20230204"
+# out_directory <- directory
+# scATAC_runSyntheticCount(samplename, directory, out_directory)
 
 ######################## Main Function for scRNA-seq ########################
 scRNA_runSyntheticCount <- function(samplename, directory, out_directory, n_cell_new="default", total_count_new="default", celllabel_file="default"){

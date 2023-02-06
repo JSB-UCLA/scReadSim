@@ -59,7 +59,7 @@ $ # create a bam file with the barcode embedded into the read name
 $ time(cat <( cat tmp/10X_ATAC_chr1_4194444_4399104.header.sam ) \
  <( samtools view 10X_ATAC_chr1_4194444_4399104_unprocess.bam | awk '{for (i=12; i<=NF; ++i) { if ($i ~ "^CB:Z:"){ td[substr($i,1,2)] = substr($i,6,length($i)-5); } }; printf "%s:%s\n", td["CB"], $0 }' ) \
  | samtools view -bS - > 10X_ATAC_chr1_4194444_4399104.bam) 
-$ rm -d tmp
+$ rm -dr tmp
 
 $ samtools view 10X_ATAC_chr1_4194444_4399104.bam | head -n 1
 TGGACCGGTTCACCCA-1:A00836:472:HTNW5DMXX:1:1372:16260:18129      83      chr1    4194410 60      50M     =       4193976 -484    TGCCTTGCTACAGCAGCTCAGGAAATGTCTTTGTGCCCACAGTCTGTGGT   :FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF      NM:i:0  MD:Z:50 AS:i:50 XS:i:0  CR:Z:TCCGGGACAGCTAACA   CY:Z:FFFFFFFFFFFFFFF:   CB:Z:TGGACCGGTTCACCCA-1 BC:Z:AAACTCAT        QT:Z::FFFFFFF   RG:Z:e18_mouse_brain_fresh_5k:MissingLibrary:1:HTNW5DMXX:1
