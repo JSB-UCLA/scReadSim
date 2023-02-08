@@ -460,6 +460,6 @@ scRNA_runSyntheticCount <- function(samplename, directory, out_directory, n_cell
   rownames(simu_matrix) <- count_matrix[,1]
   write.table(colnames(simu_matrix), sprintf("%s/%s.scDesign2Simulated.CellTypeLabel.txt", out_directory, samplename), row.names = FALSE,col.names = FALSE)
   cat(sprintf("Writing out synthetic count matrix %s to %s...\n", out_directory, out_directory))
-  write.table(simu_matrix, sprintf("%s/%s.scDesign2Simulated.test.txt", out_directory, samplename), sep="\t", row.names = TRUE,col.names = FALSE)
+  write.table(simu_matrix, sprintf("%s/%s.scDesign2Simulated.txt", out_directory, samplename), sep="\t", row.names = TRUE,col.names = FALSE)
   cat("Done.\n")
 }
