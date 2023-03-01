@@ -12,12 +12,12 @@ import pkg_resources
 
 ## Required softwares for scReadSim
 scReadSim requires users to pre-install the following softwares:
-- MACS3 (https://github.com/macs3-project/MACS)
-- samtools (http://www.htslib.org/)
-- bedtools (https://bedtools.readthedocs.io/en/latest/)
-- seqtk (https://github.com/lh3/seqtk)
-- bowtie2 (http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)
-- fgbio (http://fulcrumgenomics.github.io/fgbio/)
+- [MACS3](https://github.com/macs3-project/MACS)
+- [samtools](http://www.htslib.org/)
+- [bedtools](https://bedtools.readthedocs.io/en/latest/)
+- [seqtk](https://github.com/lh3/seqtk)
+- [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)
+- [fgbio](http://fulcrumgenomics.github.io/fgbio/)
 
 
 ## Step 1: Download test sample

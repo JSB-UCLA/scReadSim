@@ -51,7 +51,7 @@ def cellbarcode_generator(length, size=10):
 # outdirectory = "/home/guanao/Projects/scIsoSim/results/20230204"
 # cell_label_file = outdirectory+"/"+"NGS_H2228_H1975_A549_H838_HCC827_Mixture_10X.UMIcountmatrix" + ".scDesign2Simulated.CellTypeLabel.txt"
 
-def scRNA_GenerateBAMCoord(bed_file, UMI_count_mat_file, synthetic_cell_label_file, read_bedfile_prename, INPUT_bamfile, outdirectory, OUTPUT_cells_barcode_file, jitter_size=5, read_len=90):
+def scRNA_GenerateBAMCoord(bed_file, UMI_count_mat_file, synthetic_cell_label_file, read_bedfile_prename, INPUT_bamfile, outdirectory, OUTPUT_cells_barcode_file, jitter_size=5, read_len=90, UMI_tag='UB:Z'):
 	"""Generate Synthetic reads in BED format. 
 
     Parameters
@@ -73,7 +73,9 @@ def scRNA_GenerateBAMCoord(bed_file, UMI_count_mat_file, synthetic_cell_label_fi
     jitter_size: `int` (default: '5')
         Specify the range of random shift to avoid replicate synthetic reads. Default value is 5 bp.
     read_len: `int` (default: '90')
-        Specify the length of synthetic reads. Default value is 50 bp.
+        Specify the length of synthetic reads. Default value is 90 bp.
+	UMI_tag: `str` (default: 'UB:Z')
+		If UMI_modeling is set to True, specify the UMI tag of input BAM file, default value 'UB:Z' is the UMI tag for 10x scRNA-seq.
     """
 	UMI_count_mat_df = pd.read_csv("%s" % (UMI_count_mat_file), header=None, delimiter="\t")
 	# Remove count matrix first column: feature names
@@ -104,8 +106,8 @@ def scRNA_GenerateBAMCoord(bed_file, UMI_count_mat_file, synthetic_cell_label_fi
 		UMI_read_dict_pergene = defaultdict(lambda: [])
 		reads = samfile.fetch(rec[0], int(rec[1]), int(rec[2]))
 		for read in reads:
-			if read.has_tag('UB:Z'):
-				UMI = read.get_tag('UB:Z')
+			if read.has_tag(UMI_tag):
+				UMI = read.get_tag(UMI_tag)
 				start = read.reference_start
 				if read.is_reverse==1:
 					strand = "-" 
@@ -136,7 +138,6 @@ def scRNA_GenerateBAMCoord(bed_file, UMI_count_mat_file, synthetic_cell_label_fi
 			synthetic_realUMI_assign_array[tmp_ind] = np.random.choice(nread_UMI_dic[i], size=len(tmp_ind), replace=True)
 		synthetic_realUMI_assign_vec = list(synthetic_realUMI_assign_array) # a vectir sane length to synthetic_nread_perUMI_percell_unlist, synthetic UMI's number 
 		# synthetic_realUMI_assign_vec = [np.random.choice(nread_UMI_dic[nread], size=1, replace=True) for nread in synthetic_nread_perUMI_percell_unlist]
-		# 
 		# Sample reads for each synthetic UMI
 		synthetic_read_list = [np.random.choice(UMI_read_dict_pergene[synthetic_realUMI_assign_vec[id]], size=synthetic_nread_perUMI_percell_unlist[id], replace=True) for id in range(len(synthetic_realUMI_assign_vec))]
 		synthetic_read_unlist = [xs for x in synthetic_read_list for xs in list(x)]
