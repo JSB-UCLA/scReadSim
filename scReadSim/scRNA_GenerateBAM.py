@@ -214,7 +214,7 @@ def scRNA_BED2FASTQ(bedtools_directory, seqtk_directory, referenceGenome_file, o
 	fasta_read2_cmd = "%s/bedtools getfasta -s -nameOnly -fi %s -bed %s/%s.read.bed -fo %s/%s.read2.strand.bed2fa.fa" % (bedtools_directory, referenceGenome_file, outdirectory, BED_filename_combined, outdirectory, synthetic_fastq_prename)
 	output, error = subprocess.Popen(fasta_read2_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
-			print(error.decode())
+		print(error.decode())
 	# remove (-) or (+)
 	org_fasta_read2_cmd = "sed '/^>/s/.\{3\}$//' %s/%s.read2.strand.bed2fa.fa > %s/%s.read2.bed2fa.fa" % (outdirectory, synthetic_fastq_prename, outdirectory, synthetic_fastq_prename)
 	output, error = subprocess.Popen(org_fasta_read2_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
