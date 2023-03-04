@@ -252,7 +252,7 @@ def scATAC_GenerateBAMCoord(bed_file, count_mat_file, synthetic_cell_label_file,
             # Generate Read Name
             nonempty_cell_ind = np.where(count_frag_vec != 0)[0]
             target_peak_concat = grey_area[0] + ":" + str(grey_area[1]) + "-" + str(grey_area[2])
-            read_name_list = [random_cellbarcode_list[nonempty_cell_ind[ind]] + "CellNo" + str(nonempty_cell_ind[ind] + 1) + ":" + str(target_peak_concat) + "#" + str(count).zfill(4) for ind in range(len(nonempty_cell_ind)) for count in range(count_frag_vec[nonempty_cell_ind[ind]])]
+            read_name_list = [random_cellbarcode_list[nonempty_cell_ind[ind]] + ":" + "CellNo" + str(nonempty_cell_ind[ind] + 1) + ":" + str(target_peak_concat) + "#" + str(count).zfill(4) for ind in range(len(nonempty_cell_ind)) for count in range(count_frag_vec[nonempty_cell_ind[ind]])]
             # Create dataframe for unspiltted sampled reads
             reads_cur = pd.DataFrame({
                 'chr': grey_area[0],
@@ -399,7 +399,7 @@ def scATAC_GenerateBAMCoord_OutputPeak(target_peak_assignment_file, count_mat_fi
             # Generate Read Name
             nonempty_cell_ind = np.where(count_frag_vec != 0)[0]
             target_peak_concat = rec[0] + ":" + str(rec[1]) + "-" + str(rec[2])
-            read_name_list = [random_cellbarcode_list[nonempty_cell_ind[ind]] + "CellNo" + str(nonempty_cell_ind[ind] + 1) + ":" + str(target_peak_concat) + "#" + str(count).zfill(4) for ind in range(len(nonempty_cell_ind)) for count in range(count_frag_vec[nonempty_cell_ind[ind]])]
+            read_name_list = [random_cellbarcode_list[nonempty_cell_ind[ind]] + ":" +  "CellNo" + str(nonempty_cell_ind[ind] + 1) + ":" + str(target_peak_concat) + "#" + str(count).zfill(4) for ind in range(len(nonempty_cell_ind)) for count in range(count_frag_vec[nonempty_cell_ind[ind]])]
             # Create dataframe for unspiltted sampled reads
             reads_cur = pd.DataFrame({
                 'chr': rec[0],
