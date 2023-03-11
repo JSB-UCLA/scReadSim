@@ -212,6 +212,7 @@ def scRNA_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_director
     print('[scReadSim] InterGene Bed File: %s/scReadSim.InterGene.bed' % (outdirectory))
     print('[scReadSim] Done!')
 
+
 def countmat_mainloop(rec_id):
     """Construct count vector for each scATAC-seq feature.
 
@@ -235,6 +236,7 @@ def countmat_mainloop(rec_id):
     count_array_withPeak = np.insert(count_array.astype(str), 0, rec_name)
     return count_array_withPeak
 
+
 def scATAC_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, count_mat_filename, n_cores=1):
     """Construct count matrix for scATAC-seq BAM file.
 
@@ -253,7 +255,7 @@ def scATAC_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdi
     n_cores: `int` (default: 1)
         Specify the number of cores for parallel computing when generating count matrix.
     """
-    cells = pd.read_csv(cells_barcode_file, sep="\t")
+    cells = pd.read_csv(cells_barcode_file, sep="\t", header=None)
     cells = cells.values.tolist()
     # Specify global vars
     global open_peak, cells_n, cells_barcode, INPUT_bamfile_glb
@@ -295,11 +297,12 @@ def scRNA_UMIcountmat_mainloop(rec_id):
     rec_name = '_'.join((rec[0], str(rec[1]), str(rec[2])))
     samfile = pysam.AlignmentFile(INPUT_bamfile_glb, "rb")
     reads = samfile.fetch(rec[0], int(rec[1]), int(rec[2]))  
-    UMI_iter = []
-    cell_idx_ls = []
+    # UMI_iter = []
+    # cell_idx_ls = []
     for read in reads:
         cell = read.qname.split(":")[0].upper()
         if cell in cells_barcode:
+            print(1)
             try:
                 if read.has_tag(UMI_tag_glb):
                     UMI = read.get_tag(UMI_tag_glb)
@@ -311,7 +314,15 @@ def scRNA_UMIcountmat_mainloop(rec_id):
     return UMI_count_array
 
 
-def scRNA_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, count_mat_filename, UMI_modeling=True, UMI_tag = "UB:Z", n_cores=1):
+# TEST
+# cells_barcode_file= INPUT_cells_barcode_file
+# bed_file=outdirectory + "/" + ref_peakfile
+# count_mat_filename=UMI_count_mat_filename
+# UMI_modeling=True
+# UMI_tag = "UB:Z"
+# UMI_countmat_array = scRNA_UMIcountmat_mainloop(rec_id)
+
+def scRNA_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, count_mat_filename, UMI_modeling=True, UMI_tag="UB:Z", n_cores=1):
     """Construct read (or UMI) count matrix for scRNA-seq BAM file.
 
     Parameters
@@ -333,7 +344,7 @@ def scRNA_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdir
     n_cores: `int` (default: 1)
         Specify the number of cores for parallel computing when generating count matrix.
     """
-    cells = pd.read_csv(cells_barcode_file, sep="\t")
+    cells = pd.read_csv(cells_barcode_file, sep="\t", header=None)
     cells = cells.values.tolist()
     # Specify global vars
     global open_peak, cells_n, cells_barcode, INPUT_bamfile_glb, UMI_tag_glb, cellsdic
@@ -398,7 +409,7 @@ def scATAC_bam2countmat_OutputPeak(cells_barcode_file, assignment_file, INPUT_ba
     count_mat_filename: `str`
         Specify the base name of output count matrix.
     """
-    cells = pd.read_csv(cells_barcode_file, sep="\t")
+    cells = pd.read_csv(cells_barcode_file, sep="\t", header=None)
     cells = cells.values.tolist()
     cells_barcode = [item[0] for item in cells]
     with open("%s/%s.txt" % (outdirectory, count_mat_filename), 'w') as outsfile:
