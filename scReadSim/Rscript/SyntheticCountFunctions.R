@@ -13,6 +13,9 @@ if (!requireNamespace("scDesign2", quietly = TRUE)) {
     install.packages("devtools")
 devtools::install_github("JSB-UCLA/scDesign2")
 }
+if (!requireNamespace("Seurat", quietly = TRUE)) {
+install.packages('Seurat')
+}
 
 # Load packages
 library(Matrix)

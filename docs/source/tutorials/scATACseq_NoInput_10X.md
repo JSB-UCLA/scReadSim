@@ -209,10 +209,10 @@ BED_filename_combined_pre = "%s.syntheticBAM.combined" % filename
 synthetic_cell_label_file = count_mat_peak_filename + ".scDesign2Simulated.CellTypeLabel.txt"
 
 # Create synthetic read bed file for peaks
-scATAC_GenerateBAM.scATAC_GenerateBAMCoord(bed_file=peak_bedfile, count_mat_file=outdirectory + "/" + synthetic_countmat_peak_file, synthetic_cell_label_file=synthetic_cell_label_file, read_bedfile_prename=peak_read_bedfile_prename, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file, jitter_size=5, read_len=50)
+scATAC_GenerateBAM.scATAC_GenerateBAMCoord(bed_file=peak_bedfile, count_mat_file=outdirectory + "/" + synthetic_countmat_peak_file, synthetic_cell_label_file=outdirectory + "/" + synthetic_cell_label_file, read_bedfile_prename=peak_read_bedfile_prename, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file, jitter_size=5, read_len=50)
 
 # Create synthetic read bed file for non-peaks
-scATAC_GenerateBAM.scATAC_GenerateBAMCoord(bed_file=nonpeak_bedfile, count_mat_file=outdirectory + "/" + synthetic_countmat_nonpeak_file, synthetic_cell_label_file=synthetic_cell_label_file, read_bedfile_prename=nonpeak_read_bedfile_prename, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file, jitter_size=5, read_len=50,  GrayAreaModeling=True))
+scATAC_GenerateBAM.scATAC_GenerateBAMCoord(bed_file=nonpeak_bedfile, count_mat_file=outdirectory + "/" + synthetic_countmat_nonpeak_file, synthetic_cell_label_file=outdirectory + "/" + synthetic_cell_label_file, read_bedfile_prename=nonpeak_read_bedfile_prename, INPUT_bamfile=INPUT_bamfile, outdirectory=outdirectory, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file, jitter_size=5, read_len=50,  GrayAreaModeling=True)
 
 # Combine bed files
 scATAC_GenerateBAM.scATAC_CombineBED(outdirectory=outdirectory, peak_read_bedfile_prename=peak_read_bedfile_prename, nonpeak_read_bedfile_prename=nonpeak_read_bedfile_prename, BED_filename_combined_pre=BED_filename_combined_pre)
