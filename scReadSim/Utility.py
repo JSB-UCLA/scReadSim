@@ -297,12 +297,9 @@ def scRNA_UMIcountmat_mainloop(rec_id):
     rec_name = '_'.join((rec[0], str(rec[1]), str(rec[2])))
     samfile = pysam.AlignmentFile(INPUT_bamfile_glb, "rb")
     reads = samfile.fetch(rec[0], int(rec[1]), int(rec[2]))  
-    # UMI_iter = []
-    # cell_idx_ls = []
     for read in reads:
         cell = read.qname.split(":")[0].upper()
         if cell in cells_barcode:
-            print(1)
             try:
                 if read.has_tag(UMI_tag_glb):
                     UMI = read.get_tag(UMI_tag_glb)
@@ -313,14 +310,6 @@ def scRNA_UMIcountmat_mainloop(rec_id):
     UMI_count_array.insert(0,rec_name)
     return UMI_count_array
 
-
-# TEST
-# cells_barcode_file= INPUT_cells_barcode_file
-# bed_file=outdirectory + "/" + ref_peakfile
-# count_mat_filename=UMI_count_mat_filename
-# UMI_modeling=True
-# UMI_tag = "UB:Z"
-# UMI_countmat_array = scRNA_UMIcountmat_mainloop(rec_id)
 
 def scRNA_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdirectory, count_mat_filename, UMI_modeling=True, UMI_tag="UB:Z", n_cores=1):
     """Construct read (or UMI) count matrix for scRNA-seq BAM file.
