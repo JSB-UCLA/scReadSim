@@ -210,7 +210,7 @@ referenceGenome_file = "%s/%s.fa" % (referenceGenome_dir, referenceGenome_name)
 synthetic_fastq_prename = BED_filename_combined_pre
 
 # Convert combined bed file into FASTQ files
-scRNA_GenerateBAM.scRNA_BED2FASTQ(bedtools_directory=bedtools_directory, seqtk_directory=seqtk_directory, referenceGenome_file=referenceGenome_file, outdirectory=outdirectory, BED_filename_combined=BED_filename_combined_pre, synthetic_fastq_prename=synthetic_fastq_prename, sort_FASTQ = True)
+scRNA_GenerateBAM.scRNA_BED2FASTQ(bedtools_directory=bedtools_directory, seqtk_directory=seqtk_directory, referenceGenome_file=referenceGenome_file, outdirectory=outdirectory, BED_filename_combined=BED_filename_combined_pre, synthetic_fastq_prename=synthetic_fastq_prename)
 ```
 
 ### Convert FASTQ files to BAM file (optional)
