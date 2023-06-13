@@ -1,15 +1,5 @@
 # scReadSim on 10x scATAC-seq with user-input chromatin regions
 
-Import modules.
-
-```{code-block} python3
-import sys, os
-import scReadSim.Utility as Utility
-import scReadSim.GenerateSyntheticCount as GenerateSyntheticCount
-import scReadSim.scATAC_GenerateBAM as scATAC_GenerateBAM
-import pkg_resources
-```
-
 ## Required softwares for scReadSim
 scReadSim requires users to pre-install the following softwares:
 - [MACS3](https://github.com/macs3-project/MACS)
@@ -20,17 +10,10 @@ scReadSim requires users to pre-install the following softwares:
 - [fgbio](http://fulcrumgenomics.github.io/fgbio/)
 
 
-## Step 1: Download test sample
-The example deploys scReadSim on the [10x single cell ATAC-seq](https://www.10xgenomics.com/resources/datasets/fresh-embryonic-e-18-mouse-brain-5-k-1-standard-2-0-0) dataset. The demo BAM file and its corresponding cell barcode file could be accessed through the following chunk. This BAM file uses mm10 as reference genome, the required chromosome size file is also embedded within the package.  
-
-```{code-block} python3
-INPUT_cells_barcode_file = pkg_resources.resource_filename("scReadSim", 'data/barcodes.tsv') 
-filename = "10X_ATAC_chr1_4194444_4399104"
-INPUT_bamfile = pkg_resources.resource_filename("scReadSim", 'data/%s.bam' % filename)
-INPUT_genome_size_file = pkg_resources.resource_filename("scReadSim", 'data/mm10.chrom.sizes')
-```
-
-Use the following chunk to download other required files for this example, inlcuding the reference genome FASTA file (indexed by bowtie2) and annotation gtf file. 
+## Download reference genome
+The example deploys scReadSim on the [10x single cell ATAC-seq](https://www.10xgenomics.com/resources/datasets/fresh-embryonic-e-18-mouse-brain-5-k-1-standard-2-0-0) dataset. For user convienience, we prepared the indexed reference genome files (by bowtie2), which can be downloaded using the following bash commands:
+- GENCODE reference genome FASTA file and index file(indexed by bowtie2): reference.genome.chr1.tar.gz
+- GENCODE genome annotation gtf file: gencode.vM10.annotation.gtf
 
 ```{code-block} console
 $ mkdir example/refgenome_dir 
@@ -64,6 +47,32 @@ $ rm -dr tmp
 $ samtools view 10X_ATAC_chr1_4194444_4399104.bam | head -n 1
 TGGACCGGTTCACCCA-1:A00836:472:HTNW5DMXX:1:1372:16260:18129      83      chr1    4194410 60      50M     =       4193976 -484    TGCCTTGCTACAGCAGCTCAGGAAATGTCTTTGTGCCCACAGTCTGTGGT   :FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF      NM:i:0  MD:Z:50 AS:i:50 XS:i:0  CR:Z:TCCGGGACAGCTAACA   CY:Z:FFFFFFFFFFFFFFF:   CB:Z:TGGACCGGTTCACCCA-1 BC:Z:AAACTCAT        QT:Z::FFFFFFF   RG:Z:e18_mouse_brain_fresh_5k:MissingLibrary:1:HTNW5DMXX:1
 ```
+
+
+## Step 1: Import packages and data files
+Import modules.
+
+```{code-block} python3
+import sys, os
+import scReadSim.Utility as Utility
+import scReadSim.GenerateSyntheticCount as GenerateSyntheticCount
+import scReadSim.scATAC_GenerateBAM as scATAC_GenerateBAM
+import pkg_resources
+```
+
+The following data files can be accessed by simply loading the code chunk below:
+-  BAM file: 10X_ATAC_chr1_4194444_4399104.bam
+-  cell barcode file: barcodes.tsv
+-  chromosome size file: mm10.chrom.sizes
+
+```{code-block} python3
+INPUT_cells_barcode_file = pkg_resources.resource_filename("scReadSim", 'data/barcodes.tsv') 
+filename = "10X_ATAC_chr1_4194444_4399104"
+INPUT_bamfile = pkg_resources.resource_filename("scReadSim", 'data/%s.bam' % filename)
+INPUT_genome_size_file = pkg_resources.resource_filename("scReadSim", 'data/mm10.chrom.sizes')
+```
+
+
 
 ## Step 2: Feature space construction
 scReadSim allows users to specify open chromatin regions (referred to as "output peaks") and then generate synthetic scATAC-seq reads accordingly. When users take this option, scReadSim requires users to input the BAM file, trustworthy peaks and non-peaks (i.e., input peaks and input non-peaks. Alternatively, if users do not specify input peaks and non-peaks, scReadSim by default uses [MACS3](https://github.com/macs3-project/MACS) with stringent criteria to call trustworthy peaks (q-value `0.01`) and non-peaks (q-value `0.1`) from the input BAM file) of the BAM file, and a list of output peaks. Given the specified output peaks, scReadSim takes the inter-output-peak as the output non-peaks. In summary, scReadSim defines two sets of peaks and non-peaks: the "input peak and input non-peak" set based on the user-specified (or scReadSim-generated) input peaks and input non-peak and the "output peak and output non-peak" set based on the user-specified output peaks. The following chunks show how to prepare the features for scReadSim with user-spepcified open chromatin regions when anlayzing scATAC-seq data.
@@ -218,7 +227,7 @@ Based on the synthetic count matrix, scReadSim generates synthetic reads by rand
 - `random_noise_mode`: (Optional, default: 'False') Specify whether to use a uniform distribution of reads.
 - `GrayAreaModeling`: (Optional, default: 'False') Specify whether to generate synthetic reads for Gray Areas when generaing reads for non-peaks. Do not specify 'True' when generating reads for peaks.
 
-This function will output two bed files *`read_bedfile_prename:`.read1.bed* and *`read_bedfile_prename:`.read2.bed* storing the coordinates information of synthetic reads and its cell barcode file `OUTPUT_cells_barcode_file` in directory `outdirectory`.
+This function will output two bed files *`read_bedfile_prename`.read1.bed* and *`read_bedfile_prename`.read2.bed* storing the coordinates information of synthetic reads and its cell barcode file `OUTPUT_cells_barcode_file` in directory `outdirectory`.
 
 After generation of synthetic reads for both peaks and non-peaks, combine the their bed files using function `scATAC_GenerateBAM.scATAC_CombineBED`, which takes following input arguments:
 - `outdirectory`: Directory of `peak_read_bedfile_prename`.txt and `nonpeak_read_bedfile_prename`.txt.

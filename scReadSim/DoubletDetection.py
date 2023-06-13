@@ -8,7 +8,7 @@ def detectDoublet(count_mat_filename, directory, outdirectory, omic_choice):
 	Parameters
 	----------
 	count_mat_filename: `str`
-		Base name of the count matrix output by function scRNA_bam2countmat().
+		Base name of the count matrix output by function `Utility.scATAC_bam2countmat_paral` or `Utility.scRNA_bam2countmat_paral`.
 	directory: `str`
 		Path to the count matrix.
 	outdirectory: `str`
@@ -17,8 +17,6 @@ def detectDoublet(count_mat_filename, directory, outdirectory, omic_choice):
 		Specify the omic choice for doublet detection procedure: "ATAC" or "RNA".	
 	"""
 	r = robjects.r
-	# TODO
-    # Need to edit the Rscript path
 	rscript_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Rscript/DoubletDetection_Rscript.R')
 	print(rscript_dir)
 	# rscript_dir = pkg_resources.resource_stream(__name__, 'Rscript/scATAC_SyntheticCountFunctions.R').read().decode()

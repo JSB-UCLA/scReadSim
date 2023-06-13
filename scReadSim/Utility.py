@@ -57,7 +57,7 @@ def ExtractBAMCoverage(INPUT_bamfile, samtools_directory, outdirectory):
     return chromosomes_coverd
 
 
-def scATAC_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directory, outdirectory, genome_size_file, macs3_directory, INPUT_peakfile=None, INPUT_nonpeakfile=None, OUTPUT_peakfile=None):
+def scATAC_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directory, outdirectory, genome_size_file, macs3_directory=None, INPUT_peakfile=None, INPUT_nonpeakfile=None, OUTPUT_peakfile=None):
     """Create the foreground and background feature set for the input scATAC-seq bam file.
 
     Parameters
@@ -72,8 +72,8 @@ def scATAC_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directo
         Output directory.
     genome_size_file: `str`
         Directory of Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicates the size.  
-    macs3_directory: `str`
-        Path to software MACS3.
+    macs3_directory: `str` (default: None)
+        Path to software MACS3. Must be specified if `INPUT_peakfile` and `INPUT_nonpeakfile` are None.
     INPUT_peakfile: `str` (default: None)
         Directory of user-specified input peak file.
     INPUT_nonpeakfile: `str` (default: None)
@@ -93,8 +93,8 @@ def scATAC_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directo
         peakfile = outdirectory + "/" + "scReadSim.MACS3.peak.bed"
         nonpeakfile = outdirectory + "/" + "scReadSim.MACS3.nonpeak.bed"
         # Call peaks
-        print("[scReadSim] No Input Peaks and Non-Peaks.")
-        print("[scReadSim] Generate Peaks and Non-Peaks using MACS3 Instead.")
+        print("[scReadSim] No Input Peaks and Non-Peaks detected.")
+        print("[scReadSim] Identify Peaks and Non-Peaks using MACS3 Instead.")
         print("[scReadSim] Generating Peaks using MACS3...")
         CallPeak(macs3_directory, INPUT_bamfile, outdirectory, "scReadSim_MACS3_Stringent", qval=0.01)
         cmd = "%s/bedtools sort -i %s/scReadSim_MACS3_Stringent_peaks.narrowPeak | %s/bedtools merge  > %s/scReadSim.MACS3.peak.bed" % (bedtools_directory, outdirectory, bedtools_directory, outdirectory)
