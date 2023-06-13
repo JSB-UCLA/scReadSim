@@ -1,20 +1,18 @@
 # Check if packages are installed
 if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
+  install.packages("BiocManager")
+if (!requireNamespace("devtools", quietly = TRUE)) 
+  install.packages("devtools")
 if (!require("Rsubread", quietly = TRUE))
-    BiocManager::install("Rsubread")
-if (!requireNamespace("ROGUE", quietly = TRUE)) {
-  if (!requireNamespace("devtools", quietly = TRUE)) 
-    install.packages("devtools")
-devtools::install_github("PaulingLiu/ROGUE")
-}
+  BiocManager::install("Rsubread")
+# if (!requireNamespace("ROGUE", quietly = TRUE)) {
+# devtools::install_github("PaulingLiu/ROGUE")
+# }
 if (!requireNamespace("scDesign2", quietly = TRUE)) {
-  if (!requireNamespace("devtools", quietly = TRUE)) 
-    install.packages("devtools")
-devtools::install_github("JSB-UCLA/scDesign2")
+  devtools::install_github("JSB-UCLA/scDesign2")
 }
 if (!requireNamespace("Seurat", quietly = TRUE)) {
-install.packages('Seurat')
+  install.packages('Seurat')
 }
 
 # Load packages
@@ -24,7 +22,7 @@ library(pscl)
 library(parallel)
 library(MASS)
 library(tidyverse)
-library(ROGUE)
+# library(ROGUE)
 library(Seurat)
 
 ### Functions
@@ -263,18 +261,18 @@ get_submat <- function(data_mat, cell_type_sel){
     data_mat[, colnames(data_mat) %in% cell_type_sel]
   }
 }
-# function of using ROGUE scores to check cluster qualities -------------------------------
-check_cluster_quality <- function(data_mat, cell_type_sel,
-                                  platform = c("full-length", "UMI")){
-  platform <- match.arg(platform)
+# # function of using ROGUE scores to check cluster qualities -------------------------------
+# check_cluster_quality <- function(data_mat, cell_type_sel,
+#                                   platform = c("full-length", "UMI")){
+#   platform <- match.arg(platform)
   
-  data_mat_sel <- get_submat(data_mat, cell_type_sel)
+#   data_mat_sel <- get_submat(data_mat, cell_type_sel)
   
-  expr <- data_mat_sel
-  rogue.res <- rogue(expr, labels = colnames(expr),
-                     samples = rep(1, ncol(expr)), platform = platform)
-  unlist(rogue.res)
-}
+#   expr <- data_mat_sel
+#   rogue.res <- rogue(expr, labels = colnames(expr),
+#                      samples = rep(1, ncol(expr)), platform = platform)
+#   unlist(rogue.res)
+# }
 
 # function of using Seurat to cluster -----------------------------------------------------
 get_cluster_seurat <- function(data_mat, n_cluster,
@@ -340,129 +338,191 @@ get_cluster_seurat <- function(data_mat, n_cluster,
 
 ######################## Main Function for scATAC-seq ########################
 ## Test
-# samplename <- "10X_ATAC_chr1_4194444_4399104.assigned.countmatrix"
-# directory <- "/home/gayan/Projects/scATAC_Simulator/package_development/package_results/20230105_10X_scATACseq_INPUT"
+# Test
+# samplename <- "10X_ATAC_chr1_4194444_4399104.peak.countmatrix"
+# directory <- "/home/gayan/Projects/scATAC_Simulator/results/Revision_test_scATACseq10x_20230610"
 # out_directory <- directory
+# celllabel_file <- sprintf("%s/test.CellTypeLabel.txt", out_directory) 
+# # celllabel_file <- "/home/guanao/Projects/scIsoSim/results/20230204/NGS_H2228_H1975_A549_H838_HCC827_Mixture_10X.UMIcountmatrix.scDesign2Simulated.CellTypeLabel.txt"
+# doub_classification_label_file <- sprintf("%s/doublet_classification.Rdata", out_directory)
 # scATAC_runSyntheticCount(samplename, directory, out_directory)
-## Read in count matrix
-scATAC_runSyntheticCount <- function(samplename, directory, out_directory, n_cell_new="default", total_count_new="default", celllabel_file="default", n_cluster="default"){
-  cat(sprintf("Reading count matrix %s.txt...\n", samplename))
-  count_matrix <- read.table(sprintf("%s/%s.txt", directory, samplename), sep="\t",header = FALSE)
-  matrix_num <- data.matrix(count_matrix[,2:ncol(count_matrix)])
-  count_pergene_vec <- rowSums(matrix_num)
-  # write.table(count_pergene_vec, sprintf("%s/%s.real.nPairsRegionmargional.txt",out_directory, samplename), row.names = FALSE,col.names = FALSE)
-  matrix_num_nonzero <- matrix_num[count_pergene_vec>0,]
-  ## Clustering
-  if (celllabel_file == "default"){
-    cat("No cell label file detected. Louvain clustering before simulation...\n")
-    set.seed(2022)
-    clustering_result <- get_cluster_seurat(matrix_num_nonzero, n_cluster=n_cluster)
-    colnames(matrix_num) <- clustering_result$clustering_result
-    write.table(clustering_result$clustering_result, sprintf("%s/%s.LouvainClusterResults.txt", out_directory, samplename), sep="\n", row.names = FALSE,col.names = FALSE)
-  } else {
-    cat(sprintf("Loading cell label file %s...\n", celllabel_file))
-    clustering_result <- unlist(read.table(celllabel_file, header=FALSE))
-    if (length(clustering_result) == ncol(matrix_num)){
-    colnames(matrix_num) <- clustering_result
-    } else {
-      stop("Number of cell labels differs from the cell number contained in the count matrix!\n ")
-    }
-  }
-  ## Use scDesign2 for training countmatrix
-  cat("Model fitting...\n")
-  n_cell_old <- ncol(matrix_num)
-  total_count_old <- sum(matrix_num)
-  if (n_cell_new == "default"){
-    n_cell_new <- n_cell_old
-  }
-  if (total_count_new == "default"){
-    total_count_new <- total_count_old
-  }
-  cell_type_sel <- unique(colnames(matrix_num))
-  cell_type_prop <- table(colnames(matrix_num))[cell_type_sel]
-  copula_result <- fit_model_scDesign2_new(matrix_num, cell_type_sel, sim_method = 'copula',
-                                        ncores = length(cell_type_sel))
-  cat("Generating synthetic count matrix...\n")
-  cat(sprintf("Amount of synthetic cell: %s\n", n_cell_new))
-  cat(sprintf("Amount of (expected) sequencing depth: %s\n", total_count_new))
-  simu_matrix <- scDesign2::simulate_count_scDesign2(copula_result, 
-                            total_count_old = total_count_old,
-                            n_cell_old = n_cell_old,
-                            total_count_new = total_count_new,
-                            n_cell_new = n_cell_new,
-                            cell_type_prop = cell_type_prop,
-                            reseq_method = 'mean_scale', cell_sample = TRUE)
 
-  write.table(colnames(simu_matrix), sprintf("%s/%s.scDesign2Simulated.CellTypeLabel.txt", out_directory, samplename), row.names = FALSE,col.names = FALSE)
-  rownames(simu_matrix) <- count_matrix[,1]
-  cat(sprintf("Writing out synthetic count matrix %s to %s...\n", out_directory, out_directory))
-  write.table(simu_matrix, sprintf("%s/%s.scDesign2Simulated.txt", out_directory, samplename), sep="\t", row.names = TRUE,col.names = FALSE)
-  cat("Done.\n")
+## Read in count matrix
+scATAC_runSyntheticCount <- function(samplename, directory, out_directory, doub_classification_label_file="default", n_cell_new="default", total_count_new="default", celllabel_file="default", n_cluster="default"){
+    set.seed(2022)
+    cat(sprintf("[scReadSim] Reading count matrix %s.txt...\n", samplename))
+    count_matrix <- read.table(sprintf("%s/%s.txt", directory, samplename), sep="\t",header = FALSE)
+    matrix_num <- data.matrix(count_matrix[,2:ncol(count_matrix)])
+    
+    ## Doublet filtering
+    if (doub_classification_label_file!="default"){
+        cat("[scReadSim] Doublets removing...\n")
+        load(doub_classification_label_file)
+        singlet_ind <- which(doub_classification_label == "singlet")
+        matrix_num <- matrix_num[, singlet_ind]
+        cat(sprintf("[scReadSim] Removed %s doublets\n", length(doub_classification_label)-length(singlet_ind)))
+    } 
+    
+    count_pergene_vec <- rowSums(matrix_num)
+    matrix_num_nonzero <- matrix_num[count_pergene_vec>0,]
+
+    ## Clustering
+    if (celllabel_file == "default"){
+      cat("[scReadSim] No cell label file detected. Louvain clustering before simulation...\n")
+      clustering_result <- get_cluster_seurat(matrix_num_nonzero, n_cluster=n_cluster)
+      colnames(matrix_num) <- clustering_result$clustering_result
+      if (doub_classification_label_file!="default"){
+          # Fill in doublet removal cells' label with Doublet
+          cat("[scReadSim] Writing out Louvain clustering result...\n")
+          cat("[scReadSim] Created:\n")
+          cat(sprintf("[scReadSim] Real count matrix's Louvain clustering file (doublets assigned as Doublet):  %s/%s.LouvainClusterResults.txt\n", out_directory, samplename))
+          full_cell_label <- rep("Doublet", ncol(count_matrix)-1)
+          full_cell_label[singlet_ind] <- clustering_result$clustering_result
+        } else {
+          full_cell_label <- clustering_result$clustering_result
+          cat("[scReadSim] Writing out Louvain clustering result...\n")
+          cat("[scReadSim] Created:\n")
+          cat(sprintf("[scReadSim] Real count matrix's Louvain clustering file: %s/%s.LouvainClusterResults.txt\n", out_directory, samplename))
+        }
+      write.table(full_cell_label, sprintf("%s/%s.LouvainClusterResults.txt", out_directory, samplename), sep="\n", row.names = FALSE,col.names = FALSE)
+    } else {
+      cat(sprintf("[scReadSim] Loading cell label file %s...\n", celllabel_file))
+      clustering_result <- unlist(read.table(celllabel_file, header=FALSE))
+      # Doublet removal
+      if (doub_classification_label_file!="default"){
+          cat(sprintf("[scReadSim] Removing doublets corresponding cell labels...\n"))
+          clustering_result <- clustering_result[singlet_ind]
+      }
+      if (length(clustering_result) == ncol(matrix_num)){
+          colnames(matrix_num) <- clustering_result
+      } else {
+          stop("[scReadSim] Number of cell labels differs from the cell number contained in the count matrix!\n ")
+      }
+    }
+    ## Use scDesign2 for training countmatrix
+    cat("[scReadSim] Model fitting...\n")
+    n_cell_old <- ncol(matrix_num)
+    total_count_old <- sum(matrix_num)
+    if (n_cell_new == "default"){
+      n_cell_new <- n_cell_old
+    }
+    if (total_count_new == "default"){
+      total_count_new <- total_count_old
+    }
+    cell_type_sel <- unique(colnames(matrix_num))
+    cell_type_prop <- table(colnames(matrix_num))[cell_type_sel]
+    copula_result <- fit_model_scDesign2_new(matrix_num, cell_type_sel, sim_method = 'copula',
+                                          ncores = length(cell_type_sel))
+    cat("[scReadSim] Generating synthetic count matrix...\n")
+    cat(sprintf("[scReadSim] Amount of synthetic cell: %s\n", n_cell_new))
+    cat(sprintf("[scReadSim] Amount of (expected) sequencing depth: %s\n", total_count_new))
+    simu_matrix <- scDesign2::simulate_count_scDesign2(copula_result, 
+                              total_count_old = total_count_old,
+                              n_cell_old = n_cell_old,
+                              total_count_new = total_count_new,
+                              n_cell_new = n_cell_new,
+                              cell_type_prop = cell_type_prop,
+                              reseq_method = 'mean_scale', cell_sample = TRUE)
+    rownames(simu_matrix) <- count_matrix[,1]
+    write.table(colnames(simu_matrix), sprintf("%s/%s.scDesign2Simulated.CellTypeLabel.txt", out_directory, samplename), row.names = FALSE,col.names = FALSE)
+    cat(sprintf("[scReadSim] Writing out synthetic count matrix %s to %s...\n", out_directory, out_directory))
+    write.table(simu_matrix, sprintf("%s/%s.scDesign2Simulated.txt", out_directory, samplename), sep="\t", row.names = TRUE,col.names = FALSE)
+    cat("[scReadSim] Done.\n")
 }
 
 
 
 
 # Test
-# samplename <- "NGS_H2228_H1975_A549_H838_HCC827_Mixture_10X.COMPLE.UMIcountmatrix"
-# directory <- "/home/guanao/Projects/scIsoSim/results/20230204"
+# samplename <- "10X_RNA_chr1_3073253_4526737.gene.countmatrix"
+# directory <- "/home/gayan/Projects/scATAC_Simulator/results/Revision_test_scRNAseq10x_20230610"
 # out_directory <- directory
-# celllabel_file <- "/home/guanao/Projects/scIsoSim/results/20230204/NGS_H2228_H1975_A549_H838_HCC827_Mixture_10X.UMIcountmatrix.scDesign2Simulated.CellTypeLabel.txt"
-# scRNA_runSyntheticCount(samplename, directory, out_directory, n_cluster=5, celllabel_file=celllabel_file)
+# celllabel_file <- sprintf("%s/test.CellTypeLabel.txt", out_directory) 
+# # celllabel_file <- "/home/guanao/Projects/scIsoSim/results/20230204/NGS_H2228_H1975_A549_H838_HCC827_Mixture_10X.UMIcountmatrix.scDesign2Simulated.CellTypeLabel.txt"
+# doub_classification_label_file <- sprintf("%s/doublet_classification.Rdata", out_directory)
+# scRNA_runSyntheticCount(samplename, directory, out_directory, doub_classification_label_file, celllabel_file=celllabel_file)
 
 ######################## Main Function for scRNA-seq ########################
-scRNA_runSyntheticCount <- function(samplename, directory, out_directory, n_cell_new="default", total_count_new="default", celllabel_file="default", n_cluster="default"){
-  cat(sprintf("Reading count matrix %s.txt...\n", samplename))
-  count_matrix <- read.table(sprintf("%s/%s.txt", directory, samplename), sep="\t",header = FALSE)
-  matrix_num <- data.matrix(count_matrix[,2:ncol(count_matrix)])
-  count_pergene_vec <- rowSums(matrix_num)
-  matrix_num_nonzero <- matrix_num[count_pergene_vec>0,]
-
-  ## Clustering
-  if (celllabel_file == "default"){
-    cat("No cell label file detected. Louvain clustering before simulation...\n")
+scRNA_runSyntheticCount <- function(samplename, directory, out_directory, doub_classification_label_file="default", n_cell_new="default", total_count_new="default", celllabel_file="default", n_cluster="default"){
     set.seed(2022)
-    clustering_result <- get_cluster_seurat(matrix_num_nonzero, n_cluster=n_cluster)
-    colnames(matrix_num) <- clustering_result$clustering_result
-    write.table(clustering_result$clustering_result, sprintf("%s/%s.LouvainClusterResults.txt", out_directory, samplename), sep="\n", row.names = FALSE,col.names = FALSE)
-  } else {
-    cat(sprintf("Loading cell label file %s...\n", celllabel_file))
-    clustering_result <- unlist(read.table(celllabel_file, header=FALSE))
-    if (length(clustering_result) == ncol(matrix_num)){
-    colnames(matrix_num) <- clustering_result
+    cat(sprintf("[scReadSim] Reading count matrix %s.txt...\n", samplename))
+    count_matrix <- read.table(sprintf("%s/%s.txt", directory, samplename), sep="\t",header = FALSE)
+    matrix_num <- data.matrix(count_matrix[,2:ncol(count_matrix)])
+
+    ## Doublet filtering
+    if (doub_classification_label_file!="default"){
+        cat("[scReadSim] Doublets removing...\n")
+        load(doub_classification_label_file)
+        singlet_ind <- which(doub_classification_label == "singlet")
+        matrix_num <- matrix_num[, singlet_ind]
+        cat(sprintf("[scReadSim] Removed %s doublets\n", length(doub_classification_label)-length(singlet_ind)))
+    } 
+
+    count_pergene_vec <- rowSums(matrix_num)
+    matrix_num_nonzero <- matrix_num[count_pergene_vec>0,]
+
+    ## Clustering
+    if (celllabel_file == "default"){
+        cat("[scReadSim] No cell label file detected. Louvain clustering before simulation...\n")
+        clustering_result <- get_cluster_seurat(matrix_num_nonzero, n_cluster=n_cluster)
+        colnames(matrix_num) <- clustering_result$clustering_result
+        if (doub_classification_label_file!="default"){
+          # Fill in doublet removal cells' label with Doublet
+          cat("[scReadSim] Writing out Louvain clustering result...\n")
+          cat("[scReadSim] Created:\n")
+          cat(sprintf("[scReadSim] Real count matrix's Louvain clustering file (doublets assigned as Doublet):  %s/%s.LouvainClusterResults.txt\n", out_directory, samplename))
+          full_cell_label <- rep("Doublet", ncol(count_matrix)-1)
+          full_cell_label[singlet_ind] <- clustering_result$clustering_result
+        } else {
+          cat("[scReadSim] Writing out Louvain clustering result...\n")
+          cat("[scReadSim] Created:\n")
+          cat(sprintf("[scReadSim] Real count matrix's Louvain clustering file: %s/%s.LouvainClusterResults.txt\n", out_directory, samplename))
+          full_cell_label <- clustering_result$clustering_result
+        }
+        write.table(full_cell_label, sprintf("%s/%s.LouvainClusterResults.txt", out_directory, samplename), sep="\n", row.names = FALSE,col.names = FALSE)
     } else {
-      stop("Number of cell labels differs from the cell number contained in the count matrix! \n")
+        cat(sprintf("[scReadSim] Loading cell label file %s...\n", celllabel_file))
+        clustering_result <- unlist(read.table(celllabel_file, header=FALSE))
+        # Doublet removal
+        if (doub_classification_label_file!="default"){
+            cat(sprintf("[scReadSim] Removing doublets corresponding cell labels...\n"))
+            clustering_result <- clustering_result[singlet_ind]
+        }
+        if (length(clustering_result) == ncol(matrix_num)){
+            colnames(matrix_num) <- clustering_result
+        } else {
+        stop("[scReadSim] Number of cell labels differs from the cell number contained in the count matrix! \n")
+        }
     }
-  }
-  ## Use scDesign2 for training countmatrix
-  cat("Model fitting...\n")
-  n_cell_old <- ncol(matrix_num)
-  total_count_old <- sum(matrix_num)
-  if (n_cell_new == "default"){
-    n_cell_new <- n_cell_old
-  }
-  if (total_count_new == "default"){
-    total_count_new <- total_count_old
-  }
-  cell_type_sel <- unique(colnames(matrix_num))
-  cell_type_prop <- table(colnames(matrix_num))[cell_type_sel]
-  copula_result <- fit_model_scDesign2_new(matrix_num, cell_type_sel, sim_method = 'copula',
-                                        ncores = length(cell_type_sel))
-  cat("Generating synthetic count matrix...\n")
-  cat(sprintf("Amount of synthetic cell: %s\n", n_cell_new))
-  cat(sprintf("Amount of (expected) sequencing depth: %s\n", total_count_new))
-  # simu_matrix <- scDesign2::simulate_count_scDesign2(copula_result, n_cell_new, sim_method = 'copula',
-  #                                                cell_type_prop = cell_type_prop)
-  simu_matrix <- scDesign2::simulate_count_scDesign2(copula_result, 
-                            total_count_old = total_count_old,
-                            n_cell_old = n_cell_old,
-                            total_count_new = total_count_new,
-                            n_cell_new = n_cell_new,
-                            cell_type_prop = cell_type_prop,
-                            reseq_method = 'mean_scale', cell_sample = TRUE)
-  rownames(simu_matrix) <- count_matrix[,1]
-  write.table(colnames(simu_matrix), sprintf("%s/%s.scDesign2Simulated.CellTypeLabel.txt", out_directory, samplename), row.names = FALSE,col.names = FALSE)
-  cat(sprintf("Writing out synthetic count matrix %s to %s...\n", out_directory, out_directory))
-  write.table(simu_matrix, sprintf("%s/%s.scDesign2Simulated.txt", out_directory, samplename), sep="\t", row.names = TRUE,col.names = FALSE)
-  cat("Done.\n")
+    ## Use scDesign2 for training countmatrix
+    cat("[scReadSim] Model fitting...\n")
+    n_cell_old <- ncol(matrix_num)
+    total_count_old <- sum(matrix_num)
+    if (n_cell_new == "default"){
+        n_cell_new <- n_cell_old
+    }
+    if (total_count_new == "default"){
+        total_count_new <- total_count_old
+    }
+    cell_type_sel <- unique(colnames(matrix_num))
+    cell_type_prop <- table(colnames(matrix_num))[cell_type_sel]
+    copula_result <- fit_model_scDesign2_new(matrix_num, cell_type_sel, sim_method = 'copula',
+                                            ncores = length(cell_type_sel))
+    cat("[scReadSim] Generating synthetic count matrix...\n")
+    cat(sprintf("[scReadSim] Amount of synthetic cell: %s\n", n_cell_new))
+    cat(sprintf("[scReadSim] Amount of (expected) sequencing depth: %s\n", total_count_new))
+    # simu_matrix <- scDesign2::simulate_count_scDesign2(copula_result, n_cell_new, sim_method = 'copula',
+    #                                                cell_type_prop = cell_type_prop)
+    simu_matrix <- scDesign2::simulate_count_scDesign2(copula_result, 
+                                total_count_old = total_count_old,
+                                n_cell_old = n_cell_old,
+                                total_count_new = total_count_new,
+                                n_cell_new = n_cell_new,
+                                cell_type_prop = cell_type_prop,
+                                reseq_method = 'mean_scale', cell_sample = TRUE)
+    rownames(simu_matrix) <- count_matrix[,1]
+    write.table(colnames(simu_matrix), sprintf("%s/%s.scDesign2Simulated.CellTypeLabel.txt", out_directory, samplename), row.names = FALSE,col.names = FALSE)
+    cat(sprintf("[scReadSim] Writing out synthetic count matrix to %s...\n", out_directory))
+    write.table(simu_matrix, sprintf("%s/%s.scDesign2Simulated.txt", out_directory, samplename), sep="\t", row.names = TRUE,col.names = FALSE)
+    cat("[scReadSim] Done.\n")
 }
