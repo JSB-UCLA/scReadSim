@@ -83,10 +83,9 @@ INPUT_genome_size_file = pkg_resources.resource_filename("scReadSim", 'data/mm10
 ## Step 2: Generate features
 To pre-process real scATAC-seq data for training, scReadSim requires users’ trustworthy peaks and non-peaks for the input BAM file. Alternatively, if users do not input peaks and non-peaks, scReadSim by default uses [MACS3](https://github.com/macs3-project/MACS) with stringent criteria to call trustworthy peaks (q-value `0.01`) and non-peaks (q-value `0.1`) from the input BAM file. Then scReadSim defines gray areas as the genomic regions complementary to the peaks and non-peaks. Three bed files recording peaks, non-peaks and gray areas will be prepared by scReadSim for following analysis.
 
-**Note**: users may need to edit the code by using their own path.
 
 ### Specify output directory
-Specify the absolute path of output directory. Create output directory if it does not exist.
+**Note**: users may need to edit the code by using their own path.
 
 
 ```{code-block} python3
@@ -95,9 +94,9 @@ os.mkdir(outdirectory)
 ```
 
 ### Specify pre-installed software paths
+**Note**: users may need to edit the code by using their own path.
 
 ```{code-block} python3
-# may use user's own path
 samtools_directory="/home/users/Tools/samtools/bin" 
 macs3_directory="/home/users/Tools/MACS3/bin"
 bedtools_directory="/home/users/Tools/bedtools/bedtools2/bin"

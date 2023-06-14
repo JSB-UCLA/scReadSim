@@ -18,7 +18,7 @@ Depending on users' choices, the following softwares are optional:
 Input BAM file for scReadSim needs pre-processing to add the cell barcode in front of the read name. For example, in 10x sequencing data, cell barcode `AACTTAGTCACAAGCT-1` is stored in the field `CB:Z:AACTTAGTCACAAGCT-1`. 
 
 ```{code-block} console
-$ samtools view 10X_RNA_chr1_3073253_4526737_unprocess.bam | head -n 1
+$ samtools view unprocess.bam | head -n 1
 A00984:207:HGWCKDSXY:2:2306:14253:36886      16      chr1    3013015 255     17M186701N73M   *       0       0       TTTTTTTTTTTTTTGTTTTAAAATGACCACAGTGTACTTTATTTAATGATTTTTGTACTTTGTGTTGCAATAAAATAAAAAAAAAATCTA   ::F::FFFF,F:,FFF:FFFFFFFFFFFFF:F:FFFFFFFFFFFFFFFF:::FFF:FFFF:F:FFFFFFFFFFFFFFFFFFFFFFFFFFF      NH:i:1  HI:i:1  AS:i:78      nM:i:0  RG:Z:e18_mouse_brain_fresh_5k:0:1:HGWCKDSXY:2   RE:A:I  xf:i:0  CR:Z:AACTTAGTCACAAGCT   CY:Z:FFFFFFFFFFFFFFFF   CB:Z:AACTTAGTCACAAGCT-1 UR:Z:TAAGGTTCGACA   UY:Z:FFFFFFFFFFFF        UB:Z:TAAGGTTCGACA
 ```
 
@@ -27,15 +27,15 @@ The following code chunk adds the cell barcodes in front of the read names.
 ```{code-block} console
 $ # extract the header file
 $ mkdir tmp
-$ samtools view 10X_RNA_chr1_3073253_4526737_unprocess.bam -H > tmp/10X_RNA_chr1_3073253_4526737.header.sam
+$ samtools view unprocess.bam -H > tmp/unprocess.header.sam
 
 $ # create a bam file with the barcode embedded into the read name
-$ time(cat <( cat tmp/10X_RNA_chr1_3073253_4526737.header.sam ) \
- <( samtools view 10X_RNA_chr1_3073253_4526737_unprocess.bam | awk '{for (i=12; i<=NF; ++i) { if ($i ~ "^CB:Z:"){ td[substr($i,1,2)] = substr($i,6,length($i)-5); } }; printf "%s:%s\n", td["CB"], $0 }' ) \
- | samtools view -bS - > 10X_RNA_chr1_3073253_4526737.bam) 
+$ time(cat <( cat tmp/unprocess.header.sam ) \
+ <( samtools view unprocess.bam | awk '{for (i=12; i<=NF; ++i) { if ($i ~ "^CB:Z:"){ td[substr($i,1,2)] = substr($i,6,length($i)-5); } }; printf "%s:%s\n", td["CB"], $0 }' ) \
+ | samtools view -bS - > processed.bam) 
 $ rm -d tmp
 
-$ samtools view 10X_RNA_chr1_3073253_4526737.bam | head -n 1
+$ samtools view processed.bam | head -n 1
 AACTTAGTCACAAGCT-1:A00984:207:HGWCKDSXY:2:2306:14253:36886      16      chr1    3013015 255     17M186701N73M   *       0       0       TTTTTTTTTTTTTTGTTTTAAAATGACCACAGTGTACTTTATTTAATGATTTTTGTACTTTGTGTTGCAATAAAATAAAAAAAAAATCTA   ::F::FFFF,F:,FFF:FFFFFFFFFFFFF:F:FFFFFFFFFFFFFFFF:::FFF:FFFF:F:FFFFFFFFFFFFFFFFFFFFFFFFFFF      NH:i:1  HI:i:1  AS:i:78      nM:i:0  RG:Z:e18_mouse_brain_fresh_5k:0:1:HGWCKDSXY:2   RE:A:I  xf:i:0  CR:Z:AACTTAGTCACAAGCT   CY:Z:FFFFFFFFFFFFFFFF   CB:Z:AACTTAGTCACAAGCT-1 UR:Z:TAAGGTTCGACA   UY:Z:FFFFFFFFFFFF        UB:Z:TAAGGTTCGACA
 ```
 
@@ -85,9 +85,9 @@ INPUT_genome_size_file = pkg_resources.resource_filename("scReadSim", 'data/mm10
 ## Step 2: Generate features
 To pre-process real scRNA-seq data for training, scReadSim requires a BAM file (containing scRNA-seq reads in cells) and a gene annotation file (in GTF format). Based on the gene coordinates in the annotation file, scReadSim segregates the reference genome into two sets of features: genes and inter-genes.
 
-**Note**: users may need to edit the code by using their own path.
 
 ### Specify output directory
+**Note**: users may need to edit the code by using their own path.
 
 ```{code-block} python3
 outdirectory = "/home/users/example/outputs" # may use user's own path
@@ -96,9 +96,10 @@ os.mkdir(outdirectory)
 
 
 ### Specify pre-installed software paths
+**Note**: users may need to edit the code by using their own path.
+
 
 ```{code-block} python3
-# may use user's own path
 samtools_directory="/home/users/Tools/samtools/bin" 
 bedtools_directory="/home/users/Tools/bedtools/bedtools2/bin"
 seqtk_directory="/home/users/Tools/seqtk/bin"
@@ -119,6 +120,8 @@ This function will generate the following two bed files into directory `outdirec
 
 - gene bed file: *scReadSim.Gene.bed*
 - inter-gene bed file: *scReadSim.InterGene.bed*
+
+**Note**: users may need to edit the code by using their own path.
 
 ```{code-block} python3
 # Specify the absolute path to gene annotation file
