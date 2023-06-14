@@ -3,7 +3,7 @@ import rpy2.robjects as robjects
 import os
 
 def scMultiOmics_GenerateSyntheticCount(RNA_count_mat_filename, ATAC_count_mat_filename, directory, outdirectory, n_cell_new=None, celllabel_file=None, n_cluster=None, n_cores=1):
-	"""Simulate synthetic count matrix.
+	"""Simulate synthetic multiomic count matrices.
 
 	Parameters
 	----------
@@ -33,7 +33,6 @@ def scMultiOmics_GenerateSyntheticCount(RNA_count_mat_filename, ATAC_count_mat_f
 		celllabel_file = "default"
 	if n_cluster == None:
 		n_cluster = "default"
-		
 	scMultiOmics_runSyntheticCount(RNA_count_mat_filename, ATAC_count_mat_filename, directory, outdirectory, n_cell_new, celllabel_file, n_cluster, n_cores)
 	print("[scReadSim] Created:")
 	print("[scReadSim] Synthetic scMultiOmics (ATAC modality) count matrix: %s.scMultiOmics.scDesign3Simulated.ATAC.txt" % RNA_count_mat_filename)

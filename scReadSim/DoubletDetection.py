@@ -3,7 +3,7 @@ import rpy2.robjects as robjects
 import os
 
 def detectDoublet(count_mat_filename, directory, outdirectory, omic_choice):
-	"""Simulate synthetic count matrix.
+	"""Detect doublets from real count matrix.
 
 	Parameters
 	----------
