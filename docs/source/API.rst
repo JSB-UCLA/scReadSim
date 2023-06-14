@@ -63,6 +63,7 @@ scRNA_GenerateBAM
    scReadSim.scRNA_GenerateBAM.SubstiError
    scReadSim.scRNA_GenerateBAM.scRNA_ErrorBase
 
+
 DoubletDetection
 ~~~~~~~~~~~~~~~~
 .. autosummary::
@@ -84,9 +85,5 @@ GenerateSyntheticCount_MultiOmics
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. autosummary::
    :toctree: _autosummary
-
-   scReadSim.GenerateSyntheticCount_MultiOmics.scMultiOmics_GenerateSyntheticCount
-
    
-
-
+   scReadSim.GenerateSyntheticCount_MultiOmics.scMultiOmics_GenerateSyntheticCount
