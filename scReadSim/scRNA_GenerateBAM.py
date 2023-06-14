@@ -89,11 +89,11 @@ def scRNA_GenerateBAMCoord(bed_file, UMI_count_mat_file, synthetic_cell_label_fi
 	peak_nonzero_id = np.nonzero(UMI_count_mat.sum(axis=1))[0]
 	random.seed(2022)
 	random_cellbarcode_list = cellbarcode_generator(n_cell, size=16)
-	with open(OUTPUT_cells_barcode_file, 'w') as f:
+	with open(outdirectory + "/" + OUTPUT_cells_barcode_file, 'w') as f:
 		for item in random_cellbarcode_list:
 			f.write(item + "\n")
 	cellbarcode_list_withclusters = np.vstack((random_cellbarcode_list, UMI_count_mat_cluster)).transpose()
-	with open(OUTPUT_cells_barcode_file + ".withSynthCluster", 'w') as f:
+	with open(outdirectory + "/" + OUTPUT_cells_barcode_file + ".withSynthCluster", 'w') as f:
 		for item in cellbarcode_list_withclusters:
 			f.write("\t".join(item) + "\n")
 	with open("%s/%s.read.bed" % (outdirectory, read_bedfile_prename), 'w') as fp:

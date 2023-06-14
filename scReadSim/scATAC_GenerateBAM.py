@@ -88,11 +88,11 @@ def scATAC_GenerateBAMCoord(bed_file, count_mat_file, synthetic_cell_label_file,
     peak_nonzero_id = np.nonzero(count_mat.sum(axis=1))[0]
     random.seed(2022)
     random_cellbarcode_list = cellbarcode_generator(n_cell, size=16)
-    with open(OUTPUT_cells_barcode_file, 'w') as f:
+    with open(outdirectory + "/"+ OUTPUT_cells_barcode_file, 'w') as f:
         for item in random_cellbarcode_list:
             f.write(item + "\n")
     cellbarcode_list_withclusters = np.vstack((random_cellbarcode_list, count_mat_cluster)).transpose()
-    with open(OUTPUT_cells_barcode_file + ".withSynthCluster", 'w') as f:
+    with open(outdirectory + "/"+ OUTPUT_cells_barcode_file + ".withSynthCluster", 'w') as f:
         for item in cellbarcode_list_withclusters:
             f.write("\t".join(item) + "\n")
     # Create read 1 and read 2 files
@@ -342,11 +342,11 @@ def scATAC_GenerateBAMCoord_OutputPeak(target_peak_assignment_file, count_mat_fi
     peak_nonzero_id = np.nonzero(count_mat.sum(axis=1))[0]
     random.seed(2022)
     random_cellbarcode_list = cellbarcode_generator(n_cell, size=16)
-    with open(OUTPUT_cells_barcode_file, 'w') as f:
+    with open(outdirectory + "/"+ OUTPUT_cells_barcode_file, 'w') as f:
         for item in random_cellbarcode_list:
             f.write(item + "\n")
     cellbarcode_list_withclusters = np.vstack((random_cellbarcode_list, count_mat_cluster)).transpose()
-    with open(OUTPUT_cells_barcode_file + ".withSynthCluster", 'w') as f:
+    with open(outdirectory + "/"+ OUTPUT_cells_barcode_file + ".withSynthCluster", 'w') as f:
         for item in cellbarcode_list_withclusters:
             f.write("\t".join(item) + "\n")
     # Create read 1 and read 2 files
