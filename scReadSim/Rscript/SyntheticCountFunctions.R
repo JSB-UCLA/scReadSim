@@ -16,14 +16,15 @@ if (!requireNamespace("Seurat", quietly = TRUE)) {
 }
 
 # Load packages
-library(Matrix)
-library(Rsubread)
-library(pscl)
-library(parallel)
-library(MASS)
-library(tidyverse)
+cat(sprintf("[scReadSim] Loading R packages...\n"))
+suppressPackageStartupMessages(library(Matrix))
+suppressPackageStartupMessages(library(Rsubread))
+suppressPackageStartupMessages(library(pscl))
+suppressPackageStartupMessages(library(parallel))
+suppressPackageStartupMessages(library(MASS))
+suppressPackageStartupMessages(library(tidyverse))
 # library(ROGUE)
-library(Seurat)
+suppressPackageStartupMessages(library(Seurat))
 
 ### Functions
 fit_marginals_new <- function(x, marginal = c('auto_choose', 'zinb', 'nb', 'poisson'),
@@ -348,7 +349,7 @@ get_cluster_seurat <- function(data_mat, n_cluster,
 # scATAC_runSyntheticCount(samplename, directory, out_directory)
 
 ## Read in count matrix
-scATAC_runSyntheticCount <- function(samplename, directory, out_directory, doub_classification_label_file="default", n_cell_new="default", total_count_new="default", celllabel_file="default", n_cluster="default"){
+scATAC_runSyntheticCount <- function(samplename, directory, out_directory, doub_classification_label_file="default", n_cell_new="default", total_count_new="default", celllabel_file="default", n_cluster="default", n_cores=1){
     set.seed(2022)
     cat(sprintf("[scReadSim] Reading count matrix %s.txt...\n", samplename))
     count_matrix <- read.table(sprintf("%s/%s.txt", directory, samplename), sep="\t",header = FALSE)
@@ -387,14 +388,14 @@ scATAC_runSyntheticCount <- function(samplename, directory, out_directory, doub_
       write.table(full_cell_label, sprintf("%s/%s.LouvainClusterResults.txt", out_directory, samplename), sep="\n", row.names = FALSE,col.names = FALSE)
     } else {
       cat(sprintf("[scReadSim] Loading cell label file %s...\n", celllabel_file))
-      clustering_result <- unlist(read.table(celllabel_file, header=FALSE))
+      full_cell_label <- unlist(read.table(celllabel_file, header=FALSE))
       # Doublet removal
       if (doub_classification_label_file!="default"){
           cat(sprintf("[scReadSim] Removing doublets corresponding cell labels...\n"))
-          clustering_result <- clustering_result[singlet_ind]
+          full_cell_label <- full_cell_label[singlet_ind]
       }
-      if (length(clustering_result) == ncol(matrix_num)){
-          colnames(matrix_num) <- clustering_result
+      if (length(full_cell_label) == ncol(matrix_num)){
+          colnames(matrix_num) <- full_cell_label
       } else {
           stop("[scReadSim] Number of cell labels differs from the cell number contained in the count matrix!\n ")
       }
@@ -412,7 +413,7 @@ scATAC_runSyntheticCount <- function(samplename, directory, out_directory, doub_
     cell_type_sel <- unique(colnames(matrix_num))
     cell_type_prop <- table(colnames(matrix_num))[cell_type_sel]
     copula_result <- fit_model_scDesign2_new(matrix_num, cell_type_sel, sim_method = 'copula',
-                                          ncores = length(cell_type_sel))
+                                          ncores = n_cores)
     cat("[scReadSim] Generating synthetic count matrix...\n")
     cat(sprintf("[scReadSim] Amount of synthetic cell: %s\n", n_cell_new))
     cat(sprintf("[scReadSim] Amount of (expected) sequencing depth: %s\n", total_count_new))
@@ -443,7 +444,7 @@ scATAC_runSyntheticCount <- function(samplename, directory, out_directory, doub_
 # scRNA_runSyntheticCount(samplename, directory, out_directory, doub_classification_label_file, celllabel_file=celllabel_file)
 
 ######################## Main Function for scRNA-seq ########################
-scRNA_runSyntheticCount <- function(samplename, directory, out_directory, doub_classification_label_file="default", n_cell_new="default", total_count_new="default", celllabel_file="default", n_cluster="default"){
+scRNA_runSyntheticCount <- function(samplename, directory, out_directory, doub_classification_label_file="default", n_cell_new="default", total_count_new="default", celllabel_file="default", n_cluster="default", n_cores=1){
     set.seed(2022)
     cat(sprintf("[scReadSim] Reading count matrix %s.txt...\n", samplename))
     count_matrix <- read.table(sprintf("%s/%s.txt", directory, samplename), sep="\t",header = FALSE)
@@ -507,7 +508,7 @@ scRNA_runSyntheticCount <- function(samplename, directory, out_directory, doub_c
     cell_type_sel <- unique(colnames(matrix_num))
     cell_type_prop <- table(colnames(matrix_num))[cell_type_sel]
     copula_result <- fit_model_scDesign2_new(matrix_num, cell_type_sel, sim_method = 'copula',
-                                            ncores = length(cell_type_sel))
+                                            ncores = n_cores)
     cat("[scReadSim] Generating synthetic count matrix...\n")
     cat(sprintf("[scReadSim] Amount of synthetic cell: %s\n", n_cell_new))
     cat(sprintf("[scReadSim] Amount of (expected) sequencing depth: %s\n", total_count_new))
