@@ -4,7 +4,7 @@ import os
 
 def scMultiOmics_GenerateSyntheticCount(RNA_count_mat_filename, ATAC_count_mat_filename, directory, outdirectory, n_cell_new=None, celllabel_file=None, n_cluster=None, n_cores=1):
 	"""Simulate synthetic multiomic count matrices.
-
+	
 	Parameters
 	----------
 	RNA_count_mat_filename: `str`
