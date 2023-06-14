@@ -1,5 +1,7 @@
 # scReadSim on 10x MultiOme ATAC + Gene Expression Dataset 
 
+This tutorial demonstrates the application of scReadSim generating synthetic reads for **single-cell multiomics** with [10x Single Cell Multiome ATAC + Gene Expression Dataset](https://www.10xgenomics.com/resources/datasets/fresh-embryonic-e-18-mouse-brain-5-k-1-standard-2-0-0). The current version of scReadSim multiomic module requires the input of two modalities, scATAC-seq and scRNA-seq, to have matchinging single cells.
+
 ## Required softwares for scReadSim
 scReadSim requires users to pre-install the following softwares:
 - [MACS3](https://github.com/macs3-project/MACS)
@@ -64,6 +66,7 @@ import sys, os
 import scReadSim.Utility as Utility
 import scReadSim.scRNA_GenerateBAM as scRNA_GenerateBAM
 import scReadSim.scATAC_GenerateBAM as scATAC_GenerateBAM
+import scReadSim.GenerateSyntheticCount_MultiOmics as GenerateSyntheticCount_MultiOmics
 import pkg_resources
 ```
 
@@ -369,12 +372,12 @@ scATAC_GenerateBAM.scATAC_CombineBED(outdirectory=outdirectory, peak_read_bedfil
 ```
 
 ### Convert BED files to FASTQ files
-Use function `scATAC_BED2FASTQ` to convert BED file to FASTQ file. This function takes the following arguments:
+Use functions `scRNA_BED2FASTQ` and `scATAC_BED2FASTQ` to convert BED file to FASTQ file. These functions take the following arguments:
 - `bedtools_directory`: Path to software bedtools.
 - `seqtk_directory`: Path to software seqtk.
 - `referenceGenome_file`: Reference genome FASTA file that the synthteic reads should align.
 - `outdirectory`: Output directory of the synthteic bed file and its corresponding cell barcodes file.
-- `BED_filename_combined`: Base name of the combined bed file output by function `scATAC_CombineBED`.
+- `BED_filename_combined`: Base name of the combined bed file output by function `scRNA_CombineBED` or `scATAC_CombineBED`.
 - `synthetic_fastq_prename`: Specify the base name of the output FASTQ files.
 
 This function will output paired-end reads in FASTQ files named as *`synthetic_fastq_prename`.read1.bed2fa.sorted.fq*, *`synthetic_fastq_prename`.read2.bed2fa.sorted.fq* to directory `outdirectory`.
@@ -386,19 +389,25 @@ This function will output paired-end reads in FASTQ files named as *`synthetic_f
 referenceGenome_name = "chr1"
 referenceGenome_dir = "/home/users/example/refgenome_dir" # may use users' own path
 referenceGenome_file = "%s/%s.fa" % (referenceGenome_dir, referenceGenome_name)
-synthetic_fastq_prename = BED_filename_combined_pre
 
+# RNA modality
+RNA_synthetic_fastq_prename = RNA_read_bedfile_prename
 # Convert combined bed file into FASTQ files
-scATAC_GenerateBAM.scATAC_BED2FASTQ(bedtools_directory=bedtools_directory, seqtk_directory=seqtk_directory, referenceGenome_file=referenceGenome_file, outdirectory=outdirectory, BED_filename_combined=BED_filename_combined_pre, synthetic_fastq_prename=synthetic_fastq_prename)
+scRNA_GenerateBAM.scRNA_BED2FASTQ(bedtools_directory=bedtools_directory, seqtk_directory=seqtk_directory, referenceGenome_file=referenceGenome_file, outdirectory=outdirectory, BED_filename_combined=RNA_read_bedfile_prename, synthetic_fastq_prename=RNA_synthetic_fastq_prename)
+
+# ATAC modality
+ATAC_synthetic_fastq_prename = ATAC_read_bedfile_prename
+# Convert combined bed file into FASTQ files
+scATAC_GenerateBAM.scATAC_BED2FASTQ(bedtools_directory=bedtools_directory, seqtk_directory=seqtk_directory, referenceGenome_file=referenceGenome_file, outdirectory=outdirectory, BED_filename_combined=ATAC_read_bedfile_prename, synthetic_fastq_prename=ATAC_synthetic_fastq_prename)
 ```
 
 
 ### Introduce Error to synthetic data 
-Use function `scATAC_ErrorBase` to introduce random error to synthetic reads. 
+Use function `scRNA_GenerateBAM` and `scATAC_ErrorBase` to introduce random error to synthetic reads. 
 
 **Build reference genome dictionary (optional)**
 
-Note that before using function `scATAC_ErrorBase`, please create the reference dictionary for the reference genome with function `CreateSequenceDictionary` using software Picard and make sure that the output *.dict* files are within the same directory to *`referenceGenome_name`.fa*. **For this tutorial, no dictionary building is needed since we have built for chr1.fa in reference.genome.chr1.tar.gz**. 
+Note that before using function `scRNA_GenerateBAM` and `scATAC_ErrorBase`, please create the reference dictionary for the reference genome with function `CreateSequenceDictionary` using software Picard and make sure that the output *.dict* files are within the same directory to *`referenceGenome_name`.fa*. **For this tutorial, no dictionary building is needed since we have built for chr1.fa in reference.genome.chr1.tar.gz**. 
 
 ```{code-block} console
 $ cd /home/users/example/refgenome_dir # may use users' own path
@@ -409,53 +418,23 @@ $       -O chr1.fa.dict
 
 **Introduce errors to synthetic reads**
 
-Function `scATAC_ErrorBase` takes the following arguments:
+Functions `scRNA_GenerateBAM` and `scATAC_ErrorBase` take the following arguments:
 - `fgbio_jarfile`: Path to software fgbio jar script.
 - `INPUT_bamfile`: Input BAM file for anlaysis.
 - `referenceGenome_file`: Reference genome FASTA file that the synthteic reads should align.
 - `outdirectory`: Specify the output directory of the synthteic FASTQ file with random errors.
-- `synthetic_fastq_prename`: Base name of the synthetic FASTQ files output by function `scATAC_BED2FASTQ`.
+- `synthetic_fastq_prename`: Base name of the synthetic FASTQ files output by function `scRNA_BED2FASTQ` or `scATAC_BED2FASTQ`.
 
 This function will output synthetic reads with random errors in FASTQ files named as *`synthetic_fastq_prename`.ErrorIncluded.read1.bed2fa.fq*, *`synthetic_fastq_prename`.ErrorIncluded.read2.bed2fa.fq* to directory `outdirectory`.
 
 
 ```{code-block} python3
-# Generate reads with errors in FASTQs
-scATAC_GenerateBAM.scATAC_ErrorBase(fgbio_jarfile=fgbio_jarfile, INPUT_bamfile=INPUT_bamfile, referenceGenome_file=referenceGenome_file, outdirectory=outdirectory, synthetic_fastq_prename=synthetic_fastq_prename)
+# RNA modality
+scRNA_GenerateBAM.scRNA_ErrorBase(fgbio_jarfile=fgbio_jarfile, INPUT_bamfile=INPUT_RNA_bamfile, referenceGenome_file=referenceGenome_file, outdirectory=outdirectory, synthetic_fastq_prename=RNA_synthetic_fastq_prename)
+
+# ATAC modality
+scATAC_GenerateBAM.scATAC_ErrorBase(fgbio_jarfile=fgbio_jarfile, INPUT_bamfile=INPUT_ATAC_bamfile, referenceGenome_file=referenceGenome_file, outdirectory=outdirectory, synthetic_fastq_prename=ATAC_synthetic_fastq_prename)
 ```
 
-### Convert FASTQ files to BAM file (optional)
-The current version of scReadSim implicitly uses [bowtie2](https://bowtie-bio.sourceforge.net/bowtie2/index.shtml) to align the synthetic reads onto the reference genome. Use function `AlignSyntheticBam_Pair` to align FASTQ files onto reference genome. It takes the following arguments:
-- `bowtie2_directory`: Path to software bowtie2.
-- `samtools_directory`: Path to software samtools.
-- `outdirectory`: Specify the output directory of the synthteic BAM file.
-- `referenceGenome_name`: Base name of the reference genome FASTA file. For example, you should input "chr1" for file "chr1.fa".
-- `referenceGenome_dir`: Path to the reference genome FASTA file.
-- `synthetic_fastq_prename`: Base name of the synthetic FASTQ files output by function `scATAC_BED2FASTQ`.
-- `output_BAM_pre`: Specify the base name of the output BAM file.
-
-**Index reference genome (optional)** 
-
-Before using function `AlignSyntheticBam_Pair`, the reference gemome FASTA file should be indexed by bowtie2 through following chunk and make sure the output index files are within the same directory to *`referenceGenome_name`.fa*. **For this tutorial, no indexing is needed since we have indexed chr1.fa in reference.genome.chr1.tar.gz**. 
-
-
-```{code-block} console
-$ cd /home/users/example/refgenome_dir # may use users' own path
-$ bowtie2-build chr1.fa chr1
-```
-
-**Align synthetic reads** 
-
-Now align the synthetic reads on to the reference genome with bowtie2.
-
-```{code-block} python3
-output_BAM_pre = "%s.syntheticBAM.CBincluded" % filename
-
-# Synthetic reads alignment
-scATAC_GenerateBAM.AlignSyntheticBam_Pair(bowtie2_directory=bowtie2_directory, samtools_directory=samtools_directory, outdirectory=outdirectory, referenceGenome_name=referenceGenome_name, referenceGenome_dir=referenceGenome_dir, synthetic_fastq_prename=synthetic_fastq_prename, output_BAM_pre=output_BAM_pre)
-
-# Synthetic reads (with sequencing errors) alignment
-scATAC_GenerateBAM.AlignSyntheticBam_Pair(bowtie2_directory=bowtie2_directory, samtools_directory=samtools_directory, outdirectory=outdirectory, referenceGenome_name=referenceGenome_name, referenceGenome_dir=referenceGenome_dir, synthetic_fastq_prename=synthetic_fastq_prename + ".ErrorIncluded" , output_BAM_pre=output_BAM_pre+ ".ErrorIncluded")
-```
 
 
