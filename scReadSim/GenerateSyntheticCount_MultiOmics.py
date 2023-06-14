@@ -2,6 +2,7 @@ import numpy as np
 import rpy2.robjects as robjects
 import os
 
+
 def scMultiOmics_GenerateSyntheticCount(RNA_count_mat_filename, ATAC_count_mat_filename, directory, outdirectory, n_cell_new=None, celllabel_file=None, n_cluster=None, n_cores=1):
 	"""Simulate synthetic multiomic count matrices.
 	
@@ -15,11 +16,11 @@ def scMultiOmics_GenerateSyntheticCount(RNA_count_mat_filename, ATAC_count_mat_f
 		Path to the count matrix.
 	outdirectory: `str`
 		Output directory of coordinate files.
-    n_cell_new: `int` (default: None)
+	n_cell_new: `int` (default: None)
 		Number of synthetic cells. If not specified, scReadSim uses the number of real cells.
 	celllabel_file: `str` (default: None)
-		Specify the one-column text file containing the predefined cell labels. Make sure that the order of cell labels correspond to the cell barcode file (and the columns of real count matrix). If no cell labels are specified, scReadSim performs a Louvain clustering before implementing scDesign2.
-    n_cores: `int` (default: 1)
+		Specify the one-column text file containing the predefined cell labels. Make sure that the order of cell labels correspond to the cell barcode file (and the columns of real count matrix). If no cell labels are specified, scReadSim performs a Louvain clustering before implementing scDesign3.
+	n_cores: `int` (default: 1)
 		Number of cores for parallel computing.
 	"""
 	r = robjects.r
