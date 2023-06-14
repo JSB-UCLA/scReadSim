@@ -5,12 +5,12 @@ import os
 
 def scMultiOmics_GenerateSyntheticCount(RNA_count_mat_filename, ATAC_count_mat_filename, directory, outdirectory, n_cell_new=None, celllabel_file=None, n_cluster=None, n_cores=1):
 	"""Simulate synthetic multiomic count matrices.
-	
+
 	Parameters
 	----------
 	RNA_count_mat_filename: `str`
 		Base name of the count matrix output by function scRNA_bam2countmat_paral().
-    ATAC_count_mat_filename: `str`
+	ATAC_count_mat_filename: `str`
 		Base name of the count matrix output by function scATAC_bam2countmat_paral().
 	directory: `str`
 		Path to the count matrix.
