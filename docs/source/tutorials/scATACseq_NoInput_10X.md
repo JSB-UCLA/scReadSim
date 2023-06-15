@@ -81,10 +81,7 @@ INPUT_genome_size_file = pkg_resources.resource_filename("scReadSim", 'data/mm10
 
 
 ## Step 2: Generate features
-To pre-process real scATAC-seq data for training, scReadSim segment the reference genome into trustworthy peaks, trustworthy non-peaks and gray ares. Three modes are supported by scReadSim to generate these features: "macs3", "user" and "superset". Under default mode "macs3", scReadSim uses [MACS3](https://github.com/macs3-project/MACS) with stringent criteria to call trustworthy peaks (q-value `0.01`) and non-peaks (q-value `0.1`) from the input BAM file. Under mode "user", scReadSim requires user-specified trustworthy peaks and non-peaks for the input BAM file. These peaks and non-peaks could be obtained by users using their preferred peak calling methods. Under mode "superset", scReadSim requires user to specify a super set of potential open chromatin regions, including sources such as [ENCODE cCRE](https://screen.encodeproject.org/) (Candidate Cis-Regulatory Elements) collection. Then the trustworthy peaks and non-peaks will be selected from the superset peaks and the inter-genomic-regions between superset peaks, respectively. 
-    
-
-Then scReadSim defines gray areas as the genomic regions complementary to the peaks and non-peaks. Three bed files recording peaks, non-peaks and gray areas will be prepared by scReadSim for following analysis.
+To pre-process real scATAC-seq data for training, scReadSim segments the reference genome into trustworthy peaks, trustworthy non-peaks and gray ares. First scReadSim prepares the trustworthy peaks and non-peaks for the input BAM file. Then scReadSim defines gray areas as the genomic regions complementary to the trustworthy peaks and non-peaks. Three bed files recording peaks, non-peaks and gray areas will be prepared by scReadSim for following analysis.
 
 
 ### Specify output directory
@@ -115,40 +112,59 @@ To prepare features for the following analysis, scReadSim utilizes function `Uti
 - `bedtools_directory`: Directory of software bedtools.
 - `outdirectory`: Output directory of the prepared features.
 - `genome_size_file`: Directory of Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicates the size.  
+- `peak_mode`: (Optional, default: "macs3") Specify mode for trustworthy peak and non-peak generation, must be one of the following: "macs3", "user", and "superset". 
 - `macs3_directory`: (Optional, default: None) Path to software MACS3. Must be specified if `INPUT_peakfile` and `INPUT_nonpeakfile` are None.
 - `INPUT_peakfile`: (Optional, default: None) Directory of user-specified input peak file.
 - `INPUT_nonpeakfile`: (Optional, default: None) Directory of user-specified input non-peak file.
+- `superset_peakfile`: (Optional, default: None) Directory of a superset of potential chromatin open regions, including sources such as ENCODE cCRE (Candidate Cis-Regulatory Elements) collection. Must be specified under peak_mode "superset".
 - `OUTPUT_peakfile`: (Optional, default: None) Directory of user-specified output peak file. Synthetic scATAC-seq reads will be generated taking `OUTPUT_peakfile` as ground truth peaks. Note that `OUTPUT_peakfile` does not name the generated feature files by function `scATAC_CreateFeatureSets`.
 
+Three modes are supported by scReadSim to prepare features: "macs3" (default), "user" and "superset". 
 
-<!-- #### **Case 1** without user-specified peaks and non-peaks -->
-If users do not specify trustworthy peaks and non-peaks (by setting options `INPUT_peakfile` and `INPUT_nonpeakfile` as the default values None) for the input BAM file, scReadSim by default uses MACS3 to determine the peaks and non-peaks. This function will generate the following three bed files into directory `outdirectory` for following analysis:
+Under default mode "macs3" (by setting argument `peak_mode` as the default values "macs3"), scReadSim uses [MACS3](https://github.com/macs3-project/MACS) with the stringent criteria to call trustworthy peaks (q-value `0.01`) and non-peaks (q-value `0.1`) from the input BAM file. This function will generate the following three bed files into directory `outdirectory` for following analysis:
 
 - peak bed file: *scReadSim.MACS3.peak.bed*
 - non-peak bed file: *scReadSim.MACS3.nonpeak.bed*
 - gray area bed file: *scReadSim.grayareas.bed*
 
 ```{code-block} python3
-# Prepare features without user-specified peaks and non-peaks
-Utility.scATAC_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directory, outdirectory, INPUT_genome_size_file, macs3_directory, INPUT_peakfile=None, INPUT_nonpeakfile=None)
+# Mode: macs3
+Utility.scATAC_CreateFeatureSets(peak_mode="macs3", INPUT_bamfile=INPUT_bamfile, samtools_directory=samtools_directory, bedtools_directory=bedtools_directory, outdirectory=outdirectory, genome_size_file=INPUT_genome_size_file, macs3_directory=macs3_directory, INPUT_peakfile=None, INPUT_nonpeakfile=None)
 ```
+**Note: This tutorial provides an example with the default `peak_mode` "macs3". Thus the following two chunks with `peak_mode` set to "user" or "superset" do not need to be implemented.**
 
-
-<!-- #### **Case 2** with user-specified peaks and non-peaks -->
-Or if users specify peaks and non-peaks (by setting options `INPUT_peakfile` and `INPUT_nonpeakfile` as the path to the ground truth peak and non-peak bed files) for the input BAM file, scReadSim further preprocesses the bed files and generates the following three bed files into directory `outdirectory` for following analysis:
+Under mode "user", scReadSim requires user-specified trustworthy peaks and non-peaks (by setting argument `peak_mode` as "user" and `INPUT_peakfile` and `INPUT_nonpeakfile` as the paths to the trustworthy peak and non-peak bed files) for the input BAM file. These peaks and non-peaks could be obtained by users using their preferred peak calling methods. scReadSim further preprocesses the bed files and generates the following three bed files into directory `outdirectory` for following analysis:
 
 - peak bed file: *scReadSim.UserInput.peak.bed*
 - non-peak bed file: *scReadSim.UserInput.nonpeak.bed*
 - gray area bed file: *scReadSim.grayareas.bed*
 
-<!-- ```{code-block} python3
-# Specify the path to peak and non-peak bed files
+```{code-block} python3
+# Mode: user
+# Load our demo trustworthy peak and non-peak bed files
 INPUT_peakfile = pkg_resources.resource_filename("scReadSim", 'data/10x_ATAC_chr1_4194444_4399104.input.peak.bed')
 INPUT_nonpeakfile = pkg_resources.resource_filename("scReadSim", 'data/10x_ATAC_chr1_4194444_4399104.input.nonpeak.bed')
 
-# Prepare features with user-specified peaks and non-peaks
-Utility.scATAC_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directory, outdirectory, INPUT_genome_size_file, macs3_directory, INPUT_peakfile, INPUT_nonpeakfile)
-``` -->
+Utility.scATAC_CreateFeatureSets(peak_mode="user", INPUT_bamfile=INPUT_bamfile, samtools_directory=samtools_directory, bedtools_directory=bedtools_directory, outdirectory=outdirectory, genome_size_file=INPUT_genome_size_file, INPUT_peakfile=INPUT_peakfile, INPUT_nonpeakfile=INPUT_nonpeakfile)
+```
+
+Under mode "superset" (by setting argument `peak_mode` as "superset" and `superset_peakfile` as the path to the superset of potential open chromatin region bed files), scReadSim requires user to specify a super set of potential open chromatin regions, including sources such as [ENCODE cCRE](https://screen.encodeproject.org/) (Candidate Cis-Regulatory Elements) collection. Then the trustworthy peaks and non-peaks will be selected from the superset peaks and the inter-genomic-regions between superset peaks, respectively. scReadSim further generates the following three bed files into directory `outdirectory` for following analysis:
+
+- peak bed file: *scReadSim.superset.peak.bed*
+- non-peak bed file: *scReadSim.superset.nonpeak.bed*
+- gray area bed file: *scReadSim.grayareas.bed*
+
+```{code-block} python3
+# Mode: superset
+# Load our demo superset open chromatin region bed file
+superset_peakfile=pkg_resources.resource_filename("scReadSim", 'data/cCRE_mm10_chr1_4194444_4399104.txt')
+
+Utility.scATAC_CreateFeatureSets(peak_mode="superset", INPUT_bamfile=INPUT_bamfile, samtools_directory=samtools_directory, bedtools_directory=bedtools_directory, outdirectory=outdirectory, genome_size_file=INPUT_genome_size_file, macs3_directory=macs3_directory, superset_peakfile=superset_peakfile, INPUT_peakfile=None, INPUT_nonpeakfile=None)
+```
+
+
+
+
 
 
 ## Step 3: Generate real count matrices
