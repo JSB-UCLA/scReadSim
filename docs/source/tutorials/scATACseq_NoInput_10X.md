@@ -81,7 +81,10 @@ INPUT_genome_size_file = pkg_resources.resource_filename("scReadSim", 'data/mm10
 
 
 ## Step 2: Generate features
-To pre-process real scATAC-seq data for training, scReadSim requires users’ trustworthy peaks and non-peaks for the input BAM file. Alternatively, if users do not input peaks and non-peaks, scReadSim by default uses [MACS3](https://github.com/macs3-project/MACS) with stringent criteria to call trustworthy peaks (q-value `0.01`) and non-peaks (q-value `0.1`) from the input BAM file. Then scReadSim defines gray areas as the genomic regions complementary to the peaks and non-peaks. Three bed files recording peaks, non-peaks and gray areas will be prepared by scReadSim for following analysis.
+To pre-process real scATAC-seq data for training, scReadSim segment the reference genome into trustworthy peaks, trustworthy non-peaks and gray ares. Three modes are supported by scReadSim to generate these features: "macs3", "user" and "superset". Under default mode "macs3", scReadSim uses [MACS3](https://github.com/macs3-project/MACS) with stringent criteria to call trustworthy peaks (q-value `0.01`) and non-peaks (q-value `0.1`) from the input BAM file. Under mode "user", scReadSim requires user-specified trustworthy peaks and non-peaks for the input BAM file. These peaks and non-peaks could be obtained by users using their preferred peak calling methods. Under mode "superset", scReadSim requires user to specify a super set of potential open chromatin regions, including sources such as [ENCODE cCRE](https://screen.encodeproject.org/) (Candidate Cis-Regulatory Elements) collection. Then the trustworthy peaks and non-peaks will be selected from the superset peaks and the inter-genomic-regions between superset peaks, respectively. 
+    
+
+Then scReadSim defines gray areas as the genomic regions complementary to the peaks and non-peaks. Three bed files recording peaks, non-peaks and gray areas will be prepared by scReadSim for following analysis.
 
 
 ### Specify output directory

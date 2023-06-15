@@ -57,7 +57,7 @@ def ExtractBAMCoverage(INPUT_bamfile, samtools_directory, outdirectory):
     return chromosomes_coverd
 
 
-def scATAC_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directory, outdirectory, genome_size_file, macs3_directory=None, INPUT_peakfile=None, INPUT_nonpeakfile=None, OUTPUT_peakfile=None):
+def scATAC_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directory, outdirectory, genome_size_file, peak_mode="macs3", macs3_directory=None, INPUT_peakfile=None, INPUT_nonpeakfile=None, OUTPUT_peakfile=None, superset_peakfile=None):
     """Create the foreground and background feature set for the input scATAC-seq bam file.
 
     Parameters
@@ -72,15 +72,22 @@ def scATAC_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directo
         Output directory.
     genome_size_file: `str`
         Directory of Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicates the size.  
+    peak_mode: `str` (default: macs3)
+        Specify mode for trustworthy peak and non-peak generation, must be one of the following: "macs3", "user", and "superset". 
     macs3_directory: `str` (default: None)
-        Path to software MACS3. Must be specified if `INPUT_peakfile` and `INPUT_nonpeakfile` are None.
+        Path to software MACS3. Must be specified if `INPUT_peakfile` and `INPUT_nonpeakfile` are None. Must be specified under peak_mode "macs3" or "superset".
     INPUT_peakfile: `str` (default: None)
-        Directory of user-specified input peak file.
+        Directory of user-specified input peak file. Must be specified under peak_mode "user".
     INPUT_nonpeakfile: `str` (default: None)
-        Directory of user-specified input non-peak file.
+        Directory of user-specified input non-peak file. Must be specified under peak_mode "user".
+    superset_peakfile: `str` (default: None)
+        Directory of a superset of potential chromatin open regions, including sources such as ENCODE cCRE (Candidate Cis-Regulatory Elements) collection. Must be specified under peak_mode "superset".
     OUTPUT_peakfile: `str` (default: None)
         Directory of user-specified output peak file. Synthetic scATAC-seq reads will be generated taking `OUTPUT_peakfile` as ground truth peaks. Note that `OUTPUT_peakfile` does not name the generated feature files by function `scATAC_CreateFeatureSets`.
     """
+    valid_modes = {"macs3", "user", "superset"}
+    if peak_mode not in valid_modes:
+        raise ValueError("[ERROR]: peak_mode must be one of %r." % valid_modes)
     chromosomes_coverd = ExtractBAMCoverage(INPUT_bamfile, samtools_directory, outdirectory)
     search_string_chr = '|'.join(chromosomes_coverd)
     cmd = "cat %s | grep -Ew '%s' > %s/genome_size_selected.txt" % (genome_size_file, search_string_chr, outdirectory)
@@ -88,22 +95,22 @@ def scATAC_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directo
     if error:
         print('[ERROR] Fail to extract gene regions from genome annotation file:\n', error.decode())
     # Input peaks and non-peaks
-    if INPUT_peakfile is None or INPUT_nonpeakfile is None:
+    if peak_mode == "macs3":
+        print("[scReadSim] Detected peak mode: macs3")
         # Define peaks and non-peaks using MACS3
         peakfile = outdirectory + "/" + "scReadSim.MACS3.peak.bed"
         nonpeakfile = outdirectory + "/" + "scReadSim.MACS3.nonpeak.bed"
         # Call peaks
-        print("[scReadSim] No Input Peaks and Non-Peaks detected.")
-        print("[scReadSim] Identify Peaks and Non-Peaks using MACS3 Instead.")
-        print("[scReadSim] Generating Peaks using MACS3...")
+        print("[scReadSim] Will identify trustworthy peaks and non-peaks using MACS3")
+        print("[scReadSim] Generating peaks using MACS3...")
         CallPeak(macs3_directory, INPUT_bamfile, outdirectory, "scReadSim_MACS3_Stringent", qval=0.01)
         cmd = "%s/bedtools sort -i %s/scReadSim_MACS3_Stringent_peaks.narrowPeak | %s/bedtools merge  > %s/scReadSim.MACS3.peak.bed" % (bedtools_directory, outdirectory, bedtools_directory, outdirectory)
         output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         if error:
             print('[ERROR] Fail to create feature set:\n', error.decode())
-        print("[scReadSim] Peaks Generated: %s/scReadSim.MACS3.peak.bed" % outdirectory)
+        print("[scReadSim] Peaks generated: %s/scReadSim.MACS3.peak.bed" % outdirectory)
         # Call non-peaks
-        print("[scReadSim] Generating Non-Peaks using MACS3...")
+        print("[scReadSim] Generating non-peaks using MACS3...")
         CallPeak(macs3_directory, INPUT_bamfile, outdirectory, "scReadSim_MACS3_LessStringent", qval=0.1)
         cmd = "%s/bedtools sort -i %s/scReadSim_MACS3_LessStringent_peaks.narrowPeak | %s/bedtools merge  > %s/scReadSim_MACS3.nonpeak.tmp.bed" % (bedtools_directory, outdirectory, bedtools_directory, outdirectory)
         output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
@@ -114,33 +121,90 @@ def scATAC_CreateFeatureSets(INPUT_bamfile, samtools_directory, bedtools_directo
         output, error = subprocess.Popen(complement_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         if error:
             print('[ERROR] Fail to create complementary feature set:\n', error.decode())
-        print("[scReadSim] Non-Peaks Generated: %s/scReadSim.MACS3.nonpeak.bed" % outdirectory)
-    else:
+        print("[scReadSim] Non-peaks generated: %s/scReadSim.MACS3.nonpeak.bed" % outdirectory)
+    elif peak_mode == "user":
+        print("[scReadSim] Detected peak mode: user")
+        print("[scReadSim] Will generate trustworthy peaks and non-peaks from user-specified peak and non-peaks")
+        if INPUT_peakfile is None or INPUT_nonpeakfile is None:
+            print("[scReadSim] INPUT_peakfile or INPUT_nonpeakfile not specified!")
+            raise ValueError("[ERROR]: Under peak_mode user, INPUT_peakfile and INPUT_nonpeakfile should be specified.")
         peakfile = "scReadSim.UserInput.peak.bed"
         nonpeakfile = "scReadSim.UserInput.nonpeak.bed"
         # Merge and sort peak file
-        print("[scReadSim] Merging Input Peak File: %s" % INPUT_peakfile)
+        print("[scReadSim] Merging input peak file: %s" % INPUT_peakfile)
         cmd = "%s/bedtools sort -i %s | %s/bedtools merge  > %s/%s" % (bedtools_directory, INPUT_peakfile, bedtools_directory, outdirectory, peakfile)
         output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         if error:
             print('[ERROR] Fail to sort input peak set:\n', error.decode())
-        print("[scReadSim] Merging Input Non-Peak File: %s" % INPUT_nonpeakfile)
-        print("[scReadSim] Peaks Generated: %s/%s" % (outdirectory, peakfile))
+        print("[scReadSim] Merging input non-peak File: %s" % INPUT_nonpeakfile)
+        print("[scReadSim] Peaks generated: %s/%s" % (outdirectory, peakfile))
         # Merge and sort non-peak file
         cmd = "%s/bedtools sort -i %s | %s/bedtools merge  > %s/%s" % (bedtools_directory, INPUT_nonpeakfile, bedtools_directory, outdirectory, nonpeakfile)
         output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         if error:
             print('[ERROR] Fail to merge input non-peak feature set:\n', error.decode())
-        print("[scReadSim] Non-Peaks Generated: %s/%s" % (outdirectory, nonpeakfile))
+        print("[scReadSim] Non-peaks generated: %s/%s" % (outdirectory, nonpeakfile))
+    elif peak_mode == "superset":
+        print("[scReadSim] Detected peak mode: superset")
+        print("[scReadSim] Will generate trustworthy peaks using a superset of possible open chromatin regions")
+        if superset_peakfile is None:
+            print("[scReadSim] Argument superset_peakfile not specified!")
+            raise ValueError("[ERROR]: Under peak_mode superset, superset_peakfile should be specified.")
+        peakfile = "scReadSim.superset.peak.bed"
+        nonpeakfile = "scReadSim.superset.nonpeak.bed"
+        # Merge and sort superset_peakfile_tmp
+        print("[scReadSim] Merging and sorting superset peak file: %s" % superset_peakfile)
+        cmd = "%s/bedtools sort -i %s | %s/bedtools merge  > %s/scReadSim.superset.peak.tmp.bed" % (bedtools_directory, superset_peakfile, bedtools_directory, outdirectory)
+        output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        if error:
+            print('[ERROR] Fail to sort input peak set:\n', error.decode())
+        # Calculate the inter peaks as superset_nonpeakfile_tmp
+        complement_cmd = "%s/bedtools complement -i %s/scReadSim.superset.peak.tmp.bed -g %s/genome_size_selected.txt > %s/scReadSim.superset.nonpeak.tmp.bed" % (bedtools_directory, outdirectory, outdirectory, outdirectory)
+        output, error = subprocess.Popen(complement_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        if error:
+            print('[ERROR] Fail to create complementary feature set:\n', error.decode())
+        # Identify peaks using MACS3
+        print("[scReadSim] Identifying potential peaks from input BAM file using MACS3...")
+        CallPeak(macs3_directory, INPUT_bamfile, outdirectory, "scReadSim_MACS3_Stringent", qval=0.01)
+        cmd = "%s/bedtools sort -i %s/scReadSim_MACS3_Stringent_peaks.narrowPeak | %s/bedtools merge  > %s/scReadSim.MACS3.peak.bed" % (bedtools_directory, outdirectory, bedtools_directory, outdirectory)
+        output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        if error:
+            print('[ERROR] Fail to create feature set:\n', error.decode())
+        # Call non-peaks using MACS3
+        print("[scReadSim] Identifying potential non-peaks from input BAM file using MACS3...")
+        CallPeak(macs3_directory, INPUT_bamfile, outdirectory, "scReadSim_MACS3_LessStringent", qval=0.1)
+        cmd = "%s/bedtools sort -i %s/scReadSim_MACS3_LessStringent_peaks.narrowPeak | %s/bedtools merge  > %s/scReadSim_MACS3.nonpeak.tmp.bed" % (bedtools_directory, outdirectory, bedtools_directory, outdirectory)
+        output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        if error:
+            print('[ERROR] Fail to create feature set:\n', error.decode())
+        # Calculate the inter peaks as non-peaks
+        complement_cmd = "%s/bedtools complement -i %s/scReadSim_MACS3.nonpeak.tmp.bed -g %s/genome_size_selected.txt > %s/scReadSim.MACS3.nonpeak.bed" % (bedtools_directory, outdirectory, outdirectory, outdirectory)
+        output, error = subprocess.Popen(complement_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        if error:
+            print('[ERROR] Fail to create complementary feature set:\n', error.decode())
+        # Loop superset_peak, find those overlapping half a superset peak (-f 0.5)
+        print("[scReadSim] Selecting final trustworthy peaks from superset peak list...")
+        intersect_peak_cmd = "%s/bedtools intersect -a %s/scReadSim.superset.peak.tmp.bed -b %s/scReadSim.MACS3.peak.bed -f 0.5 > %s/scReadSim.superset.peak.bed" % (bedtools_directory, outdirectory, outdirectory, outdirectory)
+        output, error = subprocess.Popen(intersect_peak_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        if error:
+            print('[ERROR] Fail to create complementary feature set:\n', error.decode())
+        print("[scReadSim] Peaks generated: %s/%s" % (outdirectory, peakfile))
+        # Loop superset_nonpeak, find those overlapping half a superset nonpeak
+        print("[scReadSim] Selecting final trustworthy non-peaks from superset non-peak list...")
+        intersect_nonpeak_cmd = "%s/bedtools intersect -a %s/scReadSim.superset.nonpeak.tmp.bed -b %s/scReadSim.MACS3.nonpeak.bed -f 0.5 > %s/scReadSim.superset.nonpeak.bed" % (bedtools_directory, outdirectory, outdirectory, outdirectory)
+        output, error = subprocess.Popen(intersect_nonpeak_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        if error:
+            print('[ERROR] Fail to create complementary feature set:\n', error.decode())
+        print("[scReadSim] Nno-peaks generated: %s/%s" % (outdirectory, nonpeakfile))
     # Union peaks and non-peaks
-    print("[scReadSim] Generating Gray Areas...")
+    print("[scReadSim] Generating gray areas...")
     cmd = "cat %s/%s %s/%s | bedtools sort | bedtools merge > %s/Peak_NonPeaks_Union.bed" % (outdirectory, peakfile, outdirectory, nonpeakfile, outdirectory)
     output, error = subprocess.Popen(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     complement_cmd = "%s/bedtools complement -i %s/Peak_NonPeaks_Union.bed -g %s/genome_size_selected.txt > %s/scReadSim.grayareas.bed" % (bedtools_directory, outdirectory, outdirectory, outdirectory)
     output, error = subprocess.Popen(complement_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     if error:
          print('[ERROR] Fail to create gray area feature set:\n', error.decode())
-    print("[scReadSim] Gray Areas Generated: %s/scReadSim.grayareas.bed" % outdirectory)
+    print("[scReadSim] Gray areas generated: %s/scReadSim.grayareas.bed" % outdirectory)
     print('\n[scReadSim] Created:')
     print('[scReadSim] Peak File: %s/%s' % (outdirectory, peakfile))
     print('[scReadSim] Non-Peak File: %s/%s' % (outdirectory, nonpeakfile))
