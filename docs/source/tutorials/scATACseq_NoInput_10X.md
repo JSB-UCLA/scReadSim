@@ -131,7 +131,7 @@ Under default mode "macs3" (by setting argument `peak_mode` as the default value
 # Mode: macs3
 Utility.scATAC_CreateFeatureSets(peak_mode="macs3", INPUT_bamfile=INPUT_bamfile, samtools_directory=samtools_directory, bedtools_directory=bedtools_directory, outdirectory=outdirectory, genome_size_file=INPUT_genome_size_file, macs3_directory=macs3_directory, INPUT_peakfile=None, INPUT_nonpeakfile=None)
 ```
-**Note: This tutorial provides an example with the default `peak_mode` "macs3". Thus the following two chunks with `peak_mode` set to "user" or "superset" do not need to be implemented.**
+**Note: This tutorial provides an example with the default `peak_mode` "macs3". Thus the following two code chunks with `peak_mode` set to "user" or "superset" do not need to be implemented.**
 
 Under mode "user", scReadSim requires user-specified trustworthy peaks and non-peaks (by setting argument `peak_mode` as "user" and `INPUT_peakfile` and `INPUT_nonpeakfile` as the paths to the trustworthy peak and non-peak bed files) for the input BAM file. These peaks and non-peaks could be obtained by users using their preferred peak calling methods. scReadSim further preprocesses the bed files and generates the following three bed files into directory `outdirectory` for following analysis:
 
