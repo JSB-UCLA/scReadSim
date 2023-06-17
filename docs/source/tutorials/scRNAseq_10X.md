@@ -9,7 +9,6 @@ scReadSim requires users to pre-install the following softwares:
 
 Depending on users' choices, the following softwares are optional:
 - [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)
-- [MACS3](https://github.com/macs3-project/MACS)
 
 
 ## Pre-process input BAM file

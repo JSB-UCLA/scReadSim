@@ -6,10 +6,11 @@ scReadSim requires users to pre-install the following softwares:
 - [samtools](http://www.htslib.org/)
 - [bedtools](https://bedtools.readthedocs.io/en/latest/)
 - [seqtk](https://github.com/lh3/seqtk)
+- [fgbio](http://fulcrumgenomics.github.io/fgbio/)
 
 Depending on users' choices, the following softwares are optional:
 - [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)
-- [fgbio](http://fulcrumgenomics.github.io/fgbio/)
+
 
 ## Pre-process input BAM file
 **Note: This tutorial does not need this pre-process step since the processed BAM file is provided by the scReadSim package (see Step 1: Import packages and data files).**

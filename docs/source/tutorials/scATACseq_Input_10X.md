@@ -6,8 +6,10 @@ scReadSim requires users to pre-install the following softwares:
 - [samtools](http://www.htslib.org/)
 - [bedtools](https://bedtools.readthedocs.io/en/latest/)
 - [seqtk](https://github.com/lh3/seqtk)
-- [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)
 - [fgbio](http://fulcrumgenomics.github.io/fgbio/)
+
+Depending on users' choices, the following softwares are optional:
+- [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)
 
 
 ## Download reference genome
