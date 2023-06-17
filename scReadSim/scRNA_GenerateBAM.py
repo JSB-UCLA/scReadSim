@@ -98,7 +98,7 @@ def scRNA_GenerateBAMCoord(bed_file, UMI_count_mat_file, synthetic_cell_label_fi
 			f.write("\t".join(item) + "\n")
 	with open("%s/%s.read.bed" % (outdirectory, read_bedfile_prename), 'w') as fp:
 		pass
-	print("[scReadSim] Generating Synthetic Reads for Feature Set: %s" % (bed_file))
+	print("[scReadSim] Generating synthetic reads in BED file...")
 	for relative_peak_ind in tqdm(range(len(peak_nonzero_id))):
 		peak_ind = peak_nonzero_id[relative_peak_ind]
 		rec = open_peak[peak_ind]
@@ -181,13 +181,13 @@ def scRNA_CombineBED(outdirectory, gene_read_bedfile_prename, intergene_read_bed
 	BED_filename_combined_pre: 'str'
 		Specify the combined syntehtic reads bed file prename. The combined bed file will be output to `outdirectory`.
 	"""
-	print("[scReadSim] Combining Synthetic Read Bed Files from Genes and InterGenes.")
+	print("[scReadSim] Combining synthetic read BED files from genes and inter-genes.")
 	combine_read_cmd = "cat %s/%s.read.bed %s/%s.read.bed | sort -k1,1 -k2,2n > %s/%s.read.bed" % (outdirectory, gene_read_bedfile_prename, outdirectory, intergene_read_bedfile_prename, outdirectory, BED_filename_combined_pre)
 	output, error = subprocess.Popen(combine_read_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
 		print('[ERROR] Fail to create combine synthetic read bed files:\n', error.decode())
 	print("\n[scReadSim] Created:")
-	print("[scReadSim] Combined Read Bed File: %s/%s.read.bed" % (outdirectory, BED_filename_combined_pre))
+	print("[scReadSim] Combined synthetic read BED file: %s/%s.read.bed" % (outdirectory, BED_filename_combined_pre))
 	print("[scReadSim] Done.")
 
 
@@ -210,7 +210,7 @@ def scRNA_BED2FASTQ(bedtools_directory, seqtk_directory, referenceGenome_file, o
 		Specify the base name of the output FASTQ files.
 	"""
 	# Create FASTA
-	print('[scReadSim] Generating Synthetic Read FASTA files...')
+	print('[scReadSim] Generating synthetic read FASTA files...')
 	fasta_read2_cmd = "%s/bedtools getfasta -s -nameOnly -fi %s -bed %s/%s.read.bed -fo %s/%s.read2.strand.bed2fa.fa" % (bedtools_directory, referenceGenome_file, outdirectory, BED_filename_combined, outdirectory, synthetic_fastq_prename)
 	output, error = subprocess.Popen(fasta_read2_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
@@ -226,7 +226,7 @@ def scRNA_BED2FASTQ(bedtools_directory, seqtk_directory, referenceGenome_file, o
 	if error:
 			print(error.decode())
 	# FASTA to FASTQ
-	print('[scReadSim] Generating Synthetic Read FASTQ files...')
+	print('[scReadSim] Generating synthetic read FASTQ files...')
 	fastq_read1_cmd = "%s/seqtk seq -F 'F' %s/%s.read1.bed2fa.fa > %s/%s.read1.bed2fa.fq" % (seqtk_directory, outdirectory, synthetic_fastq_prename, outdirectory, synthetic_fastq_prename)
 	output, error = subprocess.Popen(fastq_read1_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
@@ -245,8 +245,8 @@ def scRNA_BED2FASTQ(bedtools_directory, seqtk_directory, referenceGenome_file, o
 	if error:
 			print('[ERROR] Fail to sort read2 synthetic fastq file:', error.decode())
 	print("\n[scReadSim] Created:")
-	print("[scReadSim] Read 1 FASTQ File: %s/%s.read1.bed2fa.sorted.fq" % (outdirectory, synthetic_fastq_prename))
-	print("[scReadSim] Read 2 FASTQ File: %s/%s.read2.bed2fa.sorted.fq" % (outdirectory, synthetic_fastq_prename))
+	print("[scReadSim] Read 1 FASTQ file: %s/%s.read1.bed2fa.sorted.fq" % (outdirectory, synthetic_fastq_prename))
+	print("[scReadSim] Read 2 FASTQ file: %s/%s.read2.bed2fa.sorted.fq" % (outdirectory, synthetic_fastq_prename))
 	print("[scReadSim] Done.")
 
 
@@ -270,19 +270,19 @@ def AlignSyntheticBam_Single(bowtie2_directory, samtools_directory, outdirectory
 	output_BAM_pre: `str`
 		Specify the base name of the output BAM file.
 	"""
-	print('[scReadSim] Aligning FASTQ files onto Reference Genome Files with Bowtie2...')
+	print('[scReadSim] Aligning FASTQ files onto reference genome files with Bowtie2...')
 	alignment_cmd = "%s/bowtie2 -x %s/%s -U %s/%s.read2.bed2fa.sorted.fq | %s/samtools view -bS - > %s/%s.synthetic.noCB.bam" % (bowtie2_directory, referenceGenome_dir, referenceGenome_name,  outdirectory, synthetic_fastq_prename, samtools_directory, outdirectory, output_BAM_pre)
 	output, error = subprocess.Popen(alignment_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	print('[Bowtie2] Aligning:\n', error.decode())
-	print('[scReadSim] Alignment Done.')
-	print('[scReadSim] Generating Cell Barcode and UMI Barcode Tags...')
+	print('[scReadSim] Alignment done.')
+	print('[scReadSim] Generating cell barcode and UMI barcode tags...')
 	addBC2BAM_header_cmd = "%s/samtools view %s/%s.synthetic.noCB.bam -H > %s/%s.synthetic.noCB.header.sam" % (samtools_directory, outdirectory, output_BAM_pre, outdirectory, output_BAM_pre)
 	output, error = subprocess.Popen(addBC2BAM_header_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	addBC2BAM_cmd = "cat <( cat %s/%s.synthetic.noCB.header.sam ) <( paste <(%s/samtools view %s/%s.synthetic.noCB.bam ) <(%s/samtools view %s/%s.synthetic.noCB.bam | cut -f1 | cut -d':' -f1 | awk '{s=substr($1,1,16)}{g=substr($1,17,length($1))}{printf \"CB:Z:%%s\tUB:Z:%%s\\n\",s,g;}')) | %s/samtools view -bS - > %s/%s.synthetic.bam" % (outdirectory, output_BAM_pre, samtools_directory, outdirectory, output_BAM_pre, samtools_directory, outdirectory, output_BAM_pre, samtools_directory, outdirectory, output_BAM_pre)
 	output, error = subprocess.Popen(addBC2BAM_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
 		print('[ERROR] Fail to add CB and UB tags to synthetic BAM file:\n', error.decode())
-	print('[scReadSim] Sorting and Indexing BAM file...')
+	print('[scReadSim] Sorting and indexing BAM file...')
 	sortBAMcmd = "%s/samtools sort %s/%s.synthetic.bam > %s/%s.synthetic.sorted.bam" % (samtools_directory, outdirectory, output_BAM_pre, outdirectory, output_BAM_pre)
 	output, error = subprocess.Popen(sortBAMcmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
@@ -292,7 +292,7 @@ def AlignSyntheticBam_Single(bowtie2_directory, samtools_directory, outdirectory
 	if error:
 		print('[ERROR] Fail to index synthetic BAM file:\n', error.decode())
 	print("\n[scReadSim] Created:")
-	print("[scReadSim] Synthetic Read BAM File: %s/%s.synthetic.sorted.bam" % (outdirectory, output_BAM_pre))
+	print("[scReadSim] Synthetic read BAM file: %s/%s.synthetic.sorted.bam" % (outdirectory, output_BAM_pre))
 	print("[scReadSim] Done.")
 
 
@@ -400,7 +400,7 @@ def scRNA_ErrorBase(fgbio_jarfile, INPUT_bamfile, referenceGenome_file, outdirec
 	synthetic_fastq_prename: `str`
 		Base name of the synthetic FASTQ files output by function `scATAC_BED2FASTQ`.
 	"""
-	print('[scReadSim] Substitution Error Calculating...')
+	print('[scReadSim] Substitution error calculating...')
 	combine_read1_cmd = "java -jar %s ErrorRateByReadPosition -i %s -r %s -o %s/Real --collapse false" % (fgbio_jarfile, INPUT_bamfile, referenceGenome_file, outdirectory)
 	output, error = subprocess.Popen(combine_read1_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
@@ -419,9 +419,64 @@ def scRNA_ErrorBase(fgbio_jarfile, INPUT_bamfile, referenceGenome_file, outdirec
 	if error:
 			print('[ERROR] Fail to sort read2 synthetic fastq file:', error.decode())
 	print("\n[scReadSim] Created:")
-	print("[scReadSim] Read 1 FASTQ File with Substitution Error: %s/%s.ErrorIncluded.read1.bed2fa.sorted.fq" % (outdirectory, synthetic_fastq_prename))
-	print("[scReadSim] Read 2 FASTQ File with Substitution Error: %s/%s.ErrorIncluded.read2.bed2fa.sorted.fq" % (outdirectory, synthetic_fastq_prename))
+	print("[scReadSim] Read 1 FASTQ file with substitution error: %s/%s.ErrorIncluded.read1.bed2fa.sorted.fq" % (outdirectory, synthetic_fastq_prename))
+	print("[scReadSim] Read 2 FASTQ file with substitution error: %s/%s.ErrorIncluded.read2.bed2fa.sorted.fq" % (outdirectory, synthetic_fastq_prename))
 	print("[scReadSim] Done.")
 
 
 
+
+def scRNA_GenerateSyntheticRead_MultiSample(INPUT_bamfile, outdirectory, bedtools_directory, seqtk_directory, fgbio_jarfile, referenceGenome_file, read_len=90):
+	"""Multi-sample/replicate implement of scReadSim for simulating scRNA-seq synthetic reads.
+
+	Parameters
+	----------
+	INPUT_bamfile: `str`
+		List of input BAM files (use absolute paths to the BAM files).
+	outdirectory: `str`
+		Specify the working directory of scReadSim for generating intermediate and final output files.
+	bedtools_directory: `str`
+		Directory of software bedtools.
+	seqtk_directory: `str`
+		Directory of software seqtk.
+	fgbio_jarfile: `str`
+		Path to software fgbio jar script.
+	referenceGenome_file: 'str'
+		Reference genome FASTA file that the synthteic reads should align.
+	read_len: `int` (default: '90')
+		Specify the length of synthetic reads. Default value is 90 bp.
+	"""
+	for rep_id in range(len(INPUT_bamfile)):
+		print("\n[scReadSim] Generating synthetic reads for sample %s..." % str(rep_id+1))
+		sample_output_d = outdirectory + "/" + "Rep" + str(rep_id+1)
+		# Obtain bedfile
+		gene_bedfile = sample_output_d + "/" + "scReadSim.Gene.bed"
+		intergene_bedfile = sample_output_d + "/" + "scReadSim.InterGene.bed"
+		# Specify the output count matrices' prenames
+		UMI_gene_count_mat_filename = "Rep%s.gene.countmatrix" % str(rep_id+1)
+		UMI_intergene_count_mat_filename = "Rep%s.intergene.countmatrix" % str(rep_id+1)
+		# Specify the names of synthetic count matrices (generated by GenerateSyntheticCount.scATAC_GenerateSyntheticCount)
+		synthetic_countmat_gene_file = UMI_gene_count_mat_filename + ".scDesign2Simulated.txt"
+		synthetic_countmat_intergene_file = UMI_intergene_count_mat_filename + ".scDesign2Simulated.txt"
+		# Specify the base name of bed files containing synthetic reads
+		OUTPUT_cells_barcode_file = "synthetic_cell_barcode_rep%s.txt" % str(rep_id+1)
+		gene_read_bedfile_prename = "Rep%s.syntheticBAM.gene" % str(rep_id+1)
+		intergene_read_bedfile_prename = "Rep%s.syntheticBAM.intergene" % str(rep_id+1)
+		BED_filename_combined_pre = "Rep%s.syntheticBAM.combined" % str(rep_id+1)
+		synthetic_cell_label_file = UMI_gene_count_mat_filename + ".scDesign2Simulated.CellTypeLabel.txt"
+		# Create synthetic read bed file for peaks
+		print("\n[scReadSim] Generating synthetic read BED file for genes...")
+		scRNA_GenerateBAMCoord(bed_file=gene_bedfile, UMI_count_mat_file=sample_output_d + "/" + synthetic_countmat_gene_file, synthetic_cell_label_file=sample_output_d + "/" + synthetic_cell_label_file, read_bedfile_prename=gene_read_bedfile_prename, INPUT_bamfile=INPUT_bamfile[rep_id], outdirectory=sample_output_d, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file, jitter_size=5, read_len=read_len)
+		# Create synthetic read bed file for non-peaks
+		print("\n[scReadSim] Generating synthetic read BED file for inter-genes...")
+		scRNA_GenerateBAMCoord(bed_file=intergene_bedfile, UMI_count_mat_file=sample_output_d + "/" + synthetic_countmat_intergene_file, synthetic_cell_label_file=sample_output_d + "/" + synthetic_cell_label_file, read_bedfile_prename=intergene_read_bedfile_prename, INPUT_bamfile=INPUT_bamfile[rep_id], outdirectory=sample_output_d, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file, jitter_size=5, read_len=read_len)
+		# Combine bed file
+		scRNA_CombineBED(outdirectory=sample_output_d, gene_read_bedfile_prename=gene_read_bedfile_prename, intergene_read_bedfile_prename=intergene_read_bedfile_prename, BED_filename_combined_pre=BED_filename_combined_pre)
+		# Generate FASTQ files
+		synthetic_fastq_prename = BED_filename_combined_pre
+		# Convert combined bed file into FASTQ files
+		print("\n[scReadSim] Generating synthetic read FASTQ files...")
+		scRNA_BED2FASTQ(bedtools_directory=bedtools_directory, seqtk_directory=seqtk_directory, referenceGenome_file=referenceGenome_file, outdirectory=sample_output_d, BED_filename_combined=BED_filename_combined_pre, synthetic_fastq_prename=synthetic_fastq_prename)
+		# Generate reads with errors in FASTQs
+		print("\n[scReadSim] Generating synthetic read FASTQ files with substitutional error...")
+		scRNA_ErrorBase(fgbio_jarfile=fgbio_jarfile, INPUT_bamfile=INPUT_bamfile[rep_id], referenceGenome_file=referenceGenome_file, outdirectory=sample_output_d, synthetic_fastq_prename=synthetic_fastq_prename)

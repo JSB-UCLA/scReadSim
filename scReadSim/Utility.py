@@ -10,6 +10,7 @@ from tqdm import tqdm
 import os
 from joblib import Parallel, delayed
 from collections import Counter
+from pathlib import Path
 
 
 def CallPeak(macs3_directory, INPUT_bamfile, outdirectory, MACS3_peakname_pre, qval=0.05):
@@ -348,7 +349,7 @@ def scATAC_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdi
         for rec_id in tqdm(range(len(open_peak))):
             print("\t".join([str(x) for x in para_countmat[rec_id,:]]),file = outsfile)
     print('[scReadSim] Created:')
-    print('[scReadSim] Read Count Matrix: %s/%s.txt' % (outdirectory, count_mat_filename))
+    print('[scReadSim] Read count matrix: %s/%s.txt' % (outdirectory, count_mat_filename))
     print('[scReadSim] Done!')
 
 
@@ -647,7 +648,146 @@ def FeatureMapping(INPUT_bamfile, input_peaks, input_nonpeaks, output_peaks, out
 
 
 
+# Multi-sample
+def scATAC_CreateFeatureSets_MultiSample(INPUT_bamfile, samtools_directory, bedtools_directory, outdirectory, genome_size_file, macs3_directory, superset_peakfile, OUTPUT_peakfile=None):
+    """Multi-sample/replicate implement of scReadSim for generating scATAC-seq features. 
+
+    Parameters
+    ----------
+    INPUT_bamfile: `str`
+        List of input BAM files (use absolute paths to the BAM files).
+    samtools_directory: `str`
+        Directory of software samtools.
+    bedtools_directory: `str`
+        Directory of software bedtools.
+    outdirectory: `str`
+        Specify the working directory of scReadSim for generating intermediate and final output files.
+    genome_size_file: `str`
+        Directory of Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicates the size.  
+    macs3_directory: `str`
+        Path to software MACS3.
+    superset_peakfile: `str`
+        Directory of a superset of potential chromatin open regions, including sources such as ENCODE cCRE (Candidate Cis-Regulatory Elements) collection.
+    OUTPUT_peakfile: `str` (default: None)
+        Directory of user-specified output peak file. Synthetic scATAC-seq reads will be generated taking `OUTPUT_peakfile` as ground truth peaks. Note that `OUTPUT_peakfile` does not name the generated feature files by function `scATAC_CreateFeatureSets`.
+    """
+    if len(INPUT_bamfile) > 1:
+        print("[scReadSim] Multiple input BAM files detected.")
+        # Create individual output directories
+        print("[scReadSim] Creating individual output directory for each sample/replicate.")
+        for rep_id in range(len(INPUT_bamfile)):
+            sample_output_d = outdirectory + "/" + "Rep" + str(rep_id+1)
+            if not Path(sample_output_d).is_dir():
+                os.mkdir(sample_output_d)
+            # Preparing features for each sample
+            print("\n[scReadSim] Creating features for sample %s." % str(rep_id+1))
+            scATAC_CreateFeatureSets(peak_mode="superset", INPUT_bamfile=INPUT_bamfile[rep_id], samtools_directory=samtools_directory, bedtools_directory=bedtools_directory, outdirectory=sample_output_d, genome_size_file=genome_size_file, macs3_directory=macs3_directory, superset_peakfile=superset_peakfile, OUTPUT_peakfile=OUTPUT_peakfile)
+    elif len(INPUT_bamfile) == 1:
+        raise ValueError("[ERROR]: Only one input BAM file detected. Please use single sample version scReadSim.Utility.scATAC_CreateFeatureSets instead.")
 
 
 
 
+def scATAC_bam2countmat_paral_MultiSample(cells_barcode_file, INPUT_bamfile, outdirectory, n_cores=1):
+    """Multi-sample/replicate implement of scReadSim for constructing count matrices for scATAC-seq BAM file.
+
+    Parameters
+    ----------
+    cells_barcode_file: `str`
+        List of cell barcode files corresponding to the input BAM files.
+    INPUT_bamfile: `str`
+        List of input BAM files (use absolute paths to the BAM files).
+    outdirectory: `str`
+        Specify the working directory of scReadSim for generating intermediate and final output files.
+    n_cores: `int` (default: 1)
+        Specify the number of cores for parallel computing when generating count matrix.
+    """
+    if len(cells_barcode_file) != len(INPUT_bamfile):
+        raise ValueError("[ERROR]: Number of input cell barcode files does not match the number of inputBAM files!")
+    for rep_id in range(len(INPUT_bamfile)):
+        print("\n[scReadSim] Creating count matrices for sample %s." % str(rep_id+1))
+        sample_output_d = outdirectory + "/" + "Rep" + str(rep_id+1)
+        # Obtain bedfile
+        peak_bedfile = sample_output_d + "/" + "scReadSim.superset.peak.bed"
+        nonpeak_bedfile = sample_output_d + "/" + "scReadSim.superset.nonpeak.bed"
+        # Specify the output count matrices' prenames
+        count_mat_peak_filename = "Rep%s.peak.countmatrix" % str(rep_id+1)
+        count_mat_nonpeak_filename = "Rep%s.nonpeak.countmatrix" % str(rep_id+1)
+        # Construct count matrix for peaks
+        print("\n[scReadSim] Generating read counts for peaks...")
+        scATAC_bam2countmat_paral(cells_barcode_file=cells_barcode_file[rep_id], bed_file=peak_bedfile, INPUT_bamfile=INPUT_bamfile[rep_id], outdirectory=sample_output_d, count_mat_filename=count_mat_peak_filename, n_cores=n_cores)
+        # Construct count matrix for non-peaks
+        print("\n[scReadSim] Generating read counts for non-peaks...")
+        scATAC_bam2countmat_paral(cells_barcode_file=cells_barcode_file[rep_id], bed_file=nonpeak_bedfile, INPUT_bamfile=INPUT_bamfile[rep_id], outdirectory=sample_output_d, count_mat_filename=count_mat_nonpeak_filename, n_cores=n_cores)
+
+
+
+def scRNA_CreateFeatureSets_MultiSample(INPUT_bamfile, samtools_directory, bedtools_directory, outdirectory, genome_size_file, genome_annotation):
+    """Multi-sample/replicate implement of scReadSim for generating scRNA-seq features. 
+
+    Parameters
+    ----------
+    INPUT_bamfile: `str`
+        List of input BAM files (use absolute paths to the BAM files).
+    samtools_directory: `str`
+        Path to software `samtools`.
+    bedtools_directory: `str`
+        Path to software `bedtools`.
+    outdirectory: `str`
+        Specify the working directory of scReadSim for generating intermediate and final output files.
+    genome_annotation: `str`
+        Genome annotation file for the reference genome that the input BAM aligned on or the synthetic BAM should align on.
+    genome_size_file: `str`
+        Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicates the size.
+    """
+    if len(INPUT_bamfile) > 1:
+        print("[scReadSim] Multiple input BAM files detected.")
+        # Create individual output directories
+        print("[scReadSim] Creating individual output directory for each sample/replicate.")
+        for rep_id in range(len(INPUT_bamfile)):
+            sample_output_d = outdirectory + "/" + "Rep" + str(rep_id+1)
+            if not Path(sample_output_d).is_dir():
+                os.mkdir(sample_output_d)
+            # Preparing features for each sample
+            print("\n[scReadSim] Creating features for sample %s." % str(rep_id+1))
+            scRNA_CreateFeatureSets(INPUT_bamfile=INPUT_bamfile[rep_id], samtools_directory=samtools_directory, bedtools_directory=bedtools_directory, outdirectory=sample_output_d, genome_annotation=genome_annotation, genome_size_file=genome_size_file)
+    elif len(INPUT_bamfile) == 1:
+        raise ValueError("[ERROR]: Only one input BAM file detected. Please use single sample version scReadSim.Utility.scRNA_CreateFeatureSets instead.")
+
+
+def scRNA_bam2countmat_paral_MultiSample(cells_barcode_file, INPUT_bamfile, outdirectory, n_cores=1, UMI_modeling=True, UMI_tag = "UB:Z"):
+    """Multi-sample/replicate implement of scReadSim for constructing count matrices for scRNA-seq BAM file.
+
+    Parameters
+    ----------
+    cells_barcode_file: `str`
+        List of cell barcode files corresponding to the input BAM files.
+    INPUT_bamfile: `str`
+        List of input BAM files (use absolute paths to the BAM files).
+    outdirectory: `str`
+        Specify the working directory of scReadSim for generating intermediate and final output files.
+    n_cores: `int` (default: 1)
+        Specify the number of cores for parallel computing when generating count matrix.
+    UMI_modeling: `bool` (default: True)
+        Specify whether scReadSim should model UMI count of the input BAM file.
+    UMI_tag: `str` (default: 'UB:Z')
+        If UMI_modeling is set to True, specify the UMI tag of input BAM file, default value 'UB:Z' is the UMI tag for 10x scRNA-seq.
+    """
+    if len(cells_barcode_file) != len(INPUT_bamfile):
+        raise ValueError("[ERROR]: Number of input cell barcode files does not match the number of inputBAM files!")
+    for rep_id in range(len(INPUT_bamfile)):
+        print("\n[scReadSim] Creating count matrices for sample %s." % str(rep_id+1))
+        sample_output_d = outdirectory + "/" + "Rep" + str(rep_id+1)
+        # Obtain bedfile
+        # Specify the path to bed files generated by Utility.scRNA_CreateFeatureSets
+        gene_bedfile = sample_output_d + "/" + "scReadSim.Gene.bed"
+        intergene_bedfile = sample_output_d + "/" + "scReadSim.InterGene.bed"
+        # Specify the output count matrices' prenames
+        UMI_gene_count_mat_filename = "Rep%s.gene.countmatrix" % str(rep_id+1)
+        UMI_intergene_count_mat_filename = "Rep%s.intergene.countmatrix" % str(rep_id+1)
+        # Construct count matrix for genes
+        print("\n[scReadSim] Generating read counts for genes...")
+        scRNA_bam2countmat_paral(cells_barcode_file=cells_barcode_file[rep_id], bed_file=gene_bedfile, INPUT_bamfile=INPUT_bamfile[rep_id], outdirectory=sample_output_d, count_mat_filename=UMI_gene_count_mat_filename, UMI_modeling=UMI_modeling, UMI_tag = UMI_tag, n_cores=n_cores)
+        print("\n[scReadSim] Generating read counts for inter-genes...")
+        # Construct count matrix for inter-genes
+        scRNA_bam2countmat_paral(cells_barcode_file=cells_barcode_file[rep_id], bed_file=intergene_bedfile, INPUT_bamfile=INPUT_bamfile[rep_id], outdirectory=sample_output_d, count_mat_filename=UMI_intergene_count_mat_filename, UMI_modeling=UMI_modeling, UMI_tag = UMI_tag, n_cores=n_cores)

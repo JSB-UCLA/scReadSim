@@ -464,32 +464,32 @@ def scATAC_CombineBED(outdirectory, peak_read_bedfile_prename, nonpeak_read_bedf
         Specify whether to combine gray area's reads.
    """
     if GrayAreaModeling:
-        print("[scReadSim] Combining Synthetic Read 1 Bed Files from Peaks, NonPeaks and GrayAreas.")
+        print("[scReadSim] Combining synthetic read 1 BED files from peaks, non-peaks and gray areas.")
         combine_read1_cmd = "cat %s/%s.read1.bed %s/%s.read1.bed %s/%s.GrayArea.read1.bed > %s/%s.read1.bed" % (outdirectory, peak_read_bedfile_prename, outdirectory, nonpeak_read_bedfile_prename, outdirectory, nonpeak_read_bedfile_prename, outdirectory, BED_filename_combined_pre)
         output, error = subprocess.Popen(combine_read1_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         if error:
             print('[ERROR] Fail to create combine synthetic read1 bed files:\n', error.decode())
-        print("[scReadSim] Combining Synthetic Read 2 Bed Files from Peaks, NonPeaks and GrayAreas.")
+        print("[scReadSim] Combining synthetic read 2 BED files from peaks, non-peaks and gray areas.")
         combine_read2_cmd = "cat %s/%s.read2.bed %s/%s.read2.bed %s/%s.GrayArea.read2.bed > %s/%s.read2.bed" % (outdirectory, peak_read_bedfile_prename, outdirectory, nonpeak_read_bedfile_prename, outdirectory, nonpeak_read_bedfile_prename, outdirectory, BED_filename_combined_pre)
         output, error = subprocess.Popen(combine_read2_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         if error:
             print('[ERROR] Fail to create combine synthetic read2 bed files:\n', error.decode())
             # sys.exit('[ERROR] Fail to create combine synthetic read2 bed files:\n', error.decode())
     else:
-        print("[scReadSim] Combining Synthetic Read 1 Bed Files from Peaks, NonPeaks.")
+        print("[scReadSim] Combining synthetic read 1 BED files from peaks, non-peaks.")
         combine_read1_cmd = "cat %s/%s.read1.bed %s/%s.read1.bed > %s/%s.read1.bed" % (outdirectory, peak_read_bedfile_prename, outdirectory, nonpeak_read_bedfile_prename, outdirectory, BED_filename_combined_pre)
         output, error = subprocess.Popen(combine_read1_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         if error:
             print('[ERROR] Fail to create combine synthetic read1 bed files:\n', error.decode())
-        print("[scReadSim] Combining Synthetic Read 2 Bed Files from Peaks, NonPeaks.")
+        print("[scReadSim] Combining synthetic read 2 BED files from peaks, non-peaks.")
         combine_read2_cmd = "cat %s/%s.read2.bed %s/%s.read2.bed > %s/%s.read2.bed" % (outdirectory, peak_read_bedfile_prename, outdirectory, nonpeak_read_bedfile_prename, outdirectory, BED_filename_combined_pre)
         output, error = subprocess.Popen(combine_read2_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         if error:
             print('[ERROR] Fail to create combine synthetic read2 bed files:\n', error.decode())
             # sys.exit('[ERROR] Fail to create combine synthetic read2 bed files:\n', error.decode())        
     print("\n[scReadSim] Created:")
-    print("[scReadSim] Combined Read 1 Bed File: %s/%s.read1.bed" % (outdirectory, BED_filename_combined_pre))
-    print("[scReadSim] Combined Read 2 Bed File: %s/%s.read2.bed" % (outdirectory, BED_filename_combined_pre))
+    print("[scReadSim] Combined read 1 BED file: %s/%s.read1.bed" % (outdirectory, BED_filename_combined_pre))
+    print("[scReadSim] Combined read 2 BED file: %s/%s.read2.bed" % (outdirectory, BED_filename_combined_pre))
     print("[scReadSim] Done.")
 
 
@@ -512,7 +512,7 @@ def scATAC_BED2FASTQ(bedtools_directory, seqtk_directory, referenceGenome_file, 
         Specify the base name of the output FASTQ files.
     """
 	# Create FASTA
-    print('[scReadSim] Generating Synthetic Read FASTA files...')
+    print('[scReadSim] Generating synthetic read FASTA files...')
     fasta_read1_cmd = "%s/bedtools getfasta -s -fi %s -bed %s/%s.read1.bed -fo %s/%s.read1.bed2fa.strand.fa -nameOnly" % (bedtools_directory, referenceGenome_file, outdirectory, BED_filename_combined, outdirectory, synthetic_fastq_prename)
     output, error = subprocess.Popen(fasta_read1_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     if error:
@@ -531,7 +531,7 @@ def scATAC_BED2FASTQ(bedtools_directory, seqtk_directory, referenceGenome_file, 
     if error:
         print('[ERROR] Fail to remove strand infomormation from synthetic read2 fasta file:', error.decode())
 	# FASTA to FASTQ
-    print('[scReadSim] Generating Synthetic Read FASTQ files...')
+    print('[scReadSim] Generating synthetic read FASTQ files...')
     fastq_read1_cmd = "%s/seqtk seq -F 'F' %s/%s.read1.bed2fa.fa > %s/%s.read1.bed2fa.fq" % (seqtk_directory, outdirectory, synthetic_fastq_prename, outdirectory, synthetic_fastq_prename)
     output, error = subprocess.Popen(fastq_read1_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     if error:
@@ -550,8 +550,8 @@ def scATAC_BED2FASTQ(bedtools_directory, seqtk_directory, referenceGenome_file, 
     if error:
         print('[ERROR] Fail to sort read2 synthetic fastq file:', error.decode())
     print("\n[scReadSim] Created:")
-    print("[scReadSim] Read 1 FASTQ File: %s/%s.read1.bed2fa.sorted.fq" % (outdirectory, synthetic_fastq_prename))
-    print("[scReadSim] Read 2 FASTQ File: %s/%s.read2.bed2fa.sorted.fq" % (outdirectory, synthetic_fastq_prename))
+    print("[scReadSim] Read 1 FASTQ file: %s/%s.read1.bed2fa.sorted.fq" % (outdirectory, synthetic_fastq_prename))
+    print("[scReadSim] Read 2 FASTQ file: %s/%s.read2.bed2fa.sorted.fq" % (outdirectory, synthetic_fastq_prename))
     print("[scReadSim] Done.")
 
 
@@ -579,15 +579,15 @@ def AlignSyntheticBam_Pair(bowtie2_directory, samtools_directory, outdirectory, 
     alignment_cmd = "%s/bowtie2 --minins 0 --maxins 1200 -x %s/%s -1 %s/%s.read1.bed2fa.sorted.fq -2 %s/%s.read2.bed2fa.sorted.fq | %s/samtools view -bS - > %s/%s.synthetic.noCB.bam" % (bowtie2_directory, referenceGenome_dir, referenceGenome_name,  outdirectory, synthetic_fastq_prename, outdirectory, synthetic_fastq_prename, samtools_directory, outdirectory, output_BAM_pre)
     output, error = subprocess.Popen(alignment_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     print('[Bowtie2] Aligning:\n', error.decode())
-    print('[scReadSim] Alignment Done.')
-    print('[scReadSim] Generating Cell Barcode Tag...')
+    print('[scReadSim] Alignment done.')
+    print('[scReadSim] Generating cell barcode tag...')
     addBC2BAM_header_cmd = "%s/samtools view %s/%s.synthetic.noCB.bam -H > %s/%s.synthetic.noCB.header.sam" % (samtools_directory, outdirectory, output_BAM_pre, outdirectory, output_BAM_pre)
     output, error = subprocess.Popen(addBC2BAM_header_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     addBC2BAM_cmd = "cat <( cat %s/%s.synthetic.noCB.header.sam ) <( paste <(%s/samtools view %s/%s.synthetic.noCB.bam ) <(%s/samtools view %s/%s.synthetic.noCB.bam | cut -f1 | cut -d':' -f1 | sed -e 's/^/CB:Z:/')) | %s/samtools view -bS - > %s/%s.synthetic.bam" % (outdirectory, output_BAM_pre, samtools_directory, outdirectory, output_BAM_pre, samtools_directory, outdirectory, output_BAM_pre, samtools_directory, outdirectory, output_BAM_pre)
     output, error = subprocess.Popen(addBC2BAM_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     if error:
         print('[ERROR] Fail to add BC tag to synthetic BAM file:', error.decode())
-    print('[scReadSim] Sorting and Indexing BAM file...')
+    print('[scReadSim] Sorting and indexing BAM file...')
     sortBAMcmd = "%s/samtools sort %s/%s.synthetic.bam > %s/%s.synthetic.sorted.bam" % (samtools_directory, outdirectory, output_BAM_pre, outdirectory, output_BAM_pre)
     output, error = subprocess.Popen(sortBAMcmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     if error:
@@ -597,7 +597,7 @@ def AlignSyntheticBam_Pair(bowtie2_directory, samtools_directory, outdirectory, 
     if error:
         print('[ERROR] Fail to index synthetic BAM file:', error.decode())
     print("\n[scReadSim] Created:")
-    print("[scReadSim] Synthetic Read BAM File: %s/%s.synthetic.sorted.bam" % (outdirectory, output_BAM_pre))
+    print("[scReadSim] Synthetic read BAM file: %s/%s.synthetic.sorted.bam" % (outdirectory, output_BAM_pre))
     print("[scReadSim] Done.")
 
 
@@ -708,13 +708,13 @@ def scATAC_ErrorBase(fgbio_jarfile, INPUT_bamfile, referenceGenome_file, outdire
 	synthetic_fastq_prename: `str`
 		Base name of the synthetic FASTQ files output by function `scATAC_BED2FASTQ`.
 	"""
-	print('[scReadSim] Substitution Error Calculating...')
+	print('[scReadSim] Substitution error calculating...')
 	combine_read1_cmd = "java -jar %s ErrorRateByReadPosition -i %s -r %s -o %s/Real --collapse false" % (fgbio_jarfile, INPUT_bamfile, referenceGenome_file, outdirectory)
 	output, error = subprocess.Popen(combine_read1_cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 	if error:
 		print('[Messages] Running fgbio on real bam file:\n', error.decode())
 	# Generate Errors into fastq files
-	print('[scReadSim] Generting Synthetic Read FASTQ Files with Substitution Errors...')
+	print('[scReadSim] Generting synthetic read FASTQ files with substitution errors...')
 	real_error_rate_file = outdirectory + "/" + "Real.error_rate_by_read_position.txt"
 	SubstiError_Pair(real_error_rate_file, outdirectory, synthetic_fastq_prename)
 	# Combine FASTQs
@@ -728,13 +728,70 @@ def scATAC_ErrorBase(fgbio_jarfile, INPUT_bamfile, referenceGenome_file, outdire
 	if error:
 			print('[ERROR] Fail to sort read2 synthetic fastq file:', error.decode())
 	print("\n[scReadSim] Created:")
-	print("[scReadSim] Read 1 FASTQ File with Substitution Error: %s/%s.ErrorIncluded.read1.bed2fa.sorted.fq" % (outdirectory, synthetic_fastq_prename))
-	print("[scReadSim] Read 2 FASTQ File with Substitution Error: %s/%s.ErrorIncluded.read2.bed2fa.sorted.fq" % (outdirectory, synthetic_fastq_prename))
+	print("[scReadSim] Read 1 FASTQ file with substitutional error: %s/%s.ErrorIncluded.read1.bed2fa.sorted.fq" % (outdirectory, synthetic_fastq_prename))
+	print("[scReadSim] Read 2 FASTQ file with substitutional error: %s/%s.ErrorIncluded.read2.bed2fa.sorted.fq" % (outdirectory, synthetic_fastq_prename))
 	print("[scReadSim] Done.")
 
 
 
 
+
+
+
+def scATAC_GenerateSyntheticRead_MultiSample(INPUT_bamfile, outdirectory, bedtools_directory, seqtk_directory, fgbio_jarfile, referenceGenome_file, read_len=50):
+    """Multi-sample/replicate implement of scReadSim for simulating scATAC-seq synthetic reads.
+
+    Parameters
+    ----------
+    INPUT_bamfile: `str`
+        List of input BAM files (use absolute paths to the BAM files).
+    outdirectory: `str`
+        Specify the working directory of scReadSim for generating intermediate and final output files.
+    bedtools_directory: `str`
+        Directory of software bedtools.
+    seqtk_directory: `str`
+        Directory of software seqtk.
+    fgbio_jarfile: `str`
+        Path to software fgbio jar script.
+    referenceGenome_file: 'str'
+        Reference genome FASTA file that the synthteic reads should align.
+    read_len: `int` (default: '50')
+        Specify the length of synthetic reads. Default value is 50 bp.
+    """
+    for rep_id in range(len(INPUT_bamfile)):
+        print("\n[scReadSim] Generating synthetic reads for sample %s..." % str(rep_id+1))
+        sample_output_d = outdirectory + "/" + "Rep" + str(rep_id+1)
+        # Obtain bedfile
+        peak_bedfile = sample_output_d + "/" + "scReadSim.superset.peak.bed"
+        nonpeak_bedfile = sample_output_d + "/" + "scReadSim.superset.nonpeak.bed"
+        # Specify the output count matrices' prenames
+        count_mat_peak_filename = "Rep%s.peak.countmatrix" % str(rep_id+1)
+        count_mat_nonpeak_filename = "Rep%s.nonpeak.countmatrix" % str(rep_id+1)
+        # Specify the names of synthetic count matrices (generated by GenerateSyntheticCount.scATAC_GenerateSyntheticCount)
+        synthetic_countmat_peak_file = count_mat_peak_filename + ".scDesign2Simulated.txt"
+        synthetic_countmat_nonpeak_file = count_mat_nonpeak_filename + ".scDesign2Simulated.txt"
+        # Specify the base name of bed files containing synthetic reads
+        OUTPUT_cells_barcode_file = "synthetic_cell_barcode_rep%s.txt" % str(rep_id+1)
+        peak_read_bedfile_prename = "Rep%s.syntheticBAM.peak" % str(rep_id+1)
+        nonpeak_read_bedfile_prename = "Rep%s.syntheticBAM.nonpeak" % str(rep_id+1)
+        BED_filename_combined_pre = "Rep%s.syntheticBAM.combined" % str(rep_id+1)
+        synthetic_cell_label_file = count_mat_peak_filename + ".scDesign2Simulated.CellTypeLabel.txt"
+        # Create synthetic read bed file for peaks
+        print("\n[scReadSim] Generating synthetic read BED file for peaks...")
+        scATAC_GenerateBAMCoord(bed_file=peak_bedfile, count_mat_file=sample_output_d + "/" + synthetic_countmat_peak_file, synthetic_cell_label_file=sample_output_d + "/" + synthetic_cell_label_file, read_bedfile_prename=peak_read_bedfile_prename, INPUT_bamfile=INPUT_bamfile[rep_id], outdirectory=sample_output_d, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file, jitter_size=5, read_len=read_len)
+        # Create synthetic read bed file for non-peaks
+        print("\n[scReadSim] Generating synthetic read BED file for non-peaks...")
+        scATAC_GenerateBAMCoord(bed_file=nonpeak_bedfile, count_mat_file=sample_output_d + "/" + synthetic_countmat_nonpeak_file, synthetic_cell_label_file=sample_output_d + "/" + synthetic_cell_label_file, read_bedfile_prename=nonpeak_read_bedfile_prename, INPUT_bamfile=INPUT_bamfile[rep_id], outdirectory=sample_output_d, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file, jitter_size=5, read_len=read_len,  GrayAreaModeling=True)
+        # Combine bed fileS
+        scATAC_CombineBED(outdirectory=sample_output_d, peak_read_bedfile_prename=peak_read_bedfile_prename, nonpeak_read_bedfile_prename=nonpeak_read_bedfile_prename, BED_filename_combined_pre=BED_filename_combined_pre)
+        # Generate FASTQ files
+        synthetic_fastq_prename = BED_filename_combined_pre
+        # Convert combined bed file into FASTQ files
+        print("\n[scReadSim] Generating read synthetic FASTQ files...")
+        scATAC_BED2FASTQ(bedtools_directory=bedtools_directory, seqtk_directory=seqtk_directory, referenceGenome_file=referenceGenome_file, outdirectory=sample_output_d, BED_filename_combined=BED_filename_combined_pre, synthetic_fastq_prename=synthetic_fastq_prename)
+        # Generate reads with errors in FASTQs
+        print("\n[scReadSim] Generating read synthetic FASTQ files with substitutional error...")
+        scATAC_ErrorBase(fgbio_jarfile=fgbio_jarfile, INPUT_bamfile=INPUT_bamfile[rep_id], referenceGenome_file=referenceGenome_file, outdirectory=sample_output_d, synthetic_fastq_prename=synthetic_fastq_prename)
 
 
 
