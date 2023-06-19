@@ -2,7 +2,7 @@
 
 This tutorial demonstrates the application of scReadSim generating synthetic reads for **scATAC-seq from multiple replicates/samples**. For simplicity, we chose two of 10x datasets as the input multi-samples for this tutorial illustration. The datasets we chose include
 - [10x Single Cell Multiome dataset (ATAC modality) for Fresh Embryonic E18 Mouse Brain](https://www.10xgenomics.com/resources/datasets/fresh-embryonic-e-18-mouse-brain-5-k-1-standard-2-0-0)
-- [10x Mouse Brain (E18) scATAC-seq](https://www.10xgenomics.com/resources/datasets/fresh-cortex-hippocampus-and-ventricular-zone-from-embryonic-mouse-brain-e-18-1-standard-1-2-0)
+- [10x E18 Mouse Brain scATAC-seq](https://www.10xgenomics.com/resources/datasets/fresh-cortex-hippocampus-and-ventricular-zone-from-embryonic-mouse-brain-e-18-1-standard-1-2-0)
 
 
 

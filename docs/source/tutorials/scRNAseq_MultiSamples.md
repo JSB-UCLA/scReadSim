@@ -2,7 +2,7 @@
 
 This tutorial demonstrates the application of scReadSim generating synthetic reads for **scRNA-seq from multiple replicates/samples**. For simplicity, we chose two of 10x datasets as the input multi-samples for this tutorial illustration. The datasets we chose include
 - [10x Single Cell Multiome dataset (RNA modality) for Fresh Embryonic E18 Mouse Brain](https://www.10xgenomics.com/resources/datasets/fresh-embryonic-e-18-mouse-brain-5-k-1-standard-2-0-0)
-- [10x Mouse Brain (E18) scRNA-seq](https://www.10xgenomics.com/resources/datasets/5-k-mouse-e-18-combined-cortex-hippocampus-and-subventricular-zone-cells-3-1-standard-6-0-0)
+- [10x E18 Mouse Brain scRNA-seq](https://www.10xgenomics.com/resources/datasets/5-k-mouse-e-18-combined-cortex-hippocampus-and-subventricular-zone-cells-3-1-standard-6-0-0)
 
 
 
