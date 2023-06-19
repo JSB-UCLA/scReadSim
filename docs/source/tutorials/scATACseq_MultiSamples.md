@@ -4,6 +4,13 @@ This tutorial demonstrates the application of scReadSim generating synthetic rea
 - [10x Single Cell Multiome dataset (ATAC modality) for Fresh Embryonic E18 Mouse Brain](https://www.10xgenomics.com/resources/datasets/fresh-embryonic-e-18-mouse-brain-5-k-1-standard-2-0-0)
 - [10x E18 Mouse Brain scATAC-seq](https://www.10xgenomics.com/resources/datasets/fresh-cortex-hippocampus-and-ventricular-zone-from-embryonic-mouse-brain-e-18-1-standard-1-2-0)
 
+This tutorial's main steps and corresponding estimated time usage are as follows (tested on a server with the 256x Intel Xeon Phi CPU 7210 at 1.30 GHz):
+
+- [Step 1: Import packages and data files](#step-1-import-packages-and-data-files): < 1 min
+- [Step 2: Generate features](#step-2-generate-features): < 1 min
+- [Step 3: Generate real count matrices](#step-3-generate-real-count-matrices): ~ 3 mins
+- [Step 4: Simulate synthetic count matrix](#step-4-simulate-synthetic-count-matrix): ~ 5 mins
+- [Step 5: Output synthetic read](#step-5-output-synthetic-read): ~ 3 mins
 
 
 ## Required softwares for scReadSim

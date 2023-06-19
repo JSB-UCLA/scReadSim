@@ -1,5 +1,14 @@
 # scReadSim on 10x scATAC-seq 
 
+This tutorial's main steps and corresponding estimated time usage are as follows (tested on a server with the 256x Intel Xeon Phi CPU 7210 at 1.30 GHz):
+
+- [Step 1: Import packages and data files](#step-1-import-packages-and-data-files): < 1 min
+- [Step 2: Generate features](#step-2-generate-features): < 1 min
+- [Step 3: Generate real count matrices](#step-3-generate-real-count-matrices): < 1 min
+- [Step 4: Simulate synthetic count matrix](#step-4-simulate-synthetic-count-matrix): ~ 3 mins
+- [Step 5: Output synthetic read](#step-5-output-synthetic-read): ~ 2 mins
+
+
 ## Required softwares for scReadSim
 scReadSim requires users to pre-install the following softwares:
 - [MACS3](https://github.com/macs3-project/MACS)
@@ -254,7 +263,7 @@ GenerateSyntheticCount.scATAC_GenerateSyntheticCount(count_mat_filename=count_ma
 GenerateSyntheticCount.scATAC_GenerateSyntheticCount(count_mat_filename=count_mat_peak_filename, directory=outdirectory, outdirectory=outdirectory)
 
 # Specify cluster labels obtained from peak-by-cell matrix
-celllabel_file = outdirectory + "/" + 10X_ATAC_chr1_4194444_4399104.peak.countmatrix.LouvainClusterResults.txt"
+celllabel_file = outdirectory + "/" + "10X_ATAC_chr1_4194444_4399104.peak.countmatrix.LouvainClusterResults.txt"
 # Generate synthetic count matrix for nonpeak-by-cell count matrix
 GenerateSyntheticCount.scATAC_GenerateSyntheticCount(count_mat_filename=count_mat_nonpeak_filename, directory=outdirectory, outdirectory=outdirectory, celllabel_file=celllabel_file)
 ```

@@ -5,6 +5,17 @@ This tutorial demonstrates the application of scReadSim generating synthetic rea
 - [10x E18 Mouse Brain scRNA-seq](https://www.10xgenomics.com/resources/datasets/5-k-mouse-e-18-combined-cortex-hippocampus-and-subventricular-zone-cells-3-1-standard-6-0-0)
 
 
+This tutorial's main steps and corresponding estimated time usage are as follows (tested on a server with the 256x Intel Xeon Phi CPU 7210 at 1.30 GHz):
+
+- [Step 1: Import packages and data files](#step-1-import-packages-and-data-files): < 1 min
+- [Step 2: Generate features](#step-2-generate-features): < 1 min
+- [Step 3: Generate real count matrices](#step-3-generate-real-count-matrices): ~ 5 mins
+- [Step 4: Simulate synthetic count matrix](#step-4-simulate-synthetic-count-matrix): ~ 15 mins
+- [Step 5: Output synthetic read](#step-5-output-synthetic-read): ~ 11 mins
+
+
+
+
 
 ## Required softwares for scReadSim
 scReadSim requires users to pre-install the following softwares:
@@ -19,7 +30,7 @@ Depending on users' choices, the following softwares are optional:
 
 
 ## Pre-process input BAM file
-**Note: This tutorial does not need this pre-process step since the processed BAM file is provided by the scReadSim package (see Step 1: Import packages and data files).**
+**Note: This tutorial does not need this pre-process step since the processed BAM file is provided by the scReadSim package (see [Step 1: Import packages and data files](#step-1-import-packages-and-data-files)).**
 
 Input BAM file for scReadSim needs pre-processing to add the cell barcode in front of the read name. For example, in 10x sequencing data, cell barcode `TGGACCGGTTCACCCA-1` is stored in the field `CB:Z:TGGACCGGTTCACCCA-1`. 
 
