@@ -65,6 +65,8 @@ or::
    scReadSim on 10x scATAC-seq<scATACseq_NoInput_10X>
    scReadSim on 10x scRNA-seq<scRNAseq_10X>
    scReadSim on single-cell multiomics<scMultiOmics>
+   scReadSim on scATAC-seq with multiple samples/replicates<scATACseq_MultiSamples>
+   scReadSim on scRNA-seq with multiple samples/replicates<scRNACseq_MultiSamples>
    scReadSim on 10x scATAC-seq with user-input chromatin regions<scATACseq_INPUT_10X>
 
 

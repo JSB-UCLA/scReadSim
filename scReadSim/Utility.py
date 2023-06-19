@@ -735,10 +735,10 @@ def scRNA_CreateFeatureSets_MultiSample(INPUT_bamfile, samtools_directory, bedto
         Path to software `bedtools`.
     outdirectory: `str`
         Specify the working directory of scReadSim for generating intermediate and final output files.
-    genome_annotation: `str`
-        Genome annotation file for the reference genome that the input BAM aligned on or the synthetic BAM should align on.
     genome_size_file: `str`
         Genome sizes file. The file should be a tab delimited text file with two columns: first column for the chromosome name, second column indicates the size.
+    genome_annotation: `str`
+        Genome annotation file for the reference genome that the input BAM aligned on or the synthetic BAM should align on.
     """
     if len(INPUT_bamfile) > 1:
         print("[scReadSim] Multiple input BAM files detected.")
