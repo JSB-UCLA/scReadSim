@@ -26,6 +26,8 @@ Utility
    scReadSim.Utility.match_nonpeak
    scReadSim.Utility.bam2MarginalCount
    scReadSim.Utility.FeatureMapping
+   scReadSim.Utility.scATAC_bam2countmat_paral_MultiSample
+   scReadSim.Utility.scRNA_bam2countmat_paral_MultiSample
 
 
 scATAC_GenerateBAM
@@ -45,7 +47,7 @@ scATAC_GenerateBAM
    scReadSim.scATAC_GenerateBAM.ErroneousRead
    scReadSim.scATAC_GenerateBAM.SubstiError_Pair
    scReadSim.scATAC_GenerateBAM.scATAC_ErrorBase
-
+   scReadSim.scATAC_GenerateBAM.scATAC_GenerateSyntheticRead_MultiSample
 
 scRNA_GenerateBAM
 ~~~~~~~~~~~~~~~~~
@@ -62,6 +64,7 @@ scRNA_GenerateBAM
    scReadSim.scRNA_GenerateBAM.ErroneousRead
    scReadSim.scRNA_GenerateBAM.SubstiError
    scReadSim.scRNA_GenerateBAM.scRNA_ErrorBase
+   scReadSim.scRNA_GenerateBAM.scRNA_GenerateSyntheticRead_MultiSample
 
 
 DoubletDetection
@@ -79,6 +82,8 @@ GenerateSyntheticCount
 
    scReadSim.GenerateSyntheticCount.scATAC_GenerateSyntheticCount
    scReadSim.GenerateSyntheticCount.scRNA_GenerateSyntheticCount
+   scReadSim.GenerateSyntheticCount.scATAC_GenerateSyntheticCount_MultiSample
+   scReadSim.GenerateSyntheticCount.scRNA_GenerateSyntheticCount_MultiSample
 
 
 GenerateSyntheticCount_MultiOmics

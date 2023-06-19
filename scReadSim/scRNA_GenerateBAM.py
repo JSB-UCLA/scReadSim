@@ -475,7 +475,7 @@ def scRNA_GenerateSyntheticRead_MultiSample(INPUT_bamfile, outdirectory, bedtool
 		# Generate FASTQ files
 		synthetic_fastq_prename = BED_filename_combined_pre
 		# Convert combined bed file into FASTQ files
-		print("\n[scReadSim] Generating synthetic read FASTQ files...")
+		print("\n")
 		scRNA_BED2FASTQ(bedtools_directory=bedtools_directory, seqtk_directory=seqtk_directory, referenceGenome_file=referenceGenome_file, outdirectory=sample_output_d, BED_filename_combined=BED_filename_combined_pre, synthetic_fastq_prename=synthetic_fastq_prename)
 		# Generate reads with errors in FASTQs
 		print("\n[scReadSim] Generating synthetic read FASTQ files with substitutional error...")

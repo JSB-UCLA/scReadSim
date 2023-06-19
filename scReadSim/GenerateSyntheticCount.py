@@ -47,8 +47,6 @@ def scATAC_GenerateSyntheticCount(count_mat_filename, directory, outdirectory, d
 		Number of cores for parallel computing.
 	"""
 	r = robjects.r
-	# TODO
-	# Change directory
 	rscript_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Rscript/SyntheticCountFunctions.R')
 	print(rscript_dir)
 	# rscript_dir = pkg_resources.resource_stream(__name__, 'Rscript/scATAC_SyntheticCountFunctions.R').read().decode()
@@ -94,8 +92,6 @@ def scRNA_GenerateSyntheticCount(count_mat_filename, directory, outdirectory, do
 		Number of cores for parallel computing.
 	"""
 	r = robjects.r
-	# TODO
-	# Change directory
 	rscript_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Rscript/SyntheticCountFunctions.R')
 	print(rscript_dir)
 	# rscript_dir = pkg_resources.resource_stream(__name__, 'Rscript/scATAC_SyntheticCountFunctions.R').read().decode()
