@@ -1,4 +1,4 @@
-.. scReadSim on 10X scATAC-seq with multiple samples
+.. scReadSim on 10X scATAC-seq from multiple samples
 .. =================================================
 
 .. include:: tutorials/scATACseq_MultiSamples.md

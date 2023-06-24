@@ -15,6 +15,9 @@ This tutorial's main steps and corresponding estimated time usage are as follows
 - **Step 4: Simulate synthetic count matrix**: ~ 6 mins
 - **Step 5: Output synthetic read**: ~ 8 mins
 
+By default, this tutorial uses Python (Python >= 3.8). However, we also include code chunks using bash commands to preprocess necessary files. To avoid users' confusion, bash commands start with a symbol **$**. We also indicate when a following code chunk is using bash commands. 
+
+
 ## Required softwares for scReadSim
 scReadSim requires users to pre-install the following softwares:
 - [MACS3](https://github.com/macs3-project/MACS)
@@ -28,16 +31,18 @@ Depending on users' choices, the following softwares are optional:
 
 
 ## Pre-process input BAM file
-**Note: This tutorial does not need this pre-process step since the processed BAM file is provided by the scReadSim package (see Step 1: Import packages and data files).**
+**Note**: This tutorial does not need this pre-process step since the processed BAM file is provided by the scReadSim package (see **Step 1: Import packages and data files**).
 
 Input BAM file for scReadSim needs pre-processing to add the cell barcode in front of the read name. For example, in 10x sequencing data, cell barcode `TGGACCGGTTCACCCA-1` is stored in the field `CB:Z:TGGACCGGTTCACCCA-1`. 
+
+The following code chunk (**bash commands**) outputs a read record from the original BAM file.
 
 ```{code-block} console
 $ samtools view unprocess.bam | head -n 1
 A00836:472:HTNW5DMXX:1:1372:16260:18129      83      chr1    4194410 60      50M     =       4193976 -484    TGCCTTGCTACAGCAGCTCAGGAAATGTCTTTGTGCCCACAGTCTGTGGT   :FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF      NM:i:0  MD:Z:50 AS:i:50 XS:i:0  CR:Z:TCCGGGACAGCTAACA   CY:Z:FFFFFFFFFFFFFFF:   CB:Z:TGGACCGGTTCACCCA-1 BC:Z:AAACTCAT        QT:Z::FFFFFFF   RG:Z:e18_mouse_brain_fresh_5k:MissingLibrary:1:HTNW5DMXX:1
 ```
 
-The following code chunk adds the cell barcodes in front of the read names.
+The following code chunk (**bash commands**) adds the cell barcodes in front of the read names.
 
 ```{code-block} console
 $ # extract the header file
@@ -54,12 +59,15 @@ $ samtools view processed.bam | head -n 1
 TGGACCGGTTCACCCA-1:A00836:472:HTNW5DMXX:1:1372:16260:18129      83      chr1    4194410 60      50M     =       4193976 -484    TGCCTTGCTACAGCAGCTCAGGAAATGTCTTTGTGCCCACAGTCTGTGGT   :FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF      NM:i:0  MD:Z:50 AS:i:50 XS:i:0  CR:Z:TCCGGGACAGCTAACA   CY:Z:FFFFFFFFFFFFFFF:   CB:Z:TGGACCGGTTCACCCA-1 BC:Z:AAACTCAT        QT:Z::FFFFFFF   RG:Z:e18_mouse_brain_fresh_5k:MissingLibrary:1:HTNW5DMXX:1
 ```
 
+
+
 ## Download reference genome for test example
 The example deploys scReadSim on the [10x Single Cell Multiome ATAC + Gene Expression Dataset](https://www.10xgenomics.com/resources/datasets/fresh-embryonic-e-18-mouse-brain-5-k-1-standard-2-0-0). For user convienience, we prepared the indexed reference genome files (by bowtie2), which can be downloaded using the following bash commands:
 - GENCODE reference genome FASTA file and index file(indexed by bowtie2): reference.genome.chr1.tar.gz
 - GENCODE genome annotation gtf file: gencode.vM10.annotation.gtf
 
-**Note**: users may need to edit the code by using their own path.
+**Note**: users may need to edit the code by using their own path. The following code chunk is using **bash commands**.
+
 
 
 ```{code-block} console
@@ -180,7 +188,7 @@ Under default mode "macs3" (by setting argument `peak_mode` as the default value
 - gray area bed file: *scReadSim.grayareas.bed*
 
 ```{code-block} python3
-Utility.scATAC_CreateFeatureSets(peak_mode="macs3", INPUT_bamfile=INPUT_bamfile, samtools_directory=samtools_directory, bedtools_directory=bedtools_directory, outdirectory=outdirectory, genome_size_file=INPUT_genome_size_file, macs3_directory=macs3_directory, INPUT_peakfile=None, INPUT_nonpeakfile=None)
+Utility.scATAC_CreateFeatureSets(peak_mode="macs3", INPUT_bamfile=INPUT_ATAC_bamfile, samtools_directory=samtools_directory, bedtools_directory=bedtools_directory, outdirectory=outdirectory, genome_size_file=INPUT_genome_size_file, macs3_directory=macs3_directory, INPUT_peakfile=None, INPUT_nonpeakfile=None)
 ```
 
 
@@ -206,13 +214,13 @@ For the user specified `count_mat_filename`, scReadSim will generate a count mat
 gene_bedfile = outdirectory + "/" + "scReadSim.Gene.bed"
 intergene_bedfile = outdirectory + "/" + "scReadSim.InterGene.bed"
 # Specify the output count matrices' prenames
-UMI_gene_count_mat_filename = "%s.gene.countmatrix" % filename
-UMI_intergene_count_mat_filename = "%s.intergene.countmatrix" % filename
+UMI_gene_count_mat_filename = "%s.gene.countmatrix" % filename_RNA
+UMI_intergene_count_mat_filename = "%s.intergene.countmatrix" % filename_RNA
 
 ## Construct count matrix for genes
-Utility.scRNA_bam2countmat_paral(cells_barcode_file=INPUT_cells_barcode_file, bed_file=outdirectory + "/" + gene_bedfile, INPUT_bamfile=INPUT_RNA_bamfile, outdirectory=outdirectory, count_mat_filename=UMI_gene_count_mat_filename, UMI_modeling=True, UMI_tag = "UB:Z", n_cores=8)
+Utility.scRNA_bam2countmat_paral(cells_barcode_file=INPUT_cells_barcode_file, bed_file=gene_bedfile, INPUT_bamfile=INPUT_RNA_bamfile, outdirectory=outdirectory, count_mat_filename=UMI_gene_count_mat_filename, UMI_modeling=True, UMI_tag = "UB:Z", n_cores=8)
 ## Construct count matrix for inter-genes
-Utility.scRNA_bam2countmat_paral(cells_barcode_file=INPUT_cells_barcode_file, bed_file=outdirectory + "/" + intergene_bedfile, INPUT_bamfile=INPUT_RNA_bamfile, outdirectory=outdirectory, count_mat_filename=UMI_intergene_count_mat_filename, UMI_modeling=True, UMI_tag = "UB:Z", n_cores=8)
+Utility.scRNA_bam2countmat_paral(cells_barcode_file=INPUT_cells_barcode_file, bed_file=intergene_bedfile, INPUT_bamfile=INPUT_RNA_bamfile, outdirectory=outdirectory, count_mat_filename=UMI_intergene_count_mat_filename, UMI_modeling=True, UMI_tag = "UB:Z", n_cores=8)
 ```
 
 
@@ -234,8 +242,8 @@ For the user specified `count_mat_filename`, scReadSim will generate a count mat
 peak_bedfile = outdirectory + "/" + "scReadSim.MACS3.peak.bed"
 nonpeak_bedfile = outdirectory + "/" + "scReadSim.MACS3.nonpeak.bed"
 # Specify the output count matrices' prenames
-count_mat_peak_filename = "%s.peak.countmatrix" % filename
-count_mat_nonpeak_filename = "%s.nonpeak.countmatrix" % filename
+count_mat_peak_filename = "%s.peak.countmatrix" % filename_ATAC
+count_mat_nonpeak_filename = "%s.nonpeak.countmatrix" % filename_ATAC
 
 # Construct count matrix for peaks
 Utility.scATAC_bam2countmat_paral(cells_barcode_file=INPUT_cells_barcode_file, bed_file=peak_bedfile, INPUT_bamfile=INPUT_ATAC_bamfile, outdirectory=outdirectory, count_mat_filename=count_mat_peak_filename, n_cores=1)
@@ -316,11 +324,11 @@ OUTPUT_cells_barcode_file = "synthetic_cell_barcode.txt"
 
 # Create synthetic read coordinates for genes
 scRNA_GenerateBAM.scRNA_GenerateBAMCoord(
-        bed_file=outdirectory + "/" + gene_bedfile, UMI_count_mat_file=outdirectory + "/" + synthetic_countmat_gene_file, synthetic_cell_label_file=outdirectory + "/" + synthetic_cell_label_file, read_bedfile_prename=gene_read_bedfile_prename, INPUT_bamfile=INPUT_RNA_bamfile, outdirectory=outdirectory, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file, jitter_size=5, read_len=90)
+        bed_file=gene_bedfile, UMI_count_mat_file=outdirectory + "/" + synthetic_countmat_gene_file, synthetic_cell_label_file=outdirectory + "/" + synthetic_cell_label_file, read_bedfile_prename=gene_read_bedfile_prename, INPUT_bamfile=INPUT_RNA_bamfile, outdirectory=outdirectory, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file, jitter_size=5, read_len=90)
 
 # Create synthetic read coordinates for intergenes
 scRNA_GenerateBAM.scRNA_GenerateBAMCoord(
-        bed_file=outdirectory + "/" + intergene_bedfile, UMI_count_mat_file=outdirectory + "/" + synthetic_countmat_intergene_file, synthetic_cell_label_file=outdirectory + "/" + synthetic_cell_label_file, read_bedfile_prename=intergene_read_bedfile_prename, INPUT_bamfile=INPUT_RNA_bamfile, outdirectory=outdirectory, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file, jitter_size=5, read_len=90)
+        bed_file=intergene_bedfile, UMI_count_mat_file=outdirectory + "/" + synthetic_countmat_intergene_file, synthetic_cell_label_file=outdirectory + "/" + synthetic_cell_label_file, read_bedfile_prename=intergene_read_bedfile_prename, INPUT_bamfile=INPUT_RNA_bamfile, outdirectory=outdirectory, OUTPUT_cells_barcode_file=OUTPUT_cells_barcode_file, jitter_size=5, read_len=90)
 
 # Combine synthetic read bed files
 scRNA_GenerateBAM.scRNA_CombineBED(outdirectory=outdirectory, gene_read_bedfile_prename=gene_read_bedfile_prename, intergene_read_bedfile_prename=intergene_read_bedfile_prename, BED_filename_combined_pre=RNA_read_bedfile_prename)
@@ -406,7 +414,9 @@ Use function `scRNA_GenerateBAM` and `scATAC_ErrorBase` to introduce random erro
 
 **Build reference genome dictionary (optional)**
 
-Note that before using function `scRNA_GenerateBAM` and `scATAC_ErrorBase`, please create the reference dictionary for the reference genome with function `CreateSequenceDictionary` using software Picard and make sure that the output *.dict* files are within the same directory to *`referenceGenome_name`.fa*. **For this tutorial, no dictionary building is needed since we have built for chr1.fa in reference.genome.chr1.tar.gz**. 
+Note that before using function `scRNA_GenerateBAM` and `scATAC_ErrorBase`, please create the reference dictionary for the reference genome with function `CreateSequenceDictionary` using software Picard and make sure that the output *.dict* files are within the same directory to *`referenceGenome_name`.fa*. 
+
+**Note**: For this tutorial, no dictionary building is needed since we have built for *chr1.fa* in *reference.genome.chr1.tar.gz*. The following code chunk is using **bash commands**.
 
 ```{code-block} console
 $ cd /home/users/example/refgenome_dir # may use users' own path

@@ -19,6 +19,8 @@ This tutorial's main steps and corresponding estimated time usage are as follows
 - **Step 5: Output synthetic read**: ~ 11 mins
 
 
+By default, this tutorial uses Python (Python >= 3.8). However, we also include code chunks using bash commands to preprocess necessary files. To avoid users' confusion, bash commands start with a symbol **$**. We also indicate when a following code chunk is using bash commands. 
+
 
 
 ## Required softwares for scReadSim
@@ -34,16 +36,18 @@ Depending on users' choices, the following softwares are optional:
 
 
 ## Pre-process input BAM file
-**Note: This tutorial does not need this pre-process step since the processed BAM file is provided by the scReadSim package (see Step 1: Import packages and data files).**
+**Note**: This tutorial does not need this pre-process step since the processed BAM file is provided by the scReadSim package (see **Step 1: Import packages and data files**).
 
 Input BAM file for scReadSim needs pre-processing to add the cell barcode in front of the read name. For example, in 10x sequencing data, cell barcode `TGGACCGGTTCACCCA-1` is stored in the field `CB:Z:TGGACCGGTTCACCCA-1`. 
+
+The following code chunk (**bash commands**) outputs a read record from the original BAM file.
 
 ```{code-block} console
 $ samtools view unprocess.bam | head -n 1
 A00836:472:HTNW5DMXX:1:1372:16260:18129      83      chr1    4194410 60      50M     =       4193976 -484    TGCCTTGCTACAGCAGCTCAGGAAATGTCTTTGTGCCCACAGTCTGTGGT   :FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF      NM:i:0  MD:Z:50 AS:i:50 XS:i:0  CR:Z:TCCGGGACAGCTAACA   CY:Z:FFFFFFFFFFFFFFF:   CB:Z:TGGACCGGTTCACCCA-1 BC:Z:AAACTCAT        QT:Z::FFFFFFF   RG:Z:e18_mouse_brain_fresh_5k:MissingLibrary:1:HTNW5DMXX:1
 ```
 
-The following code chunk adds the cell barcodes in front of the read names.
+The following code chunk (**bash commands**) adds the cell barcodes in front of the read names.
 
 ```{code-block} console
 $ # extract the header file
@@ -62,12 +66,14 @@ TGGACCGGTTCACCCA-1:A00836:472:HTNW5DMXX:1:1372:16260:18129      83      chr1    
 
 
 
+
+
 ## Download reference genome for test example
 For user convienience, we prepared the indexed reference genome files (by bowtie2), which can be downloaded using the following bash commands:
 - GENCODE reference genome FASTA file and index file(indexed by bowtie2): reference.genome.chr1.tar.gz
 - GENCODE genome annotation gtf file: gencode.vM10.annotation.gtf
 
-**Note**: users may need to edit the code by using their own path.
+**Note**: users may need to edit the code by using their own path. The following code chunk is using **bash commands**.
 
 
 ```{code-block} console
@@ -88,15 +94,15 @@ Import modules.
 import sys, os
 import scReadSim.Utility as Utility
 import scReadSim.GenerateSyntheticCount as GenerateSyntheticCount
-import scReadSim.scATAC_GenerateBAM as scATAC_GenerateBAM
+import scReadSim.scRNA_GenerateBAM as scRNA_GenerateBAM
 import pkg_resources
 ```
 
 The real BAM files and other input files are listed and can be accessed by simply loading the code chunk below:
--  Sample 1 BAM file: 10X_ATAC_chr1_4194444_4599104_rep1.bam
--  Sample 2 BAM file: 10X_ATAC_chr1_4194444_4599104_rep2.bam
--  Sample 1 cell barcode file: barcodes_top1k_ATACrep1.tsv
--  Sample 2 cell barcode file: barcodes_top1k_ATACrep2.tsv
+-  Sample 1 BAM file: 10X_RNA_chr1_3073253_4526737.bam
+-  Sample 2 BAM file: 10X_RNA_chr1_3073253_4526737_rep2.bam
+-  Sample 1 cell barcode file: barcodes.tsv
+-  Sample 2 cell barcode file: barcodes_RNArep2.tsv
 -  chromosome size file: mm10.chrom.sizes
 
 ```{code-block} python3
@@ -153,8 +159,14 @@ Function `Utility.scRNA_CreateFeatureSets_MultiSample` creates multiple sub-dire
 - gene bed file: *scReadSim.Gene.bed*
 - inter-gene bed file: *scReadSim.InterGene.bed*
 
+**Note**: users may need to edit the code by using their own path.
+
+
 ```{code-block} python3
-Utility.scRNA_CreateFeatureSets_MultiSample(INPUT_bamfile=INPUT_bamfile, samtools_directory=samtools_directory, bedtools_directory=bedtools_directory, outdirectory=outdirectory, genome_size_file=INPUT_genome_size_file, genome_annotation=INPUT_genome_annotation) # Less than one minute 
+# Specify the absolute path to gene annotation file
+INPUT_genome_annotation = "/home/users/example/refgenome_dir/gencode.vM10.annotation.gtf" # may use user's own path
+
+Utility.scRNA_CreateFeatureSets_MultiSample(INPUT_bamfile=INPUT_bamfile, samtools_directory=samtools_directory, bedtools_directory=bedtools_directory, outdirectory=outdirectory, genome_size_file=INPUT_genome_size_file, genome_annotation=INPUT_genome_annotation)
 ```
 
 
@@ -219,7 +231,10 @@ Use function `scRNA_GenerateBAM.scATAC_GenerateSyntheticRead_MultiSample` to gen
 
 ### Build reference genome dictionary (optional)
 
-Note that before using function `scRNA_GenerateBAM.scRNA_GenerateSyntheticRead_MultiSample`, please create the reference dictionary for the reference genome with function `CreateSequenceDictionary` using software Picard and make sure that the output *.dict* files are within the same directory to *`referenceGenome_name`.fa*. **For this tutorial, no dictionary building is needed since we have built for chr1.fa in reference.genome.chr1.tar.gz**. 
+Note that before using function `scRNA_GenerateBAM.scRNA_GenerateSyntheticRead_MultiSample`, please create the reference dictionary for the reference genome with function `CreateSequenceDictionary` using software Picard and make sure that the output *.dict* files are within the same directory to *`referenceGenome_name`.fa*. 
+
+**Note**: For this tutorial, no dictionary building is needed since we have built for *chr1.fa* in *reference.genome.chr1.tar.gz*. The following code chunk is using **bash commands**.
+
 
 ```{code-block} console
 $ cd /home/users/example/refgenome_dir # may use users' own path

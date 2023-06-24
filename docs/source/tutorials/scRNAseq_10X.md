@@ -14,6 +14,8 @@ This tutorial's main steps and corresponding estimated time usage are as follows
 - **Step 4: Simulate synthetic count matrix**: ~ 8 mins
 - **Step 5: Output synthetic read**: ~ 3 mins
 
+By default, this tutorial uses Python (Python >= 3.8). However, we also include code chunks using bash commands to preprocess necessary files. To avoid users' confusion, bash commands start with a symbol **$**. We also indicate when a following code chunk is using bash commands. 
+
 
 ## Required softwares for scReadSim
 scReadSim requires users to pre-install the following softwares:
@@ -27,16 +29,18 @@ Depending on users' choices, the following softwares are optional:
 
 
 ## Pre-process input BAM file
-**Note**: This tutorial does not need this pre-process step since the processed BAM file is provided by the scReadSim package (see Step 1: Import packages and data files).
+**Note**: This tutorial does not need this pre-process step since the processed BAM file is provided by the scReadSim package (see **Step 1: Import packages and data files**).
 
-Input BAM file for scReadSim needs pre-processing to add the cell barcode in front of the read name. For example, in 10x sequencing data, cell barcode `AACTTAGTCACAAGCT-1` is stored in the field `CB:Z:AACTTAGTCACAAGCT-1`. 
+Input BAM file for scReadSim needs pre-processing to add the cell barcode in front of the read name. For example, in 10x sequencing data, cell barcode `TGGACCGGTTCACCCA-1` is stored in the field `CB:Z:TGGACCGGTTCACCCA-1`. 
+
+The following code chunk (**bash commands**) outputs a read record from the original BAM file.
 
 ```{code-block} console
 $ samtools view unprocess.bam | head -n 1
-A00984:207:HGWCKDSXY:2:2306:14253:36886      16      chr1    3013015 255     17M186701N73M   *       0       0       TTTTTTTTTTTTTTGTTTTAAAATGACCACAGTGTACTTTATTTAATGATTTTTGTACTTTGTGTTGCAATAAAATAAAAAAAAAATCTA   ::F::FFFF,F:,FFF:FFFFFFFFFFFFF:F:FFFFFFFFFFFFFFFF:::FFF:FFFF:F:FFFFFFFFFFFFFFFFFFFFFFFFFFF      NH:i:1  HI:i:1  AS:i:78      nM:i:0  RG:Z:e18_mouse_brain_fresh_5k:0:1:HGWCKDSXY:2   RE:A:I  xf:i:0  CR:Z:AACTTAGTCACAAGCT   CY:Z:FFFFFFFFFFFFFFFF   CB:Z:AACTTAGTCACAAGCT-1 UR:Z:TAAGGTTCGACA   UY:Z:FFFFFFFFFFFF        UB:Z:TAAGGTTCGACA
+A00836:472:HTNW5DMXX:1:1372:16260:18129      83      chr1    4194410 60      50M     =       4193976 -484    TGCCTTGCTACAGCAGCTCAGGAAATGTCTTTGTGCCCACAGTCTGTGGT   :FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF      NM:i:0  MD:Z:50 AS:i:50 XS:i:0  CR:Z:TCCGGGACAGCTAACA   CY:Z:FFFFFFFFFFFFFFF:   CB:Z:TGGACCGGTTCACCCA-1 BC:Z:AAACTCAT        QT:Z::FFFFFFF   RG:Z:e18_mouse_brain_fresh_5k:MissingLibrary:1:HTNW5DMXX:1
 ```
 
-The following code chunk adds the cell barcodes in front of the read names.
+The following code chunk (**bash commands**) adds the cell barcodes in front of the read names.
 
 ```{code-block} console
 $ # extract the header file
@@ -47,11 +51,13 @@ $ # create a bam file with the barcode embedded into the read name
 $ time(cat <( cat tmp/unprocess.header.sam ) \
  <( samtools view unprocess.bam | awk '{for (i=12; i<=NF; ++i) { if ($i ~ "^CB:Z:"){ td[substr($i,1,2)] = substr($i,6,length($i)-5); } }; printf "%s:%s\n", td["CB"], $0 }' ) \
  | samtools view -bS - > processed.bam) 
-$ rm -d tmp
+$ rm -dr tmp
 
 $ samtools view processed.bam | head -n 1
-AACTTAGTCACAAGCT-1:A00984:207:HGWCKDSXY:2:2306:14253:36886      16      chr1    3013015 255     17M186701N73M   *       0       0       TTTTTTTTTTTTTTGTTTTAAAATGACCACAGTGTACTTTATTTAATGATTTTTGTACTTTGTGTTGCAATAAAATAAAAAAAAAATCTA   ::F::FFFF,F:,FFF:FFFFFFFFFFFFF:F:FFFFFFFFFFFFFFFF:::FFF:FFFF:F:FFFFFFFFFFFFFFFFFFFFFFFFFFF      NH:i:1  HI:i:1  AS:i:78      nM:i:0  RG:Z:e18_mouse_brain_fresh_5k:0:1:HGWCKDSXY:2   RE:A:I  xf:i:0  CR:Z:AACTTAGTCACAAGCT   CY:Z:FFFFFFFFFFFFFFFF   CB:Z:AACTTAGTCACAAGCT-1 UR:Z:TAAGGTTCGACA   UY:Z:FFFFFFFFFFFF        UB:Z:TAAGGTTCGACA
+TGGACCGGTTCACCCA-1:A00836:472:HTNW5DMXX:1:1372:16260:18129      83      chr1    4194410 60      50M     =       4193976 -484    TGCCTTGCTACAGCAGCTCAGGAAATGTCTTTGTGCCCACAGTCTGTGGT   :FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF      NM:i:0  MD:Z:50 AS:i:50 XS:i:0  CR:Z:TCCGGGACAGCTAACA   CY:Z:FFFFFFFFFFFFFFF:   CB:Z:TGGACCGGTTCACCCA-1 BC:Z:AAACTCAT        QT:Z::FFFFFFF   RG:Z:e18_mouse_brain_fresh_5k:MissingLibrary:1:HTNW5DMXX:1
 ```
+
+
 
 
 ## Download reference genome for test example
@@ -59,7 +65,7 @@ The example deploys scReadSim on the [10x single cell RNA-seq](https://www.10xge
 - GENCODE reference genome FASTA file and index file(indexed by bowtie2): *reference.genome.chr1.tar.gz*
 - GENCODE genome annotation gtf file: *gencode.vM10.annotation.gtf*
 
-**Note**: users may need to edit the code by using their own path.
+**Note**: users may need to edit the code by using their own path. The following code chunk is using **bash commands**.
 
 
 ```{code-block} console
@@ -302,7 +308,9 @@ Use function `scRNA_ErrorBase` to introduce random error to synthetic reads.
 
 **Build reference genome dictionary (optional)**
 
-Note that before using function `scRNA_ErrorBase`, please create the reference dictionary for the reference genome with function `CreateSequenceDictionary` using software Picard and make sure that the output *.dict* files are within the same directory to *`referenceGenome_name`.fa*. **For this tutorial, no dictionary building is needed since we have built for chr1.fa in reference.genome.chr1.tar.gz**. 
+Note that before using function `scRNA_ErrorBase`, please create the reference dictionary for the reference genome with function `CreateSequenceDictionary` using software Picard and make sure that the output *.dict* files are within the same directory to *`referenceGenome_name`.fa*. 
+
+**Note**: For this tutorial, no dictionary building is needed since we have built for *chr1.fa* in *reference.genome.chr1.tar.gz*. The following code chunk is using **bash commands**.
 
 ```{code-block} console
 $ cd /home/users/example/refgenome_dir # may use users' own path
@@ -340,7 +348,10 @@ The current version of scReadSim implicitly uses [bowtie2](https://bowtie-bio.so
 
 **Index reference genome (optional)** 
 
-Before using function `AlignSyntheticBam_Pair`, the reference gemome FASTA file should be indexed by bowtie2 through following chunk and make sure the output index files are within the same directory to *`referenceGenome_name`.fa*. **For this tutorial, no indexing is needed since we have indexed chr1.fa in reference.genome.chr1.tar.gz**. 
+Before using function `AlignSyntheticBam_Pair`, the reference gemome FASTA file should be indexed by bowtie2 through following chunk and make sure the output index files are within the same directory to *`referenceGenome_name`.fa*. 
+
+**Note**: For this tutorial, no indexing is needed since we have indexed *chr1.fa* in *reference.genome.chr1.tar.gz*. The following code chunk is using **bash commands**. 
+
 
 
 ```{code-block} console

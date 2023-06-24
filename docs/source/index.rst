@@ -33,12 +33,7 @@ Workflow of scReadSim for generating scRNA-seq reads
 Installation
 ------------
 
-Quick install from `PyPI <https://pypi.org/project/scReadSim/1.3.0/#description>`_::
-
-   pip install scReadSim
-
-
-Or install the latest version from `GitHub <https://github.com/JSB-UCLA/scReadSim>`_, 
+Install the latest version from `GitHub <https://github.com/JSB-UCLA/scReadSim>`_, 
 
 run::
 
@@ -48,6 +43,13 @@ run::
 or::
 
     pip install git+https://github.com/JSB-UCLA/scReadSim.git
+    
+Or quick install from `PyPI <https://pypi.org/project/scReadSim/1.3.0/#description>`_::
+
+   pip install scReadSim
+
+
+
 
 
 
@@ -65,9 +67,9 @@ or::
    scReadSim on 10x scATAC-seq<scATACseq_NoInput_10X>
    scReadSim on 10x scRNA-seq<scRNAseq_10X>
    scReadSim on single-cell multiomics<scMultiOmics>
-   scReadSim on scATAC-seq with multiple samples/replicates<scATACseq_MultiSamples>
-   scReadSim on scRNA-seq with multiple samples/replicates<scRNAseq_MultiSamples>
-   scReadSim on 10x scATAC-seq with user-input chromatin regions<scATACseq_INPUT_10X>
+   scReadSim on scATAC-seq from multiple samples/replicates<scATACseq_MultiSamples>
+   scReadSim on scRNA-seq from multiple samples/replicates<scRNAseq_MultiSamples>
+   scReadSim on 10x scATAC-seq with user-designed open chromatin regions<scATACseq_INPUT_10X>
 
 
 .. |Docs| image:: https://readthedocs.org/projects/screadsim/badge/?version=latest

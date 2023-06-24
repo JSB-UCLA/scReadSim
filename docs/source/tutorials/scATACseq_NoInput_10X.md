@@ -13,6 +13,8 @@ This tutorial's main steps and corresponding estimated time usage are as follows
 - **Step 4: Simulate synthetic count matrix**: ~ 3 mins
 - **Step 5: Output synthetic read**: ~ 2 mins
 
+By default, this tutorial uses Python (Python >= 3.8). However, we also include code chunks using bash commands to preprocess necessary files. To avoid users' confusion, bash commands start with a symbol **$**. We also indicate when a following code chunk is using bash commands. 
+
 ## Required softwares for scReadSim
 scReadSim requires users to pre-install the following softwares:
 - [MACS3](https://github.com/macs3-project/MACS)
@@ -26,16 +28,18 @@ Depending on users' choices, the following softwares are optional:
 
 
 ## Pre-process input BAM file
-**Note: This tutorial does not need this pre-process step since the processed BAM file is provided by the scReadSim package (see Step 1: Import packages and data files).**
+**Note**: This tutorial does not need this pre-process step since the processed BAM file is provided by the scReadSim package (see **Step 1: Import packages and data files**).
 
 Input BAM file for scReadSim needs pre-processing to add the cell barcode in front of the read name. For example, in 10x sequencing data, cell barcode `TGGACCGGTTCACCCA-1` is stored in the field `CB:Z:TGGACCGGTTCACCCA-1`. 
+
+The following code chunk (**bash commands**) outputs a read record from the original BAM file.
 
 ```{code-block} console
 $ samtools view unprocess.bam | head -n 1
 A00836:472:HTNW5DMXX:1:1372:16260:18129      83      chr1    4194410 60      50M     =       4193976 -484    TGCCTTGCTACAGCAGCTCAGGAAATGTCTTTGTGCCCACAGTCTGTGGT   :FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF      NM:i:0  MD:Z:50 AS:i:50 XS:i:0  CR:Z:TCCGGGACAGCTAACA   CY:Z:FFFFFFFFFFFFFFF:   CB:Z:TGGACCGGTTCACCCA-1 BC:Z:AAACTCAT        QT:Z::FFFFFFF   RG:Z:e18_mouse_brain_fresh_5k:MissingLibrary:1:HTNW5DMXX:1
 ```
 
-The following code chunk adds the cell barcodes in front of the read names.
+The following code chunk (**bash commands**) adds the cell barcodes in front of the read names.
 
 ```{code-block} console
 $ # extract the header file
@@ -52,12 +56,14 @@ $ samtools view processed.bam | head -n 1
 TGGACCGGTTCACCCA-1:A00836:472:HTNW5DMXX:1:1372:16260:18129      83      chr1    4194410 60      50M     =       4193976 -484    TGCCTTGCTACAGCAGCTCAGGAAATGTCTTTGTGCCCACAGTCTGTGGT   :FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF      NM:i:0  MD:Z:50 AS:i:50 XS:i:0  CR:Z:TCCGGGACAGCTAACA   CY:Z:FFFFFFFFFFFFFFF:   CB:Z:TGGACCGGTTCACCCA-1 BC:Z:AAACTCAT        QT:Z::FFFFFFF   RG:Z:e18_mouse_brain_fresh_5k:MissingLibrary:1:HTNW5DMXX:1
 ```
 
+
+
 ## Download reference genome for test example
 The example deploys scReadSim on the [10x single cell ATAC-seq](https://www.10xgenomics.com/resources/datasets/fresh-embryonic-e-18-mouse-brain-5-k-1-standard-2-0-0) dataset. For user convienience, we prepared the indexed reference genome files (by bowtie2), which can be downloaded using the following bash commands:
 - GENCODE reference genome FASTA file and index file(indexed by bowtie2): reference.genome.chr1.tar.gz
 - GENCODE genome annotation gtf file: gencode.vM10.annotation.gtf
 
-**Note**: users may need to edit the code by using their own path.
+**Note**: users may need to edit the code by using their own path. The following code chunk is using **bash commands**.
 
 
 ```{code-block} console
@@ -350,7 +356,9 @@ Use function `scATAC_ErrorBase` to introduce random error to synthetic reads.
 
 **Build reference genome dictionary (optional)**
 
-Note that before using function `scATAC_ErrorBase`, please create the reference dictionary for the reference genome with function `CreateSequenceDictionary` using software Picard and make sure that the output *.dict* files are within the same directory to *`referenceGenome_name`.fa*. **For this tutorial, no dictionary building is needed since we have built for chr1.fa in reference.genome.chr1.tar.gz**. 
+Before using function `scATAC_ErrorBase`, please create the reference dictionary for the reference genome with function `CreateSequenceDictionary` using software Picard and make sure that the output *.dict* files are within the same directory to *`referenceGenome_name`.fa*. 
+
+**Note**: For this tutorial, no dictionary building is needed since we have built for *chr1.fa* in *reference.genome.chr1.tar.gz*. The following code chunk is using **bash commands**.
 
 ```{code-block} console
 $ cd /home/users/example/refgenome_dir # may use users' own path
@@ -368,7 +376,10 @@ Function `scATAC_ErrorBase` takes the following arguments:
 - `outdirectory`: Specify the output directory of the synthteic FASTQ file with random errors.
 - `synthetic_fastq_prename`: Base name of the synthetic FASTQ files output by function `scATAC_BED2FASTQ`.
 
-This function will output synthetic reads with random errors in FASTQ files named as *`synthetic_fastq_prename`.ErrorIncluded.read1.bed2fa.fq*, *`synthetic_fastq_prename`.ErrorIncluded.read2.bed2fa.fq* to directory `outdirectory`.
+This function will output synthetic reads with random errors in FASTQ files to directory `outdirectory`: 
+
+- *`synthetic_fastq_prename`.ErrorIncluded.read1.bed2fa.fq*
+- *`synthetic_fastq_prename`.ErrorIncluded.read2.bed2fa.fq* 
 
 
 ```{code-block} python3
@@ -388,7 +399,9 @@ The current version of scReadSim implicitly uses [bowtie2](https://bowtie-bio.so
 
 **Index reference genome (optional)** 
 
-Before using function `AlignSyntheticBam_Pair`, the reference gemome FASTA file should be indexed by bowtie2 through following chunk and make sure the output index files are within the same directory to *`referenceGenome_name`.fa*. **For this tutorial, no indexing is needed since we have indexed chr1.fa in reference.genome.chr1.tar.gz**. 
+Before using function `AlignSyntheticBam_Pair`, the reference gemome FASTA file should be indexed by bowtie2 through following chunk and make sure the output index files are within the same directory to *`referenceGenome_name`.fa*. 
+
+**Note**: For this tutorial, no indexing is needed since we have indexed *chr1.fa* in *reference.genome.chr1.tar.gz*. The following code chunk is using **bash commands**. 
 
 
 ```{code-block} console

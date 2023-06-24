@@ -1,4 +1,4 @@
-.. scReadSim on 10X scRNA-seq with multiple samples
+.. scReadSim on 10X scRNA-seq from multiple samples
 .. ================================================
 
 .. include:: tutorials/scRNAseq_MultiSamples.md
