@@ -18,8 +18,6 @@ For installation details, please check [MACS3 website](https://github.com/macs3-
 
 ```{code-block} console
 $ pip install macs3
-
-# macs3 path (input of scReadSim)
 $ macs3_executefile=$(which macs3)
 $ echo ${macs3_executefile%/macs3}
 ```
@@ -36,8 +34,6 @@ $ cd samtools-1.12
 $ make
 $ sudo make install
 $ export PATH=$PATH:${Tools_path}/samtools-1.12
-
-# samtools path (input of scReadSim)
 $ echo ${Tools_path}/samtools-1.12
 ```
 
@@ -52,8 +48,6 @@ $ tar -zxvf bedtools-2.29.1.tar.gz
 $ cd bedtools2
 $ make
 $ export PATH=$PATH:${Tools_path}/bedtools2/bin
-
-# bedtools path (input of scReadSim)
 $ echo ${Tools_path}/bedtools2/bin
 ```
 
@@ -67,8 +61,6 @@ $ git clone https://github.com/lh3/seqtk.git
 $ cd seqtk
 $ make
 $ export PATH=$PATH:${Tools_path}/seqtk
-
-# seqtk path (input of scReadSim)
 $ echo ${Tools_path}/seqtk
 ```
 
@@ -97,7 +89,5 @@ $ cd ${Tools_path}
 $ git clone https://github.com/fulcrumgenomics/fgbio.gitcd fgbio
 $ cd fgbio
 $ sbt assembly
-
-# fgbio jar file  (input of scReadSim)
 $ echo ${Tools_path}/fgbio/target/scala-2.13/fgbio-2.0.1-e884860-SNAPSHOT.jar
 ```
