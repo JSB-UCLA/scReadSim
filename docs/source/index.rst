@@ -64,6 +64,7 @@ Or quick install from `PyPI <https://pypi.org/project/scReadSim/1.3.0/#descripti
    :maxdepth: 1
    :caption: Tutorials
 
+   Install required softwares of scReadSim<InstallTools>
    scReadSim on 10x scATAC-seq<scATACseq_NoInput_10X>
    scReadSim on 10x scRNA-seq<scRNAseq_10X>
    scReadSim on single-cell multiomics<scMultiOmics>
