@@ -19,10 +19,10 @@ By default, this tutorial uses Python (Python >= 3.8). However, we also include 
 
 ## Required softwares for scReadSim
 scReadSim requires users to pre-install the following softwares:
-- [samtools](http://www.htslib.org/)
-- [bedtools](https://bedtools.readthedocs.io/en/latest/)
-- [seqtk](https://github.com/lh3/seqtk)
-- [fgbio](https://github.com/fulcrumgenomics/fgbio)
+- [samtools >= 1.12](http://www.htslib.org/)
+- [bedtools >= 2.29.1](https://bedtools.readthedocs.io/en/latest/)
+- [seqtk >= 1.3](https://github.com/lh3/seqtk)
+- [fgbio >= 2.0.1](https://github.com/fulcrumgenomics/fgbio)
 
 Depending on users' choices, the following softwares are optional:
 - [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)
@@ -120,9 +120,10 @@ os.mkdir(outdirectory)
 
 
 ```{code-block} python3
-samtools_directory="/home/users/Tools/samtools/bin" 
+samtools_directory="/home/users/Tools/samtools" 
+macs3_directory="/home/users/Tools/MACS3/bin"
 bedtools_directory="/home/users/Tools/bedtools/bedtools2/bin"
-seqtk_directory="/home/users/Tools/seqtk/bin"
+seqtk_directory="/home/users/Tools/seqtk"
 fgbio_jarfile="/home/users/Tools/fgbio/target/scala-2.13/fgbio-2.0.1-e884860-SNAPSHOT.jar"
 ```
 
@@ -365,6 +366,9 @@ Now align the synthetic reads on to the reference genome with bowtie2.
 
 
 ```{code-block} python3
+# Specify bowtie2 path
+bowtie2_directory="/home/users/Tools/bowtie2/bin"
+# Specify output BAM name
 output_BAM_pre = "%s.syntheticBAM.CBincluded" % filename
 
 # Synthetic reads alignment

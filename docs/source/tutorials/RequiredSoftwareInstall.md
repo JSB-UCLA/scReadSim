@@ -1,11 +1,11 @@
 # Install required softwares of scReadSim
 
 This tutorial introduces the bash commands used to install the following required softwares for scReadSim:
-- [MACS3](https://github.com/macs3-project/MACS)
-- [samtools](http://www.htslib.org/)
-- [bedtools](https://bedtools.readthedocs.io/en/latest/)
-- [seqtk](https://github.com/lh3/seqtk)
-- [fgbio](https://github.com/fulcrumgenomics/fgbio)
+- [MACS3 >= 3.0.0](https://github.com/macs3-project/MACS)
+- [samtools >= 1.12](http://www.htslib.org/)
+- [bedtools >= 2.29.1](https://bedtools.readthedocs.io/en/latest/)
+- [seqtk >= 1.3](https://github.com/lh3/seqtk)
+- [fgbio >= 2.0.1](https://github.com/fulcrumgenomics/fgbio)
 
 Specify the absolute path where the softwares will be installed. **Note that user needs to use their own absolute path.**  
 
@@ -81,7 +81,7 @@ $ sudo apt-get install sbt
 $ sbt -h
 ```
 
-Now install fgbio. The final command returns the absolute path of fgbio java script, which is a required input of scReadSim.
+Now install fgbio. The final command returns the absolute path of fgbio java script, which is a required input of scReadSim. **Note**: user needs to specify the corresponding version.
 
 
 ```{code-block} console
@@ -89,5 +89,5 @@ $ cd ${Tools_path}
 $ git clone https://github.com/fulcrumgenomics/fgbio.gitcd fgbio
 $ cd fgbio
 $ sbt assembly
-$ echo ${Tools_path}/fgbio/target/scala-2.13/fgbio-2.0.1-e884860-SNAPSHOT.jar
+$ echo ${Tools_path}/fgbio/target/scala-{version}/fgbio-{version}-SNAPSHOT.jar
 ```
