@@ -81,7 +81,7 @@ $ sudo apt-get install sbt
 $ sbt -h
 ```
 
-Now install fgbio. The final command returns the absolute path of fgbio java script, which is a required input of scReadSim. **Note**: user needs to specify the corresponding version.
+Now install fgbio. The final command returns the absolute path of fgbio java script, which is a required input of scReadSim. **Note**: user needs to specify the corresponding version for the final command.
 
 
 ```{code-block} console
