@@ -31,8 +31,8 @@ Depending on users' choices, the following softwares are optional:
 
 
 
-## Pre-process input BAM file
-**Note**: This tutorial does not need this pre-process step since the processed BAM file is provided by the scReadSim package (see **Step 1: Import packages and data files**).
+## Pre-process BAM file before scReadSim
+**Note**: This tutorial does not need this pre-process step since the processed BAM file is provided by the scReadSim package (see below **Step 1: Import packages and data files**).
 
 Input BAM file for scReadSim needs pre-processing to add the cell barcode in front of the read name. For example, in 10x sequencing data, cell barcode `TGGACCGGTTCACCCA-1` is stored in the field `CB:Z:TGGACCGGTTCACCCA-1`. 
 
