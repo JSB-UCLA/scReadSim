@@ -65,12 +65,12 @@ Or quick install from `PyPI <https://pypi.org/project/scReadSim/1.4.0/#descripti
    :caption: Tutorials
 
    Install required softwares of scReadSim<InstallTools>
-   scReadSim on 10x scATAC-seq<scATACseq_NoInput_10X>
-   scReadSim on 10x scRNA-seq<scRNAseq_10X>
-   scReadSim on single-cell multiomics<scMultiOmics>
-   scReadSim on scATAC-seq from multiple samples/conditions<scATACseq_MultiSamples>
-   scReadSim on scRNA-seq from multiple samples/conditions<scRNAseq_MultiSamples>
-   scReadSim on 10x scATAC-seq with user-designed open chromatin regions<scATACseq_INPUT_10X>
+   scReadSim for 10x scATAC-seq<scATACseq_NoInput_10X>
+   scReadSim for 10x scRNA-seq<scRNAseq_10X>
+   scReadSim for single-cell multiomics<scMultiOmics>
+   scReadSim for scATAC-seq from multiple samples/conditions<scATACseq_MultiSamples>
+   scReadSim for scRNA-seq from multiple samples/conditions<scRNAseq_MultiSamples>
+   scReadSim for 10x scATAC-seq with user-designed open chromatin regions<scATACseq_INPUT_10X>
 
 
 .. |Docs| image:: https://readthedocs.org/projects/screadsim/badge/?version=latest

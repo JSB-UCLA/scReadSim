@@ -1,4 +1,4 @@
-# scReadSim on 10x scATAC-seq with user-designed open chromatin regions
+# scReadSim for 10x scATAC-seq with user-designed open chromatin regions
 
 This tutorial's main steps and corresponding estimated time usage are as follows (tested on a server with the 256x Intel Xeon Phi CPU 7210 at 1.30 GHz):
 

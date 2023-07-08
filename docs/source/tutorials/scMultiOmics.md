@@ -1,4 +1,4 @@
-# scReadSim on 10x MultiOme ATAC + Gene Expression Dataset 
+# scReadSim for 10x MultiOme ATAC + Gene Expression Dataset 
 
 This tutorial demonstrates the application of scReadSim generating synthetic reads for **single-cell multiomics** with [10x Single Cell Multiome ATAC + Gene Expression Dataset](https://www.10xgenomics.com/resources/datasets/fresh-embryonic-e-18-mouse-brain-5-k-1-standard-2-0-0). The current version of scReadSim multiomic module requires the input of two modalities, scATAC-seq and scRNA-seq, to have matchinging single cells.
 

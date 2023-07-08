@@ -1,4 +1,4 @@
-# scReadSim on 10x scRNA-seq from multiple samples
+# scReadSim for 10x scRNA-seq from multiple samples
 
 This tutorial demonstrates the application of scReadSim generating synthetic reads for **scRNA-seq from multiple samples/conditions**. For simplicity, we chose two of 10x datasets as the input multi-samples for this tutorial illustration. The datasets we chose include
 - [10x Single Cell Multiome dataset (RNA modality) for Fresh Embryonic E18 Mouse Brain](https://www.10xgenomics.com/resources/datasets/fresh-embryonic-e-18-mouse-brain-5-k-1-standard-2-0-0)
