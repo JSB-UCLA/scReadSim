@@ -213,12 +213,10 @@ Additionaly, if no `celllabel_file` is specified, scReadSim automatically perfor
 # Generate synthetic count matrix for gene-by-cell count matrix
 GenerateSyntheticCount_ConditionEffect.ConditionEffect_GenerateSyntheticCount(count_mat_filename=UMI_gene_count_mat_filename, cellcondition_file=INPUT_cells_condition_file, directory=outdirectory, outdirectory=outdirectory)
 
-
 # Specify cluster labels obtained from peak-by-cell matrix
 celllabel_file = outdirectory + "/" + "10X_RNA_chr1_3073253_4526737.gene.countmatrix.LouvainClusterResults.txt"
 # Generate synthetic count matrix for non-gene-by-cell count matrix
 GenerateSyntheticCount_ConditionEffect.ConditionEffect_GenerateSyntheticCount(count_mat_filename=UMI_intergene_count_mat_filename, cellcondition_file=INPUT_cells_condition_file, directory=outdirectory, outdirectory=outdirectory, celllabel_file=celllabel_file)
-
 ```
 
 ## Step 5: Output synthetic read

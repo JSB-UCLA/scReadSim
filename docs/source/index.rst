@@ -70,6 +70,7 @@ Or quick install from `PyPI <https://pypi.org/project/scReadSim/1.4.0/#descripti
    scReadSim for single-cell multiomics<scMultiOmics>
    scReadSim for scATAC-seq from multiple samples/conditions<scATACseq_MultiSamples>
    scReadSim for scRNA-seq from multiple samples/conditions<scRNAseq_MultiSamples>
+   scReadSim for scRNA-seq with condition effect<scRNAseq_10X_Condition>
    scReadSim for 10x scATAC-seq with user-designed open chromatin regions<scATACseq_INPUT_10X>
 
 
