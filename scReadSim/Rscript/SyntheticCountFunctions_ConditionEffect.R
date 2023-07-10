@@ -171,7 +171,7 @@ ConditionEffect_runSyntheticCount <- function(samplename_RNA, cellcondition_file
     write.table(synthetic_cell_label, sprintf("%s/ConditionEffect.scDesign3Simulated.CellTypeLabel.txt", out_directory), row.names = FALSE,col.names = FALSE, quote = FALSE)
     cat("[scReadSim] Writing out synthetic cell conditions...\n")
     write.table(synthetic_cell_condition, sprintf("%s/ConditionEffect.scDesign3Simulated.ConditionLabel.txt", out_directory), row.names = FALSE,col.names = FALSE, quote = FALSE)
-    cat("[scReadSim] Writing out synthetic count matrices to %s...\n")
+    cat("[scReadSim] Writing out synthetic count matrices...\n")
     write.table(synthetic_RNA_mat, sprintf("%s/%s.ConditionEffect.scDesign3Simulated.txt", out_directory, samplename_RNA), sep="\t", row.names = TRUE,col.names = FALSE)
     cat("[scReadSim] Done.\n")
 }
