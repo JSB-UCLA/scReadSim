@@ -20,7 +20,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../..'))
-autodoc_mock_imports = ["rpy2", "numpy", "pandas", "pysam", "tqdm", "joblib", "pathlib"] # Mock import these dependent pacakges for website building
+autodoc_mock_imports = ["rpy2", "numpy", "pandas", "pysam", "tqdm", "joblib", "pathlib", "Bio", "gffpandas"] # Mock import these dependent pacakges for website building
 
 
 

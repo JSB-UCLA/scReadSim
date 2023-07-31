@@ -10,9 +10,11 @@ install_require_list = [
     "pysam",
     "tqdm",
     "joblib", 
-    "pathlib"
+    "pathlib",
+    "Bio",
+    "gffpandas"
     ]
-# we need to exclude rpy2 when building the docs, and mock it for import in docs/conf.py
+# we need to exclude rpy2 when building the docs, and mock it for import in docs/source/conf.py
 # using the autodoc_mock_imports parameter:
 if not os.getenv('READTHEDOCS'):
     install_require_list.append('rpy2')
