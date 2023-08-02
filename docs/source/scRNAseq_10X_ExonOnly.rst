@@ -1,5 +1,3 @@
-.. automodule:: scReadSim
-
 .. scReadSim for 10X scRNA-seq (exon-only)
 .. =======================================
 
