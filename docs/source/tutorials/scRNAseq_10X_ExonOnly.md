@@ -1,4 +1,4 @@
-# scReadSim for 10x scRNA-seq (Exon-only)
+# scReadSim for 10x scRNA-seq (exon-only)
 
 
 This tutorial's main steps and corresponding estimated time usage are as follows (tested on a server with the 256x Intel Xeon Phi CPU 7210 at 1.30 GHz):
@@ -93,12 +93,12 @@ $ wget http://compbio10data.stat.ucla.edu/repository/gayan/Projects/scReadSim/ge
 To generate the above collapsed transcriptome FASTA file, we used `cgat` [package](https://github.com/cgat-developers/cgat-apps) and `gffread` [software](http://ccb.jhu.edu/software/stringtie/gff.shtml#gffread): 
 
 ```{code-block} console
-# Step 1: merge all transcripts for one gene
+$ # Step 1: merge all transcripts for one gene
 $ grep transcript_id gencode.vM10.merged.gtf \
         | cgat gtf2gtf --method=merge-exons \ 
                 | cgat gtf2gtf --method=set-transcript-to-gene -S gencode.vM10.merged.gtf
 
-# Step 2: Generate fa based on merged annotation gtf
+$ # Step 2: Generate fa based on merged annotation gtf
 $ gffread -w gencode.vM10.chr1.merged.fa \
         -g chr1.fa \
         -E \
