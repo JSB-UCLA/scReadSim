@@ -323,7 +323,6 @@ def scATAC_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdi
     cells = pd.read_csv(cells_barcode_file, sep="\t", header=None)
     cells = cells.values.tolist()
     # Specify global vars
-    global open_peak, cells_n, cells_barcode, INPUT_bamfile_glb
     INPUT_bamfile_glb = INPUT_bamfile
     cells_barcode = [item[0] for item in cells]
     with open(bed_file) as open_peak:
@@ -341,6 +340,7 @@ def scATAC_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdi
         peaksdic[rec_name] = k
         k += 1
     cells_n = len(cells_barcode)
+    global open_peak, cells_n, cells_barcode, INPUT_bamfile_glb
     peaks_n = len(open_peak)
     print("[scReadSim] Generating read count matrix...\n")
     mat_array = Parallel(n_jobs=n_cores, backend='multiprocessing')(delayed(countmat_mainloop)(rec_id) for rec_id in (range(len(open_peak))))
@@ -401,7 +401,6 @@ def scRNA_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdir
     cells = pd.read_csv(cells_barcode_file, sep="\t", header=None)
     cells = cells.values.tolist()
     # Specify global vars
-    global open_peak, cells_n, cells_barcode, INPUT_bamfile_glb, UMI_tag_glb, cellsdic
     UMI_tag_glb = UMI_tag
     INPUT_bamfile_glb = INPUT_bamfile
     cells_barcode = [item[0] for item in cells]
@@ -420,6 +419,7 @@ def scRNA_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdir
         peaksdic[rec_name] = k
         k += 1
     cells_n = len(cells_barcode)
+    global open_peak, cells_n, cells_barcode, INPUT_bamfile_glb, UMI_tag_glb, cellsdic
     peaks_n = len(open_peak)
     if UMI_modeling == True:
         print("[scReadSim] UMI Mode Detected.")
