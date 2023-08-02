@@ -159,7 +159,7 @@ fgbio_jarfile="/home/users/Tools/fgbio/target/scala-2.13/fgbio-2.0.1-e884860-SNA
 ```
 
 ### Prepare features
-Given the input BAM file and gene annotation file, scReadSim prepares the bed files for features using function `scRNA_CreateFeatureSets`. However, for a quick implementation in this demo, we prepared two simpler feature files embedded within the package. Users only need to implement the following code chunk to import them into the python environment. For how to generate features using scReadSim, please refer to section "Prepare features" in tutorial **scReadSim for 10x scRNA-seq**.
+Given the input BAM file and gene annotation file, scReadSim prepares the bed files for features using function `scRNA_CreateFeatureSets`. Here, for a quick implementation in this demo, we have prepared two smaller feature files (embedded within the package). Users only need to implement the following code chunk to import them into the python environment. To generate features using scReadSim, please refer to section "Prepare features" in tutorial **scReadSim for 10x scRNA-seq**.
 
 
 **Note**: users may need to edit the code by using their own path.
