@@ -353,7 +353,7 @@ def scATAC_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdi
     print('[scReadSim] Done!')
 
 
-def scRNA_UMIcountmat_mainloop(rec_id):
+def scRNA_UMIcountmat_mainloop(rec_id, cells_n):
     """Construct count vector for each scRNA-seq feature.
 
     """
@@ -419,13 +419,13 @@ def scRNA_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdir
         rec_name = '_'.join(rec)
         peaksdic[rec_name] = k
         k += 1
-    global cells_n
+    # global cells_n
     cells_n = len(cells_barcode)
     peaks_n = len(open_peak)
     if UMI_modeling == True:
         print("[scReadSim] UMI Mode Detected.")
         print("[scReadSim] Generating UMI Count Matrix...")
-        UMI_countmat_array = Parallel(n_jobs=n_cores, backend='multiprocessing')(delayed(scRNA_UMIcountmat_mainloop)(rec_id) for rec_id in (range(len(open_peak))))
+        UMI_countmat_array = Parallel(n_jobs=n_cores, backend='multiprocessing')(delayed(scRNA_UMIcountmat_mainloop)(rec_id, cells_n) for rec_id in (range(len(open_peak))))
         print("[scReadSim] Generated UMI Count Matrix.")
         UMI_countmat = np.array(UMI_countmat_array)
         print("[scReadSim] Writing UMI Count Matrix TXT File...")
