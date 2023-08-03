@@ -353,7 +353,7 @@ def scATAC_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdi
     print('[scReadSim] Done!')
 
 
-def scRNA_UMIcountmat_mainloop(rec_id, cells_n, open_peak, cells_barcode, INPUT_bamfile_glb, UMI_tag_glb, cellsdic):
+def scRNA_UMIcountmat_mainloop(rec_id):
     """Construct count vector for each scRNA-seq feature.
 
     """
@@ -401,7 +401,7 @@ def scRNA_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdir
     cells = pd.read_csv(cells_barcode_file, sep="\t", header=None)
     cells = cells.values.tolist()
     # Specify global vars
-    # global open_peak, cells_barcode, INPUT_bamfile_glb, UMI_tag_glb, cellsdic
+    global open_peak, cells_barcode, INPUT_bamfile_glb, UMI_tag_glb, cellsdic
     UMI_tag_glb = UMI_tag
     INPUT_bamfile_glb = INPUT_bamfile
     cells_barcode = [item[0] for item in cells]
@@ -419,13 +419,17 @@ def scRNA_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdir
         rec_name = '_'.join(rec)
         peaksdic[rec_name] = k
         k += 1
-    # global cells_n
+    global cells_n
     cells_n = len(cells_barcode)
     peaks_n = len(open_peak)
     if UMI_modeling == True:
         print("[scReadSim] UMI Mode Detected.")
         print("[scReadSim] Generating UMI Count Matrix...")
-        UMI_countmat_array = Parallel(n_jobs=n_cores, backend='multiprocessing')(delayed(scRNA_UMIcountmat_mainloop)(rec_id, cells_n, cells_n, open_peak, cells_barcode, INPUT_bamfile_glb, UMI_tag_glb, cellsdic) for rec_id in (range(len(open_peak))))
+        try:
+            UMI_countmat_array = Parallel(n_jobs=n_cores, backend='multiprocessing')(delayed(scRNA_UMIcountmat_mainloop)(rec_id) for rec_id in (range(len(open_peak))))
+        except:
+            print("[scReadSim] Parallel computing failed. Start computing with one core...")
+            UMI_countmat_array = Parallel(n_jobs=1, backend='multiprocessing')(delayed(scRNA_UMIcountmat_mainloop)(rec_id) for rec_id in (range(len(open_peak))))
         print("[scReadSim] Generated UMI Count Matrix.")
         UMI_countmat = np.array(UMI_countmat_array)
         print("[scReadSim] Writing UMI Count Matrix TXT File...")
