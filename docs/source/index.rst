@@ -44,7 +44,7 @@ or::
 
     pip install git+https://github.com/JSB-UCLA/scReadSim.git
     
-Or quick install from `PyPI <https://pypi.org/project/scReadSim/1.4.0/#description>`_::
+Or quick install from `PyPI <https://pypi.org/project/scReadSim/1.4.1/#description>`_::
 
    pip install scReadSim
 

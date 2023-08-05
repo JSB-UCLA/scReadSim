@@ -4,6 +4,7 @@ pyproject.toml
 setup.py
 scReadSim/DoubletDetection.py
 scReadSim/GenerateSyntheticCount.py
+scReadSim/GenerateSyntheticCount_ConditionEffect.py
 scReadSim/GenerateSyntheticCount_MultiOmics.py
 scReadSim/Utility.py
 scReadSim/__init__.py
@@ -17,6 +18,7 @@ scReadSim.egg-info/requires.txt
 scReadSim.egg-info/top_level.txt
 scReadSim/Rscript/DoubletDetection_Rscript.R
 scReadSim/Rscript/SyntheticCountFunctions.R
+scReadSim/Rscript/SyntheticCountFunctions_ConditionEffect.R
 scReadSim/Rscript/SyntheticCountFunctions_MultiOmics.R
 scReadSim/data/10X_ATAC_chr1_4194444_4399104.bam
 scReadSim/data/10X_ATAC_chr1_4194444_4399104.bam.bai
@@ -29,6 +31,7 @@ scReadSim/data/10X_RNA_chr1_3073253_4526737.bam
 scReadSim/data/10X_RNA_chr1_3073253_4526737.bam.bai
 scReadSim/data/10X_RNA_chr1_3073253_4526737_rep2.bam
 scReadSim/data/10X_RNA_chr1_3073253_4526737_rep2.bam.bai
+scReadSim/data/10X_RNA_conditionlabel.txt
 scReadSim/data/10x_ATAC_chr1_4194444_4399104.input.nonpeak.bed
 scReadSim/data/10x_ATAC_chr1_4194444_4399104.input.peak.bed
 scReadSim/data/barcodes.tsv
@@ -38,4 +41,6 @@ scReadSim/data/barcodes_top1k_ATACrep2.tsv
 scReadSim/data/cCRE_mm10_chr1_4194444_4399104.txt
 scReadSim/data/cCRE_mm10_chr1_4194444_4599104.txt
 scReadSim/data/mm10.chrom.sizes
+scReadSim/data/scReadSim.head10.Gene.bed
+scReadSim/data/scReadSim.head10.InterGene.bed
 tests/__init__.py
