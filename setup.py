@@ -21,7 +21,7 @@ if not os.getenv('READTHEDOCS'):
 
 setuptools.setup(
     name="scReadSim",
-    version="1.4.0",
+    version="1.4.1",
     author="Guanao Yan",
     author_email="gayan@g.ucla.com",
     description="A single-cell RNA-seq and ATAC-seq read simulator.",

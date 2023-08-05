@@ -343,7 +343,11 @@ def scATAC_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdi
     cells_n = len(cells_barcode)
     peaks_n = len(open_peak)
     print("[scReadSim] Generating read count matrix...\n")
-    mat_array = Parallel(n_jobs=n_cores, backend='multiprocessing')(delayed(countmat_mainloop)(rec_id) for rec_id in (range(len(open_peak))))
+    try:
+        mat_array = Parallel(n_jobs=n_cores, backend='multiprocessing')(delayed(countmat_mainloop)(rec_id) for rec_id in (range(len(open_peak))))
+    except:
+        print("[scReadSim] Parallel computing failed. Start computing with one core...")
+        mat_array = Parallel(n_jobs=1, backend='multiprocessing')(delayed(countmat_mainloop)(rec_id) for rec_id in (range(len(open_peak))))
     para_countmat = np.array(mat_array)
     with open("%s/%s.txt" % (outdirectory, count_mat_filename), 'w') as outsfile:
         for rec_id in tqdm(range(len(open_peak))):
@@ -441,7 +445,11 @@ def scRNA_bam2countmat_paral(cells_barcode_file, bed_file, INPUT_bamfile, outdir
     else:
         print("[scReadSim] Detected that UMI Mode Is Off.")
         print("[scReadSim] Generating Read Count Matrix...")
-        read_countmat_array = Parallel(n_jobs=n_cores, backend='multiprocessing')(delayed(countmat_mainloop)(rec_id) for rec_id in (range(len(open_peak))))
+        try:
+            read_countmat_array = Parallel(n_jobs=n_cores, backend='multiprocessing')(delayed(countmat_mainloop)(rec_id) for rec_id in (range(len(open_peak))))
+        except:
+            print("[scReadSim] Parallel computing failed. Start computing with one core...")
+            read_countmat_array = Parallel(n_jobs=1, backend='multiprocessing')(delayed(countmat_mainloop)(rec_id) for rec_id in (range(len(open_peak))))
         read_countmat = np.array(read_countmat_array)
         print("[scReadSim] Writing Read Count Matrix TXT File...")
         with open("%s/%s.txt" % (outdirectory, count_mat_filename), 'w') as outsfile:
