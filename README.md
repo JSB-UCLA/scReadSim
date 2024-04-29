@@ -4,6 +4,11 @@
 
 A single-cell RNA-seq and ATAC-seq read simulator.
 
+For more details about **scReadSim**, you can check out our manuscript on Nature Communications:
+
+Yan, G., Song, D., & Li, J. J. (2023). scReadSim: a single-cell RNA-seq and ATAC-seq read simulator. *Nature Communications*, 14(1), 7482. https://doi.org/10.1038/s41467-023-43162-w
+
+
 <!-- ## Update Log
 **June 18th**
 - Update UMI module and upload to PyPI.
@@ -46,7 +51,7 @@ A single-cell RNA-seq and ATAC-seq read simulator.
 - Upload scATAC-seq module. -->
 
 ## Quick Install
-Install scReadSim (most updated version) from Github
+Install `scReadSim` (most updated version) from Github
 ```bash
 pip install git+https://github.com/JSB-UCLA/scReadSim.git
 ```
@@ -62,7 +67,17 @@ Single-cell sequencing technologies emerged and diversified rapidly in the past 
 ## Website
 For tutorials and other details, check [our website](http://screadsim.readthedocs.io/).
 
+
+
+## Contact
+
+Any questions or suggestions on `scReadSim` are welcomed! Please report it on [issues](https://github.com/JSB-UCLA/scReadSim/issues), or contact Guanao Yan ([gayan\@ucla.edu](mailto:gayan@ucla.edu)).
+
+## Related Manuscripts
+-   **scDesign2**: [Sun, T., Song, D., Li, W. V., & Li, J. J. (2021). scDesign2: a transparent simulator that generates high-fidelity single-cell gene expression count data with gene correlations captured. *Genome biology*, 22(1), 1-37.](https://link.springer.com/article/10.1186/s13059-021-02367-2)
+-   **scDesign3**: [Song, D., Wang, Q., Yan, G., Liu, T., Sun, T., & Li, J. J. (2024). scDesign3 generates realistic in silico data for multimodal single-cell and spatial omics. *Nature Biotechnology*, 42(2), 247-252.](https://www.nature.com/articles/s41587-023-01772-1)
+
+
 ## License
 This pacakge is licensed under the terms
 of the **MIT License**.
-
