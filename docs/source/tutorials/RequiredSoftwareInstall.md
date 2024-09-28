@@ -86,7 +86,7 @@ Now install fgbio. The final command returns the absolute path of fgbio java scr
 
 ```{code-block} console
 $ cd ${Tools_path}
-$ git clone https://github.com/fulcrumgenomics/fgbio.gitcd fgbio
+$ git clone https://github.com/fulcrumgenomics/fgbio.git
 $ cd fgbio
 $ sbt assembly
 $ echo ${Tools_path}/fgbio/target/scala-{version}/fgbio-{version}-SNAPSHOT.jar
