@@ -5,9 +5,17 @@ if (!require("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 if (!requireNamespace("devtools", quietly = TRUE)) 
   install.packages("devtools")
-if (!requireNamespace("Seurat", quietly = TRUE)) {
-  install.packages('Seurat')
+# if (!requireNamespace("Seurat", quietly = TRUE)) {
+#   install.packages('Seurat')
+# }
+
+if (!requireNamespace("Seurat", quietly = TRUE) || packageVersion("Seurat") > "4.4.0") {
+  if (!requireNamespace("remotes", quietly = TRUE)) {
+    install.packages("remotes")
+  }
+  remotes::install_version("Seurat", version = "4.4.0")
 }
+
 if (!requireNamespace("scDesign3", quietly = TRUE)) {
 devtools::install_github("SONGDONGYUAN1994/scDesign3")
 }

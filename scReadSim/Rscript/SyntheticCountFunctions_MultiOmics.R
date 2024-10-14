@@ -5,9 +5,16 @@ if (!require("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 if (!requireNamespace("devtools", quietly = TRUE)) 
   install.packages("devtools")
-if (!requireNamespace("Seurat", quietly = TRUE)) {
-  install.packages('Seurat')
+# if (!requireNamespace("Seurat", quietly = TRUE)) {
+#   install.packages('Seurat')
+# }
+if (!requireNamespace("Seurat", quietly = TRUE) || packageVersion("Seurat") > "4.4.0") {
+  if (!requireNamespace("remotes", quietly = TRUE)) {
+    install.packages("remotes")
+  }
+  remotes::install_version("Seurat", version = "4.4.0")
 }
+
 if (!requireNamespace("scDesign3", quietly = TRUE)) {
 devtools::install_github("SONGDONGYUAN1994/scDesign3")
 }
@@ -23,10 +30,10 @@ suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(SingleCellExperiment))
 
 # Specify directories
-samplename_RNA <- "10X_RNA_chr1_3073253_4526737.gene.countmatrix"
-samplename_ATAC <- "10X_ATAC_chr1_4194444_4399104.peak.countmatrix"
-directory <- "/home/gayan/Projects/scATAC_Simulator/results/Revision_test_scMultiOmics_20230611"
-out_directory <- directory
+# samplename_RNA <- "10X_RNA_chr1_3073253_4526737.gene.countmatrix"
+# samplename_ATAC <- "10X_ATAC_chr1_4194444_4399104.peak.countmatrix"
+# directory <- "/home/gayan/Projects/scATAC_Simulator/results/Revision_test_scMultiOmics_20230611"
+# out_directory <- directory
 # n_cell_new <- 10000
 # n_cores <- 10
 # scMultiOmics_runSyntheticCount(samplename_RNA, samplename_ATAC, directory, out_directory, n_cores=10)

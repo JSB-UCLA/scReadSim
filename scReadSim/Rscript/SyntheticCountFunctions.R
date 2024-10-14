@@ -11,8 +11,14 @@ if (!require("Rsubread", quietly = TRUE))
 if (!requireNamespace("scDesign2", quietly = TRUE)) {
   devtools::install_github("JSB-UCLA/scDesign2")
 }
-if (!requireNamespace("Seurat", quietly = TRUE)) {
-  install.packages('Seurat')
+# if (!requireNamespace("Seurat", quietly = TRUE)) {
+#   install.packages('Seurat')
+# }
+if (!requireNamespace("Seurat", quietly = TRUE) || packageVersion("Seurat") > "4.4.0") {
+  if (!requireNamespace("remotes", quietly = TRUE)) {
+    install.packages("remotes")
+  }
+  remotes::install_version("Seurat", version = "4.4.0")
 }
 
 # Load packages
